@@ -1,0 +1,4 @@
+interface:
+  display_name: "LAT"
+  short_description: "Use lat.md project knowledge correctly"
+  default_prompt: "Use $lat to follow this repository's lat.md workflow before and after making changes."

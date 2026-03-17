@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "lat": {
+      "command": "/opt/homebrew/bin/lat",
+      "args": [
+        "mcp"
+      ]
+    }
+  }
+}
