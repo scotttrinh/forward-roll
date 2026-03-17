@@ -1,6 +1,7 @@
 """High-value tests for bootstrap configuration loading."""
 # @lat: [[domain#Testing Philosophy]]
-# @lat: [[workflow#Bootstrap Flow]]
+# @lat: [[workflow#Bootstrap Config Loading]]
+# @lat: [[workflow#Bootstrap Summary Rendering]]
 
 from __future__ import annotations
 

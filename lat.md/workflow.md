@@ -20,6 +20,38 @@ Related:
 - [[architecture#Planning Storage]]
 - [[domain#Planning Root]]
 
+## Bootstrap Config Loading
+
+Bootstrap config loading turns a TOML document into a typed directive at the adapter boundary.
+
+This path should resolve relative paths from the config location, apply default values when the values table is omitted, and fail with stable errors when the document shape is invalid.
+
+Code references:
+
+- [[src/forward_roll/adapters/bootstrap_config.py]]
+- [[tests/test_bootstrap_config.py]]
+
+## Bootstrap Summary Rendering
+
+Bootstrap summary rendering turns a typed directive into a concise, reviewable text artifact.
+
+The current slice is intentionally small: it surfaces project identity, repository and planning roots, and one headline each for architecture and version-control posture.
+
+Code references:
+
+- [[src/forward_roll/application/bootstrap.py]]
+- [[tests/test_bootstrap_config.py]]
+
+## Bootstrap Command
+
+The bootstrap command is the current agent-facing entry point for this repository slice.
+
+It should accept direct CLI inputs or a TOML config file, preserve the repo-root versus planning-root distinction, and print the rendered summary without embedding domain logic in the command body.
+
+Code references:
+
+- [[src/forward_roll/cli.py]]
+
 ## Phase Review Loop
 
 Every phase should have a hard boundary between implementation and review. That review is part of the spec lifecycle: it can validate the phase, trigger scope realignment, or update the project model before the next phase begins.

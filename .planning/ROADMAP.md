@@ -7,7 +7,7 @@ Forward Roll starts by defining its own domain clearly before it tries to automa
 ## Phases
 
 - [x] **Phase 1: Product Domain** - Define the operating values, core concepts, and milestone boundaries.
-- [ ] **Phase 2: Python Foundation** - Establish the strict Python package, CLI shell, and planning-root model.
+- [x] **Phase 2: Python Foundation** - Establish the strict Python package, CLI shell, and planning-root model.
 - [x] **Phase 3: Knowledge Graph Bootstrap** - Prove `lat.md` as the project knowledge substrate.
 - [ ] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
 - [ ] **Phase 5: First Executable Slice** - Implement the first real bootstrap workflow end to end.
@@ -39,9 +39,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Configure packaging, typing, linting, and test tooling.
-- [ ] 02-02: Create the initial domain and application layers.
-- [ ] 02-03: Expose a CLI command surface for bootstrap-oriented flows.
+- [x] 02-01: Configure packaging, typing, linting, and test tooling.
+- [x] 02-02: Create the initial domain and application layers.
+- [x] 02-03: Expose a CLI command surface for bootstrap-oriented flows.
 
 ### Phase 3: Knowledge Graph Bootstrap
 **Goal**: Establish `lat.md` as the first-class knowledge graph for architecture, domain, and workflow context.
@@ -93,7 +93,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Product Domain | 2/2 | Complete | 2026-03-16 |
-| 2. Python Foundation | 0/3 | In progress | - |
+| 2. Python Foundation | 3/3 | Complete | 2026-03-16 |
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 0/3 | Not started | - |
 | 5. First Executable Slice | 0/3 | Not started | - |

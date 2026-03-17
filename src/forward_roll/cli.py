@@ -1,6 +1,6 @@
 """CLI entry points for Forward Roll."""
-# @lat: [[workflow#Bootstrap Flow]]
-# @lat: [[architecture#Primary Layers]]
+# @lat: [[workflow#Bootstrap Command]]
+# @lat: [[architecture#CLI Adapter]]
 
 from __future__ import annotations
 

@@ -25,6 +25,16 @@ Code references:
 
 - [[src/forward_roll/domain/model.py]]
 
+## Project Identity
+
+Project identity captures the stable repository name and root path used by a bootstrap run.
+
+The identity object keeps the repository boundary explicit and enforces that the project name is non-empty before any workflow can proceed.
+
+Code references:
+
+- [[src/forward_roll/domain/model.py]]
+
 ## Value Set
 
 The default value set captures the behavioral posture of the tool. It is not presentation copy; it is a first-class input into planning, review, and execution decisions.
@@ -44,3 +54,14 @@ Boundary adapters may resolve paths from TOML or CLI inputs, but the domain mode
 Tests should document intent, enforce domain invariants, and validate end-to-end flows. Prefer a few high-value tests that prove the model over dense suites of mocked implementation-detail tests.
 
 For the Python foundation, the first high-value test should prefer the bootstrap happy path: TOML document to typed directive to rendered summary.
+
+## Knowledge Graph Validation
+
+Knowledge-graph validation should prove that important source files remain discoverable from `lat.md/`.
+
+The highest-value checks in this phase should confirm that key sections exist, that they reference the current Python slice, and that source files still carry explicit backlinks into the graph.
+
+Code references:
+
+- [[tests/test_bootstrap_config.py]]
+- [[tests/test_lat_knowledge_graph.py]]

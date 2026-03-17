@@ -54,8 +54,8 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 | Codex-first is the primary agent model | The tool should be optimized for the environment it actually targets | — Pending |
 | Python is the implementation language | Strict typing and modern Python tooling fit the desired architecture and maintenance posture | Implement with `attrs` and `cattrs`, use TOML at boundaries, and prefer `mypy` over `pyright` |
 | jj is a first-class workflow primitive | Automatic change tracking should improve, not fight, agent workflows | — Pending |
-| `lat.md` is the first documentation substrate to validate | Human-legible graph documentation fits the project's reviewability goal | Implemented through linked architecture/domain/workflow sections, source backlinks, and graph validation |
-| Planning roots must be externalizable | The workflow should work across poly-repos and public contribution contexts | — Pending |
+| `lat.md` is the first documentation substrate to validate | Human-legible graph documentation fits the project's reviewability goal | Implemented through linked architecture/domain/workflow sections, source backlinks, a repo-owned integrity test, and `lat check` |
+| Planning roots must be externalizable | The workflow should work across poly-repos and public contribution contexts | Implemented through explicit repo-root versus planning-root types plus CLI and TOML adapter support |
 
 ---
-*Last updated: 2026-03-17 after Phase 3 knowledge-graph slice*
+*Last updated: 2026-03-17 after planning-doc audit*

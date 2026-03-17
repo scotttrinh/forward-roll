@@ -1,7 +1,9 @@
 """Domain model for bootstrapping Forward Roll workflows."""
 # @lat: [[domain#Core Domain]]
+# @lat: [[domain#Project Identity]]
 # @lat: [[domain#Bootstrap Directive]]
 # @lat: [[domain#Value Set]]
+# @lat: [[domain#Planning Root]]
 
 from __future__ import annotations
 

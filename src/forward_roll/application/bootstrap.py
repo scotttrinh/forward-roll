@@ -1,6 +1,6 @@
 """Application services for bootstrap-oriented workflows."""
-# @lat: [[architecture#Primary Layers]]
-# @lat: [[workflow#Bootstrap Flow]]
+# @lat: [[architecture#Application Layer]]
+# @lat: [[workflow#Bootstrap Summary Rendering]]
 
 from __future__ import annotations
 

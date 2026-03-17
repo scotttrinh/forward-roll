@@ -27,6 +27,46 @@ Code references:
 - [[src/forward_roll/adapters/bootstrap_config.py]]
 - [[src/forward_roll/cli.py]]
 
+## Domain Layer
+
+The domain layer owns the typed bootstrap concepts and their invariants.
+
+It defines the frozen types that express project identity, planning-root separation, and the default value set without coupling those concepts to TOML parsing or CLI concerns.
+
+Code references:
+
+- [[src/forward_roll/domain/model.py]]
+
+## Application Layer
+
+The application layer turns typed directives into stable workflow-facing outputs.
+
+The current slice keeps application logic narrow: it accepts a validated `BootstrapDirective` and renders a concise summary without re-validating adapter input.
+
+Code references:
+
+- [[src/forward_roll/application/bootstrap.py]]
+
+## Adapter Layer
+
+The adapter layer translates external documents and command inputs into typed application calls.
+
+Bootstrap configuration loading belongs here because it resolves filesystem paths, parses TOML, and concentrates runtime validation before handing a clean directive to the application layer.
+
+Code references:
+
+- [[src/forward_roll/adapters/bootstrap_config.py]]
+
+## CLI Adapter
+
+The CLI is an adapter that exposes the current bootstrap slice without leaking transport concerns inward.
+
+It owns option parsing, exit behavior, and config-file error presentation while delegating typed work to the application and adapter modules.
+
+Code references:
+
+- [[src/forward_roll/cli.py]]
+
 ## Planning Storage
 
 Planning storage is a first-class product boundary, not an implementation detail.

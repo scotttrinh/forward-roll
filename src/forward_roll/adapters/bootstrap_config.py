@@ -1,7 +1,7 @@
 """TOML-backed bootstrap configuration adapter."""
-# @lat: [[architecture#Primary Layers]]
+# @lat: [[architecture#Adapter Layer]]
 # @lat: [[architecture#Type Posture]]
-# @lat: [[workflow#Bootstrap Flow]]
+# @lat: [[workflow#Bootstrap Config Loading]]
 
 from __future__ import annotations
 

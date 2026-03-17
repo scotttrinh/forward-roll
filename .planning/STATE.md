@@ -2,24 +2,24 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-16)
+See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Deliver an agentic workflow that remains structurally rigorous, reviewable by humans, and faithful to the domain even as automation increases.
-**Current focus:** Phase 3 - Knowledge Graph Bootstrap
+**Current focus:** Phase 4 - jj Review Workflow
 
 ## Current Position
 
-Phase: 3 of 5 (Knowledge Graph Bootstrap)
-Plan: 3 of 3 in current phase
-Status: Complete
-Last activity: 2026-03-17 — Added module-level `lat.md` coverage, source backlinks, a knowledge-graph integrity test, and passing `lat check`
+Phase: 4 of 5 (jj Review Workflow)
+Plan: 0 of 3 in current phase
+Status: Ready to start
+Last activity: 2026-03-17 — Audited planning docs after completing the Python foundation and knowledge-graph bootstrap slices
 
 Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 8
 - Average duration: -
 - Total execution time: -
 
@@ -28,9 +28,11 @@ Progress: [██████░░░░] 60%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 2 | - | - |
+| 2 | 3 | - | - |
+| 3 | 3 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 01-01, 01-02
+- Last 5 plans: 02-02, 02-03, 03-01, 03-02, 03-03
 - Trend: Stable
 
 ## Accumulated Context
@@ -48,6 +50,7 @@ Recent decisions affecting current work:
 - Phase 2: Use `.planning/` as the repo-local default instead of `.locals-only/.planning/`; planning-root override remains first-class.
 - Phase 3: Treat `lat.md` leaf sections plus explicit `@lat` backlinks as the proof that project memory is first-class rather than incidental prose.
 - Phase 3: Keep knowledge-graph validation narrow and end-to-end by testing section presence, code discoverability, and backlinks for the current Python slice.
+- Planning docs are now intentionally committed with the codebase, so `.planning/` is part of the reviewable project history in this repository.
 
 ### Pending Todos
 
@@ -55,10 +58,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- No active blockers. Phase 3 verification is passing and the next boundary is Phase 4 review/scoping, not more bootstrap expansion in this slice.
+- No active blockers. The next work should stay confined to jj-native review semantics and review gates rather than broadening into executable bootstrap work.
 
 ## Session Continuity
 
-Last session: 2026-03-17 10:31 EDT
-Stopped at: Completed Phase 3 knowledge-graph bootstrap slice
+Last session: 2026-03-17 11:07 EDT
+Stopped at: Audited planning docs and marked the repository ready for Phase 4 planning
 Resume file: None
