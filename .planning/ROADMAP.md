@@ -2,15 +2,15 @@
 
 ## Overview
 
-Forward Roll starts by defining its own domain clearly before it tries to automate much. The first milestone builds the specification and code skeleton needed to prove three things: the workflow can be Codex-first, the planning model can be separated from the code repository, and `lat.md` can carry a readable knowledge graph alongside a strictly typed Python implementation.
+Forward Roll starts by defining its own domain and aspirational specs clearly before it tries to automate much. The first milestone builds the specification and code skeleton needed to prove five things: the workflow can be Codex-first, `lat.md` can carry the aspirational specification layer, the planning model can be derived from those specs without being collapsed into them, specs and plans can live under different storage policies, and the implementation can stay strictly typed and reviewable.
 
 ## Phases
 
 - [x] **Phase 1: Product Domain** - Define the operating values, core concepts, and milestone boundaries.
 - [x] **Phase 2: Python Foundation** - Establish the strict Python package, CLI shell, and planning-root model.
 - [x] **Phase 3: Knowledge Graph Bootstrap** - Prove `lat.md` as the project knowledge substrate.
-- [ ] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
-- [ ] **Phase 5: First Executable Slice** - Implement the first real bootstrap workflow end to end.
+- [x] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
+- [ ] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
 
 ## Phase Details
 
@@ -22,9 +22,9 @@ Forward Roll starts by defining its own domain clearly before it tries to automa
   1. Forward Roll has a clear project definition, requirement set, and roadmap aligned with Codex-first goals.
   2. The product value system is documented as part of the domain, not as ad hoc prose.
   3. The first milestone boundary is clear enough to critique before deeper implementation starts.
-**Plans**: 2 plans
+**Tasks**: 2 tasks
 
-Plans:
+Tasks:
 - [x] 01-01: Define project context, requirements, and phase structure.
 - [x] 01-02: Capture initial domain concepts in the knowledge graph.
 
@@ -36,9 +36,9 @@ Plans:
   1. The repository contains a strict Python package and CLI entry point.
   2. The code models planning-root separation as an explicit domain concern.
   3. The package layout leaves room for ports-and-adapters style growth.
-**Plans**: 3 plans
+**Tasks**: 3 tasks
 
-Plans:
+Tasks:
 - [x] 02-01: Configure packaging, typing, linting, and test tooling.
 - [x] 02-02: Create the initial domain and application layers.
 - [x] 02-03: Expose a CLI command surface for bootstrap-oriented flows.
@@ -51,9 +51,9 @@ Plans:
   1. The repo contains a readable `lat.md/` graph with linked sections covering architecture, domain, and workflow.
   2. Source files can point back to graph sections through explicit references.
   3. The roadmap includes validation of `lat check` once the dependency is installed.
-**Plans**: 3 plans
+**Tasks**: 3 tasks
 
-Plans:
+Tasks:
 - [x] 03-01: Define the initial knowledge graph structure and linked sections.
 - [x] 03-02: Add source-to-graph references in Python modules.
 - [x] 03-03: Validate the graph with `lat check` when the toolchain is available.
@@ -66,34 +66,39 @@ Plans:
   1. The workflow model uses jj-native concepts instead of Git-shaped language.
   2. A mandatory review/alignment step exists between implementation phases.
   3. jj conventions for agents and reviewers are documented in durable project artifacts.
-**Plans**: 3 plans
+**Tasks**: 3 tasks
+**Task Contracts**: [Phase 4 task contracts](./PHASE-04.md)
 
-Plans:
-- [ ] 04-01: Model review-state and change-state concepts for jj-native workflows.
-- [ ] 04-02: Write reviewer-facing jj workflow guidance.
-- [ ] 04-03: Update planning artifacts to embed review gates explicitly.
+Tasks:
+- [x] 04-01: Define the jj-native workflow vocabulary for revisions, changes, stacks, review states, and the `edit`/`squash` execution loop.
+- [x] 04-02: Specify the reviewer-facing loop for alignment, feedback, and post-phase decisions.
+- [x] 04-03: Update planning artifacts so review gates and realignment outcomes are first-class state transitions.
 
 ### Phase 5: First Executable Slice
-**Goal**: Implement an end-to-end bootstrap flow that turns typed input into initial project artifacts.
+**Goal**: Implement the first self-hosting vertical slice that turns aspirational specs into plans, launches a phase, and supports operator-guided iteration.
 **Depends on**: Phase 4
 **Requirements**: [PLAN-03, QUAL-01]
 **Success Criteria** (what must be TRUE):
-  1. A user can run a Forward Roll bootstrap command against a repository.
-  2. The resulting artifacts reflect the documented values and planning-root model.
-  3. The executable path is backed by high-value tests and reviewable documentation.
-**Plans**: 3 plans
+  1. A user can start from linked aspirational specs and bootstrap a real self-hosting phase against a repository.
+  2. The executable slice respects the documented spec-to-plan boundary, separate `specs_root` / `plans_root` handling, and generic prompt-template model.
+  3. The user can iterate with operator feedback by appending follow-up work inside the active phase when appropriate.
+  4. The executable path is backed by high-value tests and reviewer-facing documentation.
+**Tasks**: 5 tasks
+**Task Contracts**: [Phase 5 task contracts](./PHASE-05.md)
 
-Plans:
-- [ ] 05-01: Define the bootstrap use-case contract and output model.
-- [ ] 05-02: Implement the initial artifact writer path.
-- [ ] 05-03: Add high-value tests and reviewer-facing documentation.
+Tasks:
+- [x] 05-01: Define the first executable self-hosting bootstrap contract with independent `specs_root` and `plans_root` inputs.
+- [ ] 05-02: Define the generic, cacheable workflow prompt-template model.
+- [ ] 05-03: Define the first full-phase execution launch contract.
+- [ ] 05-04: Define the continuous operator feedback loop for extending the active phase.
+- [ ] 05-05: Define the end-to-end verification and reviewer-facing documentation contract.
 
 ## Progress
 
-| Phase | Plans Complete | Status | Completed |
+| Phase | Tasks Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Product Domain | 2/2 | Complete | 2026-03-16 |
 | 2. Python Foundation | 3/3 | Complete | 2026-03-16 |
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
-| 4. jj Review Workflow | 0/3 | Not started | - |
-| 5. First Executable Slice | 0/3 | Not started | - |
+| 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
+| 5. First Executable Slice | 1/5 | In progress | - |

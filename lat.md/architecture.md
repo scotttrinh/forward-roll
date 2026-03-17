@@ -75,6 +75,22 @@ Planning artifacts are part of the product model, but they should not be coupled
 
 This repository uses `.planning/` as its local default, but that default should remain an adapter concern rather than a domain constraint.
 
+Forward Roll should also treat the specification layer as a distinct root. Some teams may keep specifications in-repo while plans stay ephemeral or user-local, so the product should model `specs_root` and `plans_root` independently rather than forcing a single shared workspace root.
+
+## Bootstrap Handoff Boundary
+
+Bootstrap should persist only the durable context later workflow layers need.
+
+The bootstrap boundary should write resolved roots, project identity, applied defaults, and the active planning target into `plans_root`. Prompt-template assets should remain reusable workflow assets, and live execution state should begin only when the later phase-launch layer consumes those durable planning outputs.
+
+## Knowledge and Planning Boundary
+
+`lat.md` and planning artifacts should be integrated layers with different responsibilities, not duplicate systems.
+
+`lat.md` owns the aspirational specification layer: linked concepts, intended behavior, rationale, and semantic context. Planning artifacts own the operational layer: current phases, task contracts, and the next forward changes needed to bring code and specs back into alignment.
+
+Forward Roll should consume both layers together. It should read `specs_root` to understand what the system is meant to be, and read `plans_root` to understand what work is next.
+
 ## Type Posture
 
 Strict typing is a design tool, not just a correctness tool. We model domain concepts explicitly and force ambiguity to the edges. Runtime validation should be concentrated at adapter boundaries.

@@ -36,6 +36,8 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 
 - The starting point is the design space explored by get-shit-done, but the implementation and defaults are intentionally different.
 - The first milestone should try `lat.md`, a markdown knowledge graph tool that stores project knowledge in `lat.md/` with wiki links, code backlinks, and `lat check` validation.
+- The intended workflow is spec-first: define or evolve the aspirational system in `lat.md`, then let Forward Roll derive phased execution work from the gap between specs and current implementation.
+- Specifications and plans may need different storage and governance. Forward Roll should therefore model `specs_root` and `plans_root` as independent locations rather than force one shared workspace root.
 - The repo starts greenfield, so the domain model and artifact layout can be designed cleanly instead of inherited from existing code.
 - The intended users care about software architecture, type design, and legible artifacts that can be reviewed by humans as well as consumed by agents.
 
@@ -53,9 +55,15 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 |----------|-----------|---------|
 | Codex-first is the primary agent model | The tool should be optimized for the environment it actually targets | — Pending |
 | Python is the implementation language | Strict typing and modern Python tooling fit the desired architecture and maintenance posture | Implement with `attrs` and `cattrs`, use TOML at boundaries, and prefer `mypy` over `pyright` |
-| jj is a first-class workflow primitive | Automatic change tracking should improve, not fight, agent workflows | — Pending |
+| jj is a first-class workflow primitive | Automatic change tracking should improve, not fight, agent workflows | Use `edit` for intent-based atomic WIP changes and `squash` to produce task commits that together form a reviewable phase deliverable |
+| Milestones, phases, and tasks are distinct workflow units | The planning model should separate portfolio grouping, review boundaries, and execution assignments | Milestones group phases; phases define reviewable deliverables; tasks define single-agent execution scope |
+| Task contracts should be intent-based rather than file-predicted | Planners often cannot know the final code layout up front, and executors need room to improve structure while staying in bounds | Use `Scope` and `Out of Scope` instead of hard file lists by default, and include durable references for executor context |
 | `lat.md` is the first documentation substrate to validate | Human-legible graph documentation fits the project's reviewability goal | Implemented through linked architecture/domain/workflow sections, source backlinks, a repo-owned integrity test, and `lat check` |
+| `lat.md` owns aspirational specs and planning responds to their gaps | Specification and execution planning overlap, but they should remain layered rather than collapsed into one system | Start by shaping intended behavior in `lat.md`, then derive phases, tasks, and execution from the gap between current implementation and the specs |
+| Specs and plans need independent roots | Teams may want durable in-repo specs and ephemeral or external plans, so storage policy should differ by layer | Model `specs_root` and `plans_root` independently and let bootstrap accept separate locations for each |
+| Bootstrap should persist resolved execution context before launch | Later prompt-template and execution tasks need a stable handoff artifact instead of re-deriving operator inputs from CLI state | Record resolved roots, defaults, and active planning targets durably in `plans_root`, but keep prompt assets and live execution outside bootstrap scope |
+| The first self-hosting slice should use generic prompts and launch a real phase | Self-hosting requires more than writing planning artifacts; it needs a narrow but real execution loop | Use reusable, cacheable prompt templates with specs and plans as runtime inputs, launch a full phase, and let operator feedback append follow-up tasks inside the active phase |
 | Planning roots must be externalizable | The workflow should work across poly-repos and public contribution contexts | Implemented through explicit repo-root versus planning-root types plus CLI and TOML adapter support |
 
 ---
-*Last updated: 2026-03-17 after planning-doc audit*
+*Last updated: 2026-03-19 after executable bootstrap contract definition*

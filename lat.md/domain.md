@@ -16,10 +16,14 @@ Related:
 A typed expression of what a repository bootstrap needs:
 
 - project identity
+- repository root
+- specification root
 - planning root
 - default value set
 
 The directive is a frozen domain object. It is not responsible for parsing TOML or validating raw config documents.
+
+The current Python foundation models only the earlier bootstrap slice. The first executable self-hosting contract should widen that directive boundary to preserve independent `specs_root` and `plans_root` handling without moving adapter-boundary validation into the domain.
 
 Code references:
 
