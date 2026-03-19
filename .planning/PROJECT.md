@@ -63,7 +63,8 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 | Specs and plans need independent roots | Teams may want durable in-repo specs and ephemeral or external plans, so storage policy should differ by layer | Model `specs_root` and `plans_root` independently and let bootstrap accept separate locations for each |
 | Bootstrap should persist resolved execution context before launch | Later prompt-template and execution tasks need a stable handoff artifact instead of re-deriving operator inputs from CLI state | Record resolved roots, defaults, and active planning targets durably in `plans_root`, but keep prompt assets and live execution outside bootstrap scope |
 | The first self-hosting slice should use generic prompts and launch a real phase | Self-hosting requires more than writing planning artifacts; it needs a narrow but real execution loop | Use reusable, cacheable prompt-template assets with stable role IDs and named runtime context slots, keep those assets outside `plans_root`, launch a full phase, and let operator feedback append follow-up tasks inside the active phase |
+| Operator feedback should extend phases through appended task contracts | Review feedback must stay forward-looking without inventing subphases or durable task-review states | Classify operator input as either follow-on task contracts appended with the next phase-local IDs or broader realignment that reshapes later planning |
 | Planning roots must be externalizable | The workflow should work across poly-repos and public contribution contexts | Implemented through explicit repo-root versus planning-root types plus CLI and TOML adapter support |
 
 ---
-*Last updated: 2026-03-19 after workflow prompt-template contract definition*
+*Last updated: 2026-03-19 after continuous operator-feedback contract definition*

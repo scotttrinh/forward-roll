@@ -6,7 +6,7 @@ Phase 5 turns the spec-first workflow into the first executable self-hosting sli
 
 ## Status
 
-Current focus: `05-04`
+Current focus: `05-05`
 
 ## Task Contracts
 
@@ -354,6 +354,36 @@ The user goal is not only “plan once and run once.” The first usable self-ho
 - The operator loop should reuse the review outcomes already defined in Phase 4.
 - Follow-up tasks should be appended when work still belongs inside the current phase boundary.
 - The first implementation can keep the operator loop explicit and reviewable rather than highly automated.
+
+**Operator Feedback Entry**
+- Operator feedback should enter the active loop only after a launched task or phase review yields reviewable comments tied to the current phase deliverable, the active task contract, or an explicit operator instruction about that same phase.
+- The orchestrator should package the feedback with the active `phase_contract`, the current `ROADMAP.md` and `STATE.md`, the relevant `spec_context`, and the latest review outcome before invoking the `planning_update` role.
+- Raw operator comments remain runtime input until the `planning_update` role classifies them into forward planning changes. `05-04` should not turn ad hoc conversation into durable state without that classification step.
+
+**Follow-On Task Append Rules**
+
+| Condition | Append inside the active phase? | Required durable result |
+|-----------|--------------------------------|-------------------------|
+| Feedback identifies concrete missing work that still satisfies the current phase goal and success criteria | Yes | Append one or more new task contracts to the end of the active phase using the next available phase-local task IDs, such as `05-06` after `05-05`. |
+| Feedback can be expressed as a narrow execution task with clear scope, references, verification, and definition of done | Yes | Add the full task contract text to the active `PHASE-XX.md` file and a matching task line to `ROADMAP.md` without renumbering existing tasks. |
+| Feedback changes the current phase goal, success criteria, or review boundary | No | Classify the outcome as broader realignment rather than disguising it as an in-phase follow-up task. |
+| Feedback reveals a missing prerequisite, cross-phase dependency, or roadmap shape change outside the current phase boundary | No | Update future planning through broader realignment instead of extending the active phase. |
+| Feedback is too vague to become a reviewable task contract | No | Leave the phase at the review boundary and escalate for clearer operator guidance. |
+
+**Distinguishing In-Phase Follow-Up Work from Broader Realignment**
+- Treat feedback as in-phase follow-up work only when the current phase goal still stands, the missing work is concrete, and the result can be captured as one or more narrow task contracts without reshaping the phase itself.
+- Treat feedback as broader realignment when it changes what the phase is for, invalidates earlier task sequencing, or requires new planning outside the current phase boundary.
+- An `accepted` review outcome closes the active phase without appended follow-up tasks. An `extend phase with follow-on task(s)` outcome keeps the same phase open and moves focus to the first new incomplete appended task.
+
+**Minimum Durable Planning Updates**
+- `ROADMAP.md` should append the new task line or lines inside the active phase, increase the task count for that phase, and keep the next incomplete task truthful without creating a subphase.
+- The active `PHASE-XX.md` file should append the full follow-on task contract or broader realignment guidance needed for the next planning step. Existing task text should remain stable unless the realignment path explicitly replaces future scope.
+- `STATE.md` should update the concise current-focus summary, note whether the result is appended in-phase work or broader realignment, and point at the next task or planning action rather than logging the full review conversation.
+- Bootstrap context, prompt-template assets, and jj execution history should remain outside these durable planning updates unless another task contract explicitly expands that boundary.
+
+**Boundary for Later Phase 5 Tasks**
+- `05-04` owns how operator input is classified after launch, how appended in-phase task contracts are created, and which planning artifacts must change durably.
+- `05-05` owns proving this behavior end to end and documenting it for reviewers; `05-04` should stop at the contract that later verification will exercise.
 
 **Automated Verification**  
 - Run `lat check`.

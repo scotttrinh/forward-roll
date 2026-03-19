@@ -209,6 +209,28 @@ If review reveals more work inside the same phase boundary, `ROADMAP.md` should 
 
 If review triggers broader realignment, planning should reshape future phases and future task contracts based on what was learned. This is especially important because the detailed substance of later phases is expected to be planned after the current phase completes.
 
+## Continuous Operator Feedback
+
+Operator feedback should extend the running phase only through reviewable planning updates.
+
+### Feedback Entry
+
+Operator input should enter the loop alongside the active phase contract, current planning state, relevant spec context, and the latest review outcome.
+
+Raw comments are not durable planning state by themselves. The planning-update step should classify them into either in-phase follow-on work or broader realignment before any planning artifact changes.
+
+### In-Phase Follow-On Tasks
+
+Follow-on tasks belong in the active phase only when the phase goal still stands and the missing work is concrete enough to express as a narrow task contract.
+
+When that happens, planning should append the next phase-local task IDs at the end of the current phase order rather than creating subphases or renumbering existing tasks. The active phase stays open, and focus moves to the first new incomplete task.
+
+### Broader Realignment Boundary
+
+Broader realignment should remain distinct from in-phase follow-up work.
+
+If feedback changes the phase goal, success criteria, review boundary, or future roadmap shape, planning should treat that as broader realignment instead of hiding it inside appended tasks. If feedback is too vague to become a reviewable task contract, the loop should stop for clarification rather than fabricating scope.
+
 ## First Self-Hosting Slice
 
 The first executable self-hosting slice should go beyond planning-only bootstrap output.
