@@ -2,7 +2,7 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-17)
+See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** Deliver an agentic workflow that remains structurally rigorous, reviewable by humans, and faithful to the domain even as automation increases.
 **Current focus:** Phase 5 - First Executable Slice
@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 ## Current Position
 
 Phase: 5 of 5 (First Executable Slice)
-Task: 05-02 of 5 in current phase
+Task: 05-03 of 5 in current phase
 Status: Ready to start
-Last activity: 2026-03-19 — Completed `05-01` by defining the executable bootstrap contract inputs, defaults, durable outputs, and handoff boundary
+Last activity: 2026-03-19 — Completed `05-02` by defining prompt-template roles, runtime input slots, artifact boundaries, and cacheability expectations
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -62,11 +62,12 @@ Recent decisions affecting current work:
 - Forward Roll should model `specs_root` and `plans_root` independently so durable specs and ephemeral plans can live under different storage policies.
 - Phase 5: bootstrap should persist resolved roots, defaults, and the active planning target in `plans_root` before prompt rendering or execution launch begins.
 - Phase 5 should use generic, cacheable workflow prompt templates with specs and plans as runtime inputs rather than bespoke generated prompts.
+- Phase 5: prompt templates should be versioned workflow assets with stable role identities and named runtime slots instead of per-run rewritten prompt bodies.
 - The first executable slice should launch a full phase and support iterative operator feedback by appending follow-up tasks inside the active phase.
 
 ### Pending Todos
 
-- Define the prompt-template roles and runtime input contract for `05-02`.
+- Define the phase-launch contract for `05-03`.
 
 ### Blockers/Concerns
 

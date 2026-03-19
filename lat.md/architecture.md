@@ -83,6 +83,12 @@ Bootstrap should persist only the durable context later workflow layers need.
 
 The bootstrap boundary should write resolved roots, project identity, applied defaults, and the active planning target into `plans_root`. Prompt-template assets should remain reusable workflow assets, and live execution state should begin only when the later phase-launch layer consumes those durable planning outputs.
 
+## Workflow Prompt Assets
+
+Workflow prompt templates should be versioned product assets, not per-run planning outputs.
+
+They should live with the Forward Roll implementation, carry stable role identities and output contracts, and accept runtime context through named slots bound from `specs_root`, `plans_root`, and operator or workspace state. This keeps cacheable instructions separate from project-specific planning data.
+
 ## Knowledge and Planning Boundary
 
 `lat.md` and planning artifacts should be integrated layers with different responsibilities, not duplicate systems.

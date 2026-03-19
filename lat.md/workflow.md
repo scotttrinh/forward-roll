@@ -75,6 +75,33 @@ Those templates should treat specs, plans, and runtime context as inputs. The pr
 
 This keeps prompt assets reusable and reviewable while preserving the planner-owned task contracts as the source of workflow intent.
 
+The first slice should define three template roles:
+
+1. `planning_update` for planning-artifact updates and in-phase task extension work
+2. `task_execution` for executing one active task contract
+3. `phase_review` for reviewer-facing outcome and next-step guidance
+
+Each role should be a versioned asset with stable instructions and named input slots rather than a prompt body rewritten per run.
+
+### Prompt Runtime Inputs
+
+Runtime prompt inputs should come from explicit slots, not hidden process state.
+
+The shared input envelope should include bootstrap context from `plans_root`, relevant spec context from `specs_root`, relevant planning artifacts from `plans_root`, and optional operator or workspace context when the selected role needs them.
+
+Specs and plans should enter as referenced context blocks, excerpts, or attachments. They should not be collapsed into the invariant template instructions.
+
+### Prompt Cacheability
+
+Cacheability depends on stable template assets and predictable context binding.
+
+Forward Roll should keep role identity, template version, slot ordering, and output shape stable across runs. Changes to prompt semantics should happen by versioning the asset, while run-specific differences should show up only in the bound slot content.
+
+Related:
+
+- [[architecture#Workflow Prompt Assets]]
+- [[architecture#Bootstrap Handoff Boundary]]
+
 ## Phase Review Loop
 
 Every phase should have a hard boundary between implementation and review. That review is part of the spec lifecycle: it can validate the phase, trigger scope realignment, or update the project model before the next phase begins.

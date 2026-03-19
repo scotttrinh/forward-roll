@@ -6,7 +6,7 @@ Phase 5 turns the spec-first workflow into the first executable self-hosting sli
 
 ## Status
 
-Current focus: `05-02`
+Current focus: `05-03`
 
 ## Task Contracts
 
@@ -144,6 +144,48 @@ The first executable slice needs prompts, but prompt generation should not becom
 - The first slice likely needs at least planning, execution, and review/operator-facing prompt roles.
 - Template inputs should be explicit enough that orchestration can remain typed and reviewable.
 - Prompt outputs should align with the task-contract model rather than bypass it.
+
+**Prompt-Template Asset Model**  
+- A workflow prompt template is a reusable product asset identified by a stable role name and template version.
+- Template bodies should carry durable instructions, expected output shape, and named runtime input slots rather than project-specific prose.
+- Project-specific specs, plans, and operator instructions should be bound at runtime as slot content or attached context, not rewritten into bespoke prompt bodies.
+- Template assets should live with the Forward Roll implementation and remain outside `plans_root`; planning artifacts should only reference the context those assets consume.
+
+**Prompt-Template Roles for the First Slice**  
+
+| Role | Primary Purpose | Required Runtime Inputs | Allowed Durable Effects |
+|------|-----------------|-------------------------|-------------------------|
+| `planning_update` | Update or extend planning artifacts from specs and current planning state without becoming a second planning system. | Bootstrap context, spec context, planning context, optional operator/review input | Create or update planning artifacts in `plans_root`, including appended in-phase task contracts when later workflow rules allow it. |
+| `task_execution` | Execute one active task contract against the repository and planning state. | Bootstrap context, active task contract, supporting spec context, supporting planning context, optional repository snapshot | Edit repository and planning files only within the active task contract boundary, then report verification actually performed. |
+| `phase_review` | Evaluate a phase deliverable against specs and planning intent and describe the next forward action. | Bootstrap context, spec context, planning context, review target or deliverable summary, optional operator input | Produce a review outcome and planning guidance for acceptance, follow-on work, or broader realignment without silently doing the implementation work itself. |
+
+**Shared Runtime Input Envelope**  
+
+| Input Slot | Source | Contents |
+|------------|--------|----------|
+| `bootstrap_context` | `plans_root` bootstrap artifact from `05-01` | Resolved roots, project identity, defaults applied, and the active planning target. |
+| `spec_context` | `specs_root` | Referenced spec sections, excerpts, or paths needed for the current role; use stable references when possible instead of rewriting the specs into the template body. |
+| `planning_context` | `plans_root` | `PROJECT.md`, `ROADMAP.md`, `STATE.md`, active `PHASE-XX.md`, and any task-contract slice relevant to the current role. |
+| `operator_input` | Runtime | Optional human guidance, review comments, or follow-up instructions supplied after the template is selected. |
+| `workspace_context` | Runtime | Optional repository or deliverable summary such as jj status, changed files, or review target metadata. |
+
+**Artifact and Side-Effect Expectations**  
+- Templates may assume they are given explicit runtime slots; they must not depend on hidden CLI state or ad hoc environment narration.
+- `planning_update` may write planning artifacts, but it should not invent a new workflow model or rewrite reusable template assets.
+- `task_execution` may modify repository files and planning files only when the active task contract calls for it; it should not widen scope, replace the task contract, or fabricate verification results.
+- `phase_review` may recommend acceptance, in-phase follow-up work, or broader realignment, but it should not silently append new execution scope without producing reviewable planning guidance.
+
+**Cacheability Expectations**  
+- Template structure, role identity, and output contract should remain stable across runs; changing those semantics requires a template-version change.
+- Variable project context should be supplied in the named runtime slots in a consistent order so cache hits depend on real context changes rather than incidental prompt rewriting.
+- Specs and plans should be injected as referenced context blocks or attachments, not interpolated into the invariant instruction text.
+- Provider-specific wrappers or transport formatting belong to adapters around the template asset, not to the prompt-template contract itself.
+
+**Boundary for Later Phase 5 Tasks**  
+- `05-02` owns template identities, runtime input slots, allowed effects, and cacheability rules.
+- `05-03` owns when and how those templates are invoked during phase launch and initial task sequencing.
+- `05-04` owns how operator feedback enters the loop and when the `planning_update` role is used to append follow-on work.
+- `05-05` owns how the implemented template system and its launch path are verified end to end.
 
 **Automated Verification**  
 - Run `lat check`.
@@ -357,7 +399,7 @@ A self-hosting slice is only useful if it can be reviewed and validated. This ta
 ## Phase 5 Contract Coverage
 
 - `05-01`: Specified with explicit inputs, defaults, outputs, and handoff boundary
-- `05-02`: Specified
+- `05-02`: Specified with explicit roles, runtime inputs, side-effect limits, and cacheability rules
 - `05-03`: Specified
 - `05-04`: Specified
 - `05-05`: Specified
