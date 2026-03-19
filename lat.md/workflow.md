@@ -241,6 +241,22 @@ That slice should stay narrow by relying on strong task contracts and reusable p
 
 Its bootstrap step should therefore persist the resolved execution context durably in `plans_root` so later prompt and launch steps can start from reviewable planning state rather than ephemeral CLI input.
 
+## End-to-End Verification
+
+The first self-hosting slice should be validated by a small set of reviewable end-to-end stories and reviewer docs.
+
+### Happy-Path Coverage
+
+One verification path should start from linked specs, persist bootstrap context and planning artifacts, launch the active phase, execute the planned tasks, and reach an `accepted` review outcome without manual state reconstruction.
+
+### Feedback-Path Coverage
+
+A second verification path should prove that review plus operator input can append the next phase-local task contracts inside the active phase, update `ROADMAP.md`, `STATE.md`, and the active phase contract consistently, and keep the same phase open.
+
+### Reviewer-Facing Documentation
+
+Reviewer docs should explain the slice entry conditions, bootstrap handoff artifacts, prompt-template roles, phase execution and review loop, operator-feedback append rules, and the artifacts to inspect during the happy-path and feedback-path checks.
+
 ## lat.md Role
 
 `lat.md` is the intended human-and-agent-readable knowledge substrate.

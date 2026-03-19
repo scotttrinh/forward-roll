@@ -6,7 +6,7 @@ Phase 5 turns the spec-first workflow into the first executable self-hosting sli
 
 ## Status
 
-Current focus: `05-05`
+Contract coverage complete for `05-01` through `05-05`
 
 ## Task Contracts
 
@@ -444,6 +444,35 @@ A self-hosting slice is only useful if it can be reviewed and validated. This ta
 - The core acceptance story is: go from vague idea and specs to an agentic first version through a reviewable loop.
 - Verification should include at least one path where operator feedback appends new work to the active phase.
 - Docs should show how generic prompts, specs, and plans interact without making prompts the source of truth.
+
+**Minimum End-to-End Verification Stories**
+
+| Story | Purpose | Minimum Setup | Required Assertions |
+|-------|---------|---------------|---------------------|
+| Happy-path launch and acceptance | Prove the first slice can move from linked specs to a completed phase review without manual state reconstruction. | Use isolated `repo_root`, `specs_root`, and `plans_root` inputs, a bootstrap context from `05-01`, generic prompt-template roles from `05-02`, and an active phase with at least one executable task contract. | Bootstrap persists the resolved context in `plans_root`, phase launch resolves the active phase and ordered tasks, task execution reports real verification, phase review returns `accepted`, and planning artifacts remain truthful without appended follow-on tasks. |
+| Feedback-path extension inside the active phase | Prove the same slice can absorb operator feedback without inventing a second planning system. | Start from the same launched phase shape, but have phase review plus operator input classify the outcome as `extend phase with follow-on task(s)` through the `planning_update` role. | Planning updates append the next phase-local task IDs at the end of the active phase, `ROADMAP.md`, `STATE.md`, and `PHASE-XX.md` all point at the same next task, the current phase remains open, and no subphase or task renumbering is introduced. |
+
+**Execution Harness Expectations**
+- Drive these checks through the first supported bootstrap and phase-launch entrypoints or top-level application services, not by asserting against internal prompt-string assembly helpers alone.
+- Use temporary repositories and distinct temporary `specs_root` / `plans_root` locations so the independent-roots contract is exercised in the verification path rather than assumed.
+- Replace live provider calls with deterministic prompt-template and review doubles that preserve the role boundaries from `05-02` through `05-04`.
+- Assert durable artifact outcomes and reviewer-visible state transitions, including bootstrap context, planning updates, and review outcomes, instead of treating transport-level prompt formatting as the acceptance target.
+
+**Minimum Reviewer-Facing Documentation Set**
+
+| Documentation Topic | Must Explain | Why It Matters |
+|---------------------|--------------|----------------|
+| Slice entry conditions | What inputs, roots, and artifacts must exist before the first launch starts. | Reviewers need to know what counts as a valid starting point for the executable slice. |
+| Bootstrap handoff boundary | What bootstrap writes into `plans_root` and what later steps consume from that durable context. | This keeps specs, plans, prompt assets, and live execution responsibilities legible. |
+| Prompt-template roles | How `planning_update`, `task_execution`, and `phase_review` differ and what runtime context each consumes. | Reviewers need to see that prompts are reusable assets rather than a hidden second planning system. |
+| Phase execution and review loop | How active task contracts are sequenced, how jj review boundaries are respected, and when review stops execution. | This is the core operator story for the first self-hosting slice. |
+| Operator feedback extension path | How review feedback becomes appended in-phase task contracts versus broader realignment. | The feedback path is required acceptance behavior, so reviewers need a stable way to inspect it. |
+| Verification guide | Which happy-path and feedback-path checks prove the slice works end to end and which artifacts a reviewer should inspect. | This turns the verification contract into a repeatable review checklist instead of tribal knowledge. |
+
+**Verification Boundary for Later Work**
+- `05-05` should require the two high-value end-to-end stories above, not a broad failure-mode matrix or provider-specific integration test suite.
+- Reviewer-facing documentation should explain how to inspect the executable slice and its planning updates, not become a full operator manual for future milestones.
+- Broader realignment scenarios may be documented as a review outcome, but only the happy path and in-phase feedback-extension path are mandatory verification targets for this task.
 
 **Automated Verification**  
 - Run `lat check`.

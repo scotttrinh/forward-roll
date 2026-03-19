@@ -10,7 +10,7 @@ Forward Roll starts by defining its own domain and aspirational specs clearly be
 - [x] **Phase 2: Python Foundation** - Establish the strict Python package, CLI shell, and planning-root model.
 - [x] **Phase 3: Knowledge Graph Bootstrap** - Prove `lat.md` as the project knowledge substrate.
 - [x] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
-- [ ] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
+- [x] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
 
 ## Phase Details
 
@@ -91,7 +91,7 @@ Tasks:
 - [x] 05-02: Define the generic, cacheable workflow prompt-template model.
 - [x] 05-03: Define the first full-phase execution launch contract.
 - [x] 05-04: Define the continuous operator feedback loop for extending the active phase.
-- [ ] 05-05: Define the end-to-end verification and reviewer-facing documentation contract.
+- [x] 05-05: Define the end-to-end verification and reviewer-facing documentation contract.
 
 ## Progress
 
@@ -101,4 +101,4 @@ Tasks:
 | 2. Python Foundation | 3/3 | Complete | 2026-03-16 |
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
-| 5. First Executable Slice | 4/5 | In progress | - |
+| 5. First Executable Slice | 5/5 | Complete | 2026-03-19 |
