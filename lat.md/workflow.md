@@ -102,6 +102,30 @@ Related:
 - [[architecture#Workflow Prompt Assets]]
 - [[architecture#Bootstrap Handoff Boundary]]
 
+## Phase Launch Contract
+
+Phase launch should consume durable planning state and run a real phase to its review boundary.
+
+The first supported launch entrypoint should read bootstrap context from `plans_root`, resolve the active phase and its ordered task contracts, and execute that phase rather than emitting a single standalone prompt.
+
+Launch should fail with stable, reviewable errors when the bootstrap artifact is missing, the active phase cannot be resolved, no incomplete task contracts remain, or the required prompt-template roles are unavailable.
+
+### Initial Task Sequencing
+
+The first launch slice should prefer a simple serial loop over a broad scheduler.
+
+Task order should come from the active phase contract. The launcher should execute one task contract at a time with the `task_execution` template, require each task to end as one reviewable jj revision with reported verification, and stop immediately when a task escalates or cannot satisfy its contract.
+
+When all currently planned tasks in the active phase are complete, the launcher should invoke the `phase_review` template and hand off a reviewer-facing outcome instead of inventing new execution scope on its own.
+
+### Planning and Live Execution Context
+
+Planning artifacts should stay the durable source of truth for scope and sequencing.
+
+Bootstrap context, active phase and task contracts, and prompt-template identity should remain durable planning inputs. Live execution context should be derived at launch time from those artifacts plus runtime workspace state such as jj status, revision identifiers, bound prompt inputs, and task-local verification results.
+
+The launcher may update planning artifacts only to keep the current focus truthful or because an active task contract explicitly requires a planning-file change. It should not create a separate permanent orchestration state store for the first slice.
+
 ## Phase Review Loop
 
 Every phase should have a hard boundary between implementation and review. That review is part of the spec lifecycle: it can validate the phase, trigger scope realignment, or update the project model before the next phase begins.

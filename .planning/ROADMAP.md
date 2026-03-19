@@ -89,7 +89,7 @@ Tasks:
 Tasks:
 - [x] 05-01: Define the first executable self-hosting bootstrap contract with independent `specs_root` and `plans_root` inputs.
 - [x] 05-02: Define the generic, cacheable workflow prompt-template model.
-- [ ] 05-03: Define the first full-phase execution launch contract.
+- [x] 05-03: Define the first full-phase execution launch contract.
 - [ ] 05-04: Define the continuous operator feedback loop for extending the active phase.
 - [ ] 05-05: Define the end-to-end verification and reviewer-facing documentation contract.
 
@@ -101,4 +101,4 @@ Tasks:
 | 2. Python Foundation | 3/3 | Complete | 2026-03-16 |
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
-| 5. First Executable Slice | 2/5 | In progress | - |
+| 5. First Executable Slice | 3/5 | In progress | - |

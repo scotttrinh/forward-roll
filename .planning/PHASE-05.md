@@ -6,7 +6,7 @@ Phase 5 turns the spec-first workflow into the first executable self-hosting sli
 
 ## Status
 
-Current focus: `05-03`
+Current focus: `05-04`
 
 ## Task Contracts
 
@@ -248,6 +248,48 @@ The project goal is not just to emit a single prompt. Forward Roll needs a clear
 - The first launcher can stay simple if the task contracts are strong and prompt templates are well-scoped.
 - It is acceptable for the initial sequencing model to be mostly serial if that keeps the slice reviewable.
 - Execution context should be derived from existing plans and specs rather than inventing a third source of truth.
+
+**First Supported Execution Entrypoint**  
+- The first supported launch entrypoint should be a phase-level command or application call that takes the bootstrap context from `05-01`, reads the active planning target, and launches the active phase rather than a single ad hoc task prompt.
+- The entrypoint should default to the active phase recorded in the planning artifacts, while still allowing an explicit phase selector when that selector resolves to a phase already present in `plans_root`.
+- Launch should fail with a stable, reviewable error if the bootstrap context is missing, the selected phase contract document is missing, no incomplete task contracts remain in the phase, or the required prompt-template roles from `05-02` are unavailable.
+- The entrypoint should require an execution workspace rooted at `repo_root` and compatible with jj-native review boundaries; it should not define an alternate non-jj execution mode in `05-03`.
+
+**Launch Runtime Inputs**  
+
+| Input | Source | Requirement | Purpose |
+|-------|--------|-------------|---------|
+| `bootstrap_context` | `plans_root` bootstrap artifact from `05-01` | Required | Supplies resolved roots, project identity, defaults applied, and the active planning target. |
+| `phase_contract` | Active `PHASE-XX.md` in `plans_root` | Required | Supplies the ordered task contracts and the phase review boundary for the launched phase. |
+| `planning_context` | `plans_root` | Required | Supplies `PROJECT.md`, `ROADMAP.md`, `STATE.md`, and any active task slice needed by the selected prompt role. |
+| `spec_context` | `specs_root` | Required | Supplies the linked aspirational context referenced by the active task contract and later phase review. |
+| `prompt_templates` | Workflow assets from `05-02` | Required | Supplies the stable `task_execution` and `phase_review` template assets used during launch. |
+| `workspace_context` | Runtime | Optional | Supplies jj status, changed-file summaries, or other execution-local context derived from the repository at launch time. |
+
+**Phase Launch Flow**  
+- Launch should load `bootstrap_context`, resolve the target phase from the active planning target or explicit selector, and read the current task order from the phase contract rather than inferring work from raw specs.
+- For each incomplete task contract already present in the active phase, launch should bind the `task_execution` template with the active task contract, supporting spec context, supporting planning context, and any needed workspace context.
+- The first slice should execute tasks serially in documented task order. It should not introduce scheduler heuristics, speculative parallelism, or task delegation policy beyond what one narrow vertical slice requires.
+- After each task finishes, the launcher should require the worktree history to be reduced to one reviewable task-level jj revision before advancing to the next task contract.
+- If task execution reports an escalation, cannot complete required verification, or leaves the workspace outside the expected jj review boundary, launch should stop at that task and leave planning artifacts pointing at the unresolved task rather than silently skipping ahead.
+- When the active phase has no incomplete tasks left, launch should invoke the `phase_review` template against the assembled phase deliverable and produce a reviewer-facing outcome instead of immediately inventing more execution scope.
+
+**Initial Task Sequencing Expectations**  
+- Task order should come from the durable phase contract, with `STATE.md` and `ROADMAP.md` used to confirm current focus rather than to redefine sequencing rules.
+- Only one task contract should be active at a time in the first launch slice.
+- Launch may update planning state between tasks to keep the current focus accurate, but it should not append new task contracts on its own during `05-03`.
+- The first slice should treat a completed task contract plus its reported verification as the minimum unit of progress inside a launched phase.
+
+**Planning and Live Execution Boundary**  
+- Planner-owned durable context remains the source of truth for scope: bootstrap context, task contracts, prompt-template identity, current phase, and current task focus all come from `plans_root` plus reusable prompt assets.
+- Live execution context is derived at launch time from that durable context plus runtime workspace state such as jj status, current change or revision identifiers, bound prompt inputs, and task-local verification results.
+- Live execution state may be discarded and recreated from plans plus workspace inspection after interruption unless a later task explicitly requires durable persistence; `05-03` should not invent a third permanent state store for orchestration.
+- Launch may durably update repository files and planning files only through active task-contract work or concise current-focus updates needed to keep the planning layer truthful about execution progress.
+
+**Boundary for Later Phase 5 Tasks**  
+- `05-03` owns the launch entrypoint, serial task sequencing model, stop conditions, and the handoff between planner-owned context and live execution context.
+- `05-04` owns how operator feedback or review comments append follow-up tasks inside the active phase; `05-03` should stop at reviewer-facing outcome and planning truthfulness.
+- `05-05` owns end-to-end verification and reviewer documentation for the implemented launch path.
 
 **Automated Verification**  
 - Run `lat check`.

@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 5 of 5 (First Executable Slice)
-Task: 05-03 of 5 in current phase
+Task: 05-04 of 5 in current phase
 Status: Ready to start
-Last activity: 2026-03-19 — Completed `05-02` by defining prompt-template roles, runtime input slots, artifact boundaries, and cacheability expectations
+Last activity: 2026-03-19 — Completed `05-03` by defining the phase launch entrypoint, runtime inputs, serial task sequencing, and the planning/live-execution handoff
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total tasks completed: 8
+- Total tasks completed: 9
 - Average duration per task: -
 - Total execution time: -
 
@@ -64,10 +64,11 @@ Recent decisions affecting current work:
 - Phase 5 should use generic, cacheable workflow prompt templates with specs and plans as runtime inputs rather than bespoke generated prompts.
 - Phase 5: prompt templates should be versioned workflow assets with stable role identities and named runtime slots instead of per-run rewritten prompt bodies.
 - The first executable slice should launch a full phase and support iterative operator feedback by appending follow-up tasks inside the active phase.
+- Phase 5: phase launch should consume durable planning context, execute task contracts serially to reviewable jj revisions, and stop at phase review rather than inventing new execution scope.
 
 ### Pending Todos
 
-- Define the phase-launch contract for `05-03`.
+- Define the operator-feedback contract for `05-04`.
 
 ### Blockers/Concerns
 
