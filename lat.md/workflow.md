@@ -39,7 +39,7 @@ The minimum durable planning outputs should include project, roadmap, state, and
 
 Bootstrap config loading turns a TOML document into a typed directive at the adapter boundary.
 
-This path should resolve relative paths from the config location, apply default values when the values table is omitted, and fail with stable errors when the document shape is invalid.
+This path should resolve relative paths from the config location, apply default values when the values table is omitted, validate readable `specs_root` plus writable or creatable `plans_root`, and fail with stable errors when the document shape is invalid.
 
 Code references:
 
@@ -50,7 +50,7 @@ Code references:
 
 Bootstrap summary rendering turns a typed directive into a concise, reviewable text artifact.
 
-The current slice is intentionally small: it surfaces project identity, repository and planning roots, and one headline each for architecture and version-control posture.
+The executable bootstrap handoff should now surface the resolved repository, specification, and planning roots, the defaults actually applied, and the active phase/task target that later launch steps will consume.
 
 Code references:
 
@@ -61,7 +61,7 @@ Code references:
 
 The bootstrap command is the current agent-facing entry point for this repository slice.
 
-It should accept direct CLI inputs or a TOML config file, preserve the repo-root versus planning-root distinction, and print the rendered summary without embedding domain logic in the command body.
+It should accept direct CLI inputs or a TOML config file, preserve the repo-root versus `specs_root` versus `plans_root` distinction, persist the durable bootstrap handoff artifacts, and print stable success or validation outputs without embedding domain logic in the command body.
 
 Code references:
 

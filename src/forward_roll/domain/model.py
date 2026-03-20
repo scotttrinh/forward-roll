@@ -72,9 +72,23 @@ class ValueSet:
 
 
 @frozen
+class ActivePlanningTarget:
+    """Active phase/task metadata derived from durable planning artifacts."""
+
+    phase_id: str
+    phase_name: str
+    phase_document: str
+    task_id: str
+    task_title: str
+
+
+@frozen
 class BootstrapDirective:
-    """Typed bootstrap input for early Forward Roll scaffolding."""
+    """Typed bootstrap input for the executable bootstrap handoff."""
 
     identity: ProjectIdentity
-    planning_root: Path
+    specs_root: Path
+    plans_root: Path
     values: ValueSet
+    active_target: ActivePlanningTarget
+    defaults_applied: tuple[str, ...] = field(factory=tuple)

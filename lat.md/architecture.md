@@ -41,7 +41,7 @@ Code references:
 
 The application layer turns typed directives into stable workflow-facing outputs.
 
-The current slice keeps application logic narrow: it accepts a validated `BootstrapDirective` and renders a concise summary without re-validating adapter input.
+The executable bootstrap slice keeps application logic narrow: it accepts a validated `BootstrapDirective`, writes the durable bootstrap handoff artifacts into `plans_root`, refreshes the minimum planning files needed for later launch, and avoids re-validating adapter input.
 
 Code references:
 
@@ -51,7 +51,7 @@ Code references:
 
 The adapter layer translates external documents and command inputs into typed application calls.
 
-Bootstrap configuration loading belongs here because it resolves filesystem paths, parses TOML, and concentrates runtime validation before handing a clean directive to the application layer.
+Bootstrap configuration loading belongs here because it resolves filesystem paths, parses TOML, derives the active planning target from durable planning docs, and concentrates runtime validation before handing a clean directive to the application layer.
 
 Code references:
 

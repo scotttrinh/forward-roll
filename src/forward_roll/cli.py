@@ -10,9 +10,16 @@ from typing import Annotated
 import typer
 
 from forward_roll import __version__
-from forward_roll.adapters.bootstrap_config import BootstrapConfigError, load_bootstrap_directive
-from forward_roll.application.bootstrap import render_bootstrap_summary
-from forward_roll.domain.model import BootstrapDirective, ProjectIdentity, ValueSet
+from forward_roll.adapters.bootstrap_config import (
+    BootstrapConfigError,
+    load_bootstrap_directive,
+    resolve_bootstrap_directive,
+)
+from forward_roll.application.bootstrap import (
+    BootstrapApplicationError,
+    bootstrap_project,
+    render_bootstrap_summary,
+)
 
 app = typer.Typer(
     no_args_is_help=True,
@@ -45,23 +52,37 @@ def bootstrap(
     repo_root: Annotated[
         Path,
         typer.Argument(
-            exists=True,
-            file_okay=False,
-            dir_okay=True,
             resolve_path=True,
             help="Repository root to target.",
         ),
     ] = Path("."),
-    planning_root: Annotated[
-        Path,
+    specs_root: Annotated[
+        Path | None,
         typer.Option(
-            "--planning-root",
+            "--specs-root",
             file_okay=False,
             dir_okay=True,
             resolve_path=True,
-            help="Planning workspace. This may live outside the target repository.",
+            help="Specification root. Defaults to repo_root/lat.md.",
         ),
-    ] = Path(".planning"),
+    ] = None,
+    plans_root: Annotated[
+        Path | None,
+        typer.Option(
+            "--plans-root",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+            help="Planning workspace. Defaults to repo_root/.planning and may live outside the target repository.",
+        ),
+    ] = None,
+    project_name: Annotated[
+        str | None,
+        typer.Option(
+            "--project-name",
+            help="Project identity override. Defaults to the repository directory name.",
+        ),
+    ] = None,
     config: Annotated[
         Path | None,
         typer.Option(
@@ -73,7 +94,7 @@ def bootstrap(
         ),
     ] = None,
 ) -> None:
-    """Render the current bootstrap assumptions as a typed domain object."""
+    """Resolve and persist the executable bootstrap handoff artifacts."""
     if config is not None:
         try:
             directive = load_bootstrap_directive(config)
@@ -81,13 +102,26 @@ def bootstrap(
             typer.echo(str(exc), err=True)
             raise typer.Exit(code=1) from exc
     else:
-        directive = BootstrapDirective(
-            identity=ProjectIdentity(name="Forward Roll", repo_root=repo_root),
-            planning_root=planning_root,
-            values=ValueSet.default(),
-        )
+        try:
+            directive = resolve_bootstrap_directive(
+                repo_root=repo_root,
+                specs_root=specs_root,
+                plans_root=plans_root,
+                project_name=project_name,
+            )
+        except BootstrapConfigError as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(code=1) from exc
+
+    try:
+        artifacts = bootstrap_project(directive)
+    except BootstrapApplicationError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
 
     typer.echo(render_bootstrap_summary(directive))
+    typer.echo(f"context_path={artifacts.context_path}")
+    typer.echo(f"summary_path={artifacts.summary_path}")
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ Phase 5 turns the spec-first workflow into the first executable self-hosting sli
 
 ## Status
 
-Contract coverage complete for `05-01` through `05-05`
+Contract coverage complete for `05-01` through `05-08`
 
 ## Task Contracts
 
@@ -497,6 +497,201 @@ A self-hosting slice is only useful if it can be reviewed and validated. This ta
 - Escalate if reviewer documentation cannot stay aligned with the actual executable boundaries.
 - Escalate if the intended self-hosting story still cannot be validated cleanly after the earlier tasks are defined.
 
+### Task 05-06: implement executable bootstrap handoff
+
+**Objective**  
+Implement the `05-01` bootstrap contract so Forward Roll can resolve roots and defaults, validate them at the adapter boundary, and persist the durable handoff artifacts later launch steps need.
+
+**Why**  
+The current code only structures bootstrap inputs and renders a summary. Phase 5 cannot move into executable launch until bootstrap writes the durable context and planning handoff boundary defined earlier in this phase.
+
+**Scope**  
+- Extend the typed bootstrap input model to include explicit or defaulted `specs_root`, `plans_root`, active planning target metadata, and the applied value set.
+- Implement adapter-boundary validation for readable `specs_root`, writable or creatable `plans_root`, and non-empty project identity after defaulting.
+- Persist a machine-readable bootstrap context artifact and concise human-reviewable bootstrap summary in `plans_root`.
+- Materialize or refresh the minimum planning handoff artifacts and active-target metadata the later launch task will consume.
+- Update the CLI and application service boundary so bootstrap becomes a real write-producing use case with stable error reporting.
+
+**Out of Scope**  
+- Prompt-template asset loading or rendering.
+- Phase-launch orchestration.
+- Operator feedback classification or task-appending behavior.
+- Broad milestone replanning logic.
+
+**References**  
+- `.planning/PHASE-05.md`
+- `lat.md/workflow.md`
+- `lat.md/architecture.md`
+- `src/forward_roll/cli.py`
+- `src/forward_roll/application/bootstrap.py`
+- `src/forward_roll/domain/model.py`
+
+**Design Constraints**  
+- Keep `specs_root` and `plans_root` independent in both the type model and filesystem behavior.
+- Concentrate path resolution and runtime validation at adapters rather than inside the domain model.
+- Write durable outputs that later tasks can consume directly instead of rediscovering context from raw CLI input.
+- Keep the written artifacts human-legible and reviewable alongside their machine-readable counterparts.
+
+**Implementation Notes**  
+- Treat the bootstrap context artifact as the durable source for resolved roots, defaults applied, and the active planning target.
+- Keep the first implementation narrow: bootstrap should prepare execution context and stop before prompt binding or agent invocation.
+- Prefer stable file formats and explicit field names over implicit filesystem conventions.
+
+**Automated Verification**  
+- Add focused tests for defaulting, invalid roots, external `specs_root` or `plans_root`, and successful bootstrap artifact persistence.
+- Run the relevant test suite for bootstrap behavior.
+- Run `lat check`.
+
+**Manual Verification**  
+- Confirm bootstrap can target a repository with separate `specs_root` and `plans_root` locations.
+- Confirm the persisted artifacts are sufficient for a later phase-launch task to resolve current focus without extra CLI state.
+- Confirm bootstrap failures are stable and reviewable when roots are unusable.
+
+**Definition of Done**  
+- Bootstrap writes the durable handoff artifacts required by `05-01`.
+- The CLI reports success and validation failures through stable, reviewable outputs.
+- Tests cover the implemented bootstrap handoff behavior.
+- `lat check` passes.
+
+**Dependencies**  
+- `05-01` executable bootstrap contract.
+- Existing Python foundation and adapter-boundary validation posture.
+
+**Escalation Rules**  
+- Escalate if writing the minimum handoff artifacts would require reopening the bootstrap contract.
+- Escalate if bootstrap cannot stay independent from prompt-template or launch semantics.
+- Escalate if the planning handoff artifacts cannot remain both typed and human-reviewable.
+
+### Task 05-07: implement prompt assets and serial phase launch
+
+**Objective**  
+Implement the `05-02` and `05-03` contracts so Forward Roll can load stable workflow prompt assets, bind runtime context, and launch the active phase through a narrow serial execution loop.
+
+**Why**  
+Bootstrap alone does not produce a self-hosting slice. The project needs a real launch entrypoint that consumes the durable planning boundary, executes ordered task contracts one at a time, and stops at a reviewer-facing phase outcome.
+
+**Scope**  
+- Define versioned workflow prompt-template assets for `planning_update`, `task_execution`, and `phase_review` with stable role identities and named runtime slots.
+- Implement the typed runtime-input envelope and loader logic that binds bootstrap, spec, planning, and optional workspace context to those assets.
+- Add the first phase-launch application service and CLI entrypoint that resolves the active phase, executes incomplete task contracts serially, and invokes phase review when the phase is complete.
+- Keep planning truthfulness updated between tasks so the active phase and next task remain durable and reviewable.
+- Introduce the narrow execution-runner boundary and deterministic test doubles needed to verify launch behavior without depending on live provider calls.
+
+**Out of Scope**  
+- Appending follow-on tasks from operator feedback.
+- Broad scheduling, delegation, or concurrency policy.
+- Provider-specific expansion beyond the narrow runner boundary required for the first slice.
+- Long-term orchestration telemetry or audit systems.
+
+**References**  
+- `.planning/PHASE-05.md`
+- `lat.md/workflow.md`
+- `lat.md/architecture.md`
+- `.planning/ROADMAP.md`
+- `.planning/STATE.md`
+
+**Design Constraints**  
+- Prompt assets must stay reusable and cacheable rather than being rewritten per run.
+- Phase launch must consume durable task contracts instead of inferring work from raw specs.
+- The initial launcher should stay serial and reviewable.
+- The execution boundary must preserve jj-native review semantics and stop conditions.
+
+**Implementation Notes**  
+- Keep the runner boundary explicit so the launch loop can be tested with deterministic doubles while remaining compatible with a later Codex-facing adapter.
+- Treat prompt-template identity and slot binding as product assets, not transient string assembly helpers.
+- Stop launch immediately on escalation, failed verification, or broken review-boundary assumptions.
+
+**Automated Verification**  
+- Add focused tests for prompt-asset loading, runtime-slot binding, active-phase resolution, serial task sequencing, and launch stop conditions.
+- Run the relevant launch and orchestration tests.
+- Run `lat check`.
+
+**Manual Verification**  
+- Confirm phase launch starts from persisted bootstrap context rather than ad hoc CLI narration.
+- Confirm one incomplete task contract is active at a time and the phase stops at review.
+- Confirm prompt assets remain stable across runs while context varies through named slots.
+
+**Definition of Done**  
+- The repo contains reusable prompt-template assets and a typed binding path for their runtime context.
+- A phase-level launch entrypoint can execute the active phase serially to a reviewer-facing outcome.
+- Tests cover the narrow launch loop and its stop conditions.
+- `lat check` passes.
+
+**Dependencies**  
+- `05-02` generic workflow prompt-template contract.
+- `05-03` phase execution launch contract.
+- `05-06` executable bootstrap handoff implementation.
+
+**Escalation Rules**  
+- Escalate if the first launch slice requires a broader scheduler or provider system than Phase 5 allows.
+- Escalate if prompt assets cannot remain stable without embedding project-specific planning logic.
+- Escalate if launch cannot stay aligned with the planner-owned task-contract boundary.
+
+### Task 05-08: implement feedback-path planning updates, end-to-end verification, and reviewer docs
+
+**Objective**  
+Implement the `05-04` and `05-05` contracts so the first self-hosting slice can absorb operator feedback through appended in-phase tasks and prove the happy-path and feedback-path stories end to end.
+
+**Why**  
+The first usable slice is not complete until it can handle review feedback without inventing a second planning system and until reviewers can validate the resulting behavior with stable tests and documentation.
+
+**Scope**  
+- Implement the planning-update path that classifies operator feedback into appended in-phase task contracts versus broader realignment.
+- Update `ROADMAP.md`, `STATE.md`, and the active `PHASE-XX.md` document consistently when follow-on work belongs inside the active phase.
+- Add the high-value happy-path and feedback-path end-to-end tests defined by `05-05`, using deterministic runner doubles where live model calls are not required.
+- Write the minimum reviewer-facing documentation for entry conditions, bootstrap handoff artifacts, prompt-template roles, phase launch behavior, and the operator-feedback extension path.
+- Keep broader realignment outcomes explicit and non-destructive even when the first implementation stops short of automating all such cases.
+
+**Out of Scope**  
+- General-purpose conversational memory.
+- Broad roadmap replanning beyond the active phase boundary.
+- Exhaustive failure-mode testing outside the required end-to-end stories.
+- Provider-specific integration work not needed for the first reviewable slice.
+
+**References**  
+- `.planning/PHASE-05.md`
+- `lat.md/workflow.md`
+- `.planning/ROADMAP.md`
+- `.planning/STATE.md`
+- `.planning/PHASE-04.md`
+
+**Design Constraints**  
+- Planning updates must stay forward-looking rather than becoming retrospective execution logs.
+- Appended follow-on tasks must use the next phase-local task IDs without renumbering existing tasks.
+- End-to-end verification should focus on the two required reviewable stories instead of sprawling coverage.
+- Reviewer docs should explain how to inspect the slice without turning into a full operator manual.
+
+**Implementation Notes**  
+- Reuse the review outcomes and prompt-template roles already defined earlier in Phase 5 rather than introducing a parallel feedback mechanism.
+- Keep the first implementation explicit: vague feedback should stop for clarification instead of fabricating task contracts.
+- Treat the happy-path and feedback-path tests as the acceptance target for the whole executable slice.
+
+**Automated Verification**  
+- Add the two high-value end-to-end tests for acceptance and in-phase extension.
+- Run the relevant verification and documentation-linked tests.
+- Run `lat check`.
+
+**Manual Verification**  
+- Confirm operator feedback can append a new `05-0X` task without creating a subphase or renumbering prior tasks.
+- Confirm broader realignment remains distinct from appended in-phase work.
+- Confirm the reviewer docs point at the artifacts a human should inspect to validate the slice.
+
+**Definition of Done**  
+- Operator feedback can extend the active phase through durable planning updates when the phase goal still stands.
+- The happy-path and feedback-path stories are covered by reviewable end-to-end tests.
+- Reviewer-facing documentation explains how to inspect the implemented slice.
+- `lat check` passes.
+
+**Dependencies**  
+- `05-04` continuous operator feedback contract.
+- `05-05` end-to-end verification and reviewer-doc contract.
+- `05-07` prompt assets and serial phase-launch implementation.
+
+**Escalation Rules**  
+- Escalate if operator feedback cannot be classified cleanly without reopening the Phase 4 review outcomes.
+- Escalate if the required end-to-end stories depend on broader replanning than the active-phase boundary allows.
+- Escalate if reviewer documentation cannot stay aligned with the actual executable slice and inspected artifacts.
+
 ## Phase 5 Contract Coverage
 
 - `05-01`: Specified with explicit inputs, defaults, outputs, and handoff boundary
@@ -504,3 +699,6 @@ A self-hosting slice is only useful if it can be reviewed and validated. This ta
 - `05-03`: Specified
 - `05-04`: Specified
 - `05-05`: Specified
+- `05-06`: Specified as the bootstrap implementation task
+- `05-07`: Specified as the prompt-asset and phase-launch implementation task
+- `05-08`: Specified as the feedback-path, verification, and reviewer-doc implementation task
