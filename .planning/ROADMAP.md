@@ -131,7 +131,7 @@ Tasks:
 
 Tasks:
 - [x] 07-01: Define and implement the `$fr-plan-milestone` skill contract.
-- [ ] 07-02: Define the milestone-planning orchestrator and supporting agent roles.
+- [x] 07-02: Define the milestone-planning orchestrator and supporting agent roles.
 - [ ] 07-03: Verify milestone scaffolding updates the durable planning artifacts consistently.
 
 ### Phase 8: Phase Planning Skill
@@ -204,7 +204,7 @@ Tasks:
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
 | 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
 | 6. Self-Hosting Skill-Pack Surface | 3/3 | Complete | 2026-03-20 |
-| 7. Milestone Planning Skill | 1/3 | In Progress | - |
+| 7. Milestone Planning Skill | 2/3 | In Progress | - |
 | 8. Phase Planning Skill | 0/3 | Pending | - |
 | 9. Phase Execution Skill | 0/3 | Pending | - |
 | 10. Feedback Extension Skill | 0/3 | Pending | - |

@@ -314,6 +314,8 @@ The skill should stay narrow. It should not invent specialized milestone-plannin
 
 The repo-owned entrypoint for this command lives at `.agents/skills/fr-plan-milestone/SKILL.md`.
 
+Once that skill has assembled the shared milestone-planning bundle, specialized work should flow through a small repo-owned role family under `.codex/agents/`: `fr-milestone-planning-orchestrator.md`, `fr-milestone-planner.md`, and `fr-milestone-plan-checker.md`. The skill should keep command parsing and final `lat check`, while the roles handle milestone-scoped planning edits and consistency review.
+
 Code references:
 
 - [[tests/test_milestone_planning_skill.py]]
@@ -360,6 +362,12 @@ Phase 6 should define a minimal role family for the self-hosting milestone:
 4. planning-update roles for `$fr-feedback-phase`
 
 The skill layer should own operator-facing command handling, milestone-local selector resolution, and shared context assembly. The role layer should own the specialized planning, execution, review, or feedback-classification work after that shared context is assembled.
+
+For milestone planning, the first concrete role family should be:
+
+1. `fr-milestone-planning-orchestrator` to validate the shared bundle, route the work, and preserve the stop conditions
+2. `fr-milestone-planner` to produce the minimal milestone-scoped edits in `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`
+3. `fr-milestone-plan-checker` to confirm those edits stay inside the milestone boundary and keep the planning artifacts mutually consistent
 
 ### Shared Skill Context
 

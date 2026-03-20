@@ -139,6 +139,8 @@ Skills, role descriptors, and Python helpers should have different jobs.
 
 Operator-facing skills should own command entry, context loading, milestone-local selector resolution when needed, assembly of the shared planning/spec/workspace handoff bundle, and final validation. Agent-role descriptors should own specialized planning, execution, review, or planning-update work once that bundle is ready. Python code may still provide helper logic for parsing, rendering, or validation, but Phase 6 should keep that helper layer optional so the copy/install story remains file-based and host-native.
 
+For milestone planning, the repo-owned skill should delegate that specialized work through `.codex/agents/fr-milestone-planning-orchestrator.md`, which can route the prepared bundle through `.codex/agents/fr-milestone-planner.md` and `.codex/agents/fr-milestone-plan-checker.md`. This keeps command parsing and final validation in the skill while the role layer handles milestone edits and consistency review.
+
 ## Knowledge and Planning Boundary
 
 `lat.md` and planning artifacts should be integrated layers with different responsibilities, not duplicate systems.

@@ -19,6 +19,8 @@ Use `$fr-plan-milestone` to scaffold the next milestone by updating the mileston
 - `.planning/STATE.md`
 
 This skill owns the operator-facing contract only. Do not invent specialized milestone-planning roles here; Phase `07-02` owns that boundary.
+
+Specialized milestone-planning work should now flow through `.codex/agents/fr-milestone-planning-orchestrator.md`, which coordinates `.codex/agents/fr-milestone-planner.md` and `.codex/agents/fr-milestone-plan-checker.md`.
 </objective>
 
 <inputs>
@@ -37,6 +39,9 @@ Load the shared project truth before editing:
 - `.planning/STATE.md`
 - `lat.md/architecture.md`
 - `lat.md/workflow.md`
+- `.codex/agents/fr-milestone-planning-orchestrator.md`
+- `.codex/agents/fr-milestone-planner.md`
+- `.codex/agents/fr-milestone-plan-checker.md`
 - the repo-local `lat` and `jj` skills when present
 
 Use the repository `lat` workflow:
@@ -54,11 +59,11 @@ Use jj-native language throughout. Talk about changes, revisions, stacks, and re
 1. Restate the milestone-planning target and keep it scoped to the next milestone.
 2. Validate that the request does not include a phase selector and does not drift into phase planning, execution, or feedback-extension work.
 3. Read the active planning artifacts and relevant `lat.md` sections before proposing edits.
-4. Update `PROJECT.md` with the milestone intent or key decisions needed for the next milestone.
-5. Update `REQUIREMENTS.md` with any milestone-scoped requirements or traceability changes implied by the new milestone.
-6. Update `ROADMAP.md` with the next milestone phases and tasks while preserving durable global phase numbering.
-7. Update `STATE.md` so current focus and next-step guidance remain consistent with the new roadmap state.
-8. Report the concrete planning artifacts changed and the verification actually run.
+4. Assemble the explicit shared handoff bundle: operator intent, the milestone-scoped planning artifacts, relevant `lat.md` context, and any workspace or jj context needed for reviewable milestone planning.
+5. Hand specialized milestone-planning work to `.codex/agents/fr-milestone-planning-orchestrator.md`.
+6. Expect the orchestrator to coordinate `.codex/agents/fr-milestone-planner.md` and `.codex/agents/fr-milestone-plan-checker.md`, and stop instead of guessing if their reviewable boundary fails.
+7. Review the resulting edits to ensure they stay limited to `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+8. Run the final `lat check`, then report the concrete planning artifacts changed and the verification actually run.
 </process>
 
 <stops>

@@ -6,7 +6,7 @@ Phase 7 ships the first concrete milestone-planning entrypoint in the Forward Ro
 
 ## Status
 
-Contract coverage in progress for `07-01`
+Contract coverage in progress for `07-01` through `07-02`
 
 ## Task Contracts
 
@@ -85,3 +85,82 @@ Phase 6 defined the skill-pack layout, command surface, and shared context bundl
 - Escalate if `$fr-plan-milestone` needs a phase selector to stay coherent.
 - Escalate if milestone planning cannot stay within `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
 - Escalate if the skill would need specialized role prompts before its operator-facing contract can be defined reviewably.
+
+### Task 07-02: milestone-planning orchestrator and supporting roles
+
+**Objective**  
+Define the specialized milestone-planning orchestrator and supporting role descriptors, and wire `$fr-plan-milestone` to delegate through that role family after it assembles the shared context bundle.
+
+**Why**  
+`07-01` defined the operator-facing command boundary, but milestone planning still needs a concrete role layer that can be copied with the skill pack and reviewed independently from the command entrypoint. This task makes the first milestone-planning delegation path explicit without taking on end-to-end milestone verification.
+
+**Scope**  
+- Define the milestone-planning role family for `$fr-plan-milestone`.
+- Define the responsibility split between the operator-facing skill, the orchestrator, and the supporting milestone-planning roles.
+- Implement the repo-owned role descriptors under `.codex/agents/`.
+- Update `.agents/skills/fr-plan-milestone/SKILL.md` so the skill hands specialized work to the orchestrator while preserving the `07-01` guardrails.
+- Update Phase 7 planning artifacts so `07-02` is represented as a contract-level task.
+
+**Out of Scope**  
+- Verifying the end-to-end milestone scaffolding flow against real milestone updates.
+- Reworking the no-phase-selector contract from `07-01`.
+- Defining role descriptors for `$fr-plan-phase`, `$fr-execute-phase`, or `$fr-feedback-phase`.
+- Adding generated manifests, installers, or Python-only wrappers for the role layer.
+- Expanding milestone planning beyond `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+
+**References**  
+- `lat.md/workflow.md`
+- `lat.md/architecture.md`
+- `.planning/PROJECT.md`
+- `.planning/ROADMAP.md`
+- `.planning/STATE.md`
+- `.agents/skills/fr-plan-milestone/SKILL.md`
+- `.codex/agents/fr-milestone-planning-orchestrator.md`
+- `.codex/agents/fr-milestone-planner.md`
+- `.codex/agents/fr-milestone-plan-checker.md`
+
+**Design Constraints**  
+- `$fr-plan-milestone` must stay the operator-facing no-phase-selector command defined by `07-01`.
+- The skill must keep owning command parsing, shared-context assembly, final reporting, and final `lat check`.
+- Specialized milestone-planning work must flow through copyable role descriptors under `.codex/agents/`.
+- The orchestrator and supporting roles must stay limited to milestone-scoped planning edits in `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+- The role layer must use jj-native vocabulary and stop on ambiguity instead of guessing milestone scope or phase-level work.
+
+**Implementation Notes**  
+- The skill should assemble a reviewable handoff bundle containing operator intent, milestone-scoped planning artifacts, relevant `lat.md` context, and any workspace or jj context needed for milestone planning.
+- Specialized work should flow first through `fr-milestone-planning-orchestrator`, which may delegate only to `fr-milestone-planner` and `fr-milestone-plan-checker`.
+- `fr-milestone-planner` should propose or apply the minimum durable edits needed in `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+- `fr-milestone-plan-checker` should verify those edits stay inside the milestone-planning boundary, preserve durable roadmap numbering, and leave the planning artifacts mutually consistent before the skill reports completion.
+- The role layer should return reviewable stop reasons whenever ambiguity, missing context, or later-phase workflow drift prevents a narrow milestone update.
+
+**Required Stops**  
+- The shared context bundle is missing enough planning or spec context that the next milestone cannot be updated reviewably.
+- The request would require edits outside `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+- The operator request or proposed edits drift into phase planning, phase execution, or feedback-extension behavior.
+- The checker cannot reconcile the milestone updates without widening scope or guessing missing decisions.
+- The orchestrator would need hidden host state instead of the explicit shared bundle from the skill.
+
+**Automated Verification**  
+- Run `uv run pytest`.
+- Run `lat check`.
+
+**Manual Verification**  
+- Confirm `$fr-plan-milestone` points to a concrete milestone-planning orchestrator role.
+- Confirm the repo contains copyable supporting role descriptors under `.codex/agents/`.
+- Confirm the role boundary keeps final validation in the skill and specialized milestone edits in the role layer.
+
+**Definition of Done**  
+- Phase 7 planning artifacts clearly show `07-02` as a specified task contract.
+- The repo contains reviewable milestone-planning role descriptors under `.codex/agents/`.
+- `.agents/skills/fr-plan-milestone/SKILL.md` delegates specialized work through the orchestrator without weakening the `07-01` guardrails.
+- `lat check` passes.
+
+**Dependencies**  
+- The `07-01` skill contract.
+- Phase 6 layout, selector, and shared-context contracts.
+- Existing `lat.md` workflow and host-asset boundaries.
+
+**Escalation Rules**  
+- Escalate if milestone planning cannot stay within the four milestone-scoped planning artifacts.
+- Escalate if the orchestrator needs a phase selector or unresolved hidden state to stay coherent.
+- Escalate if the supporting roles would need to absorb final command validation that belongs in the skill.
