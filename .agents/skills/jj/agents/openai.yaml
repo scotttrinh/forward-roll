@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jujutsu (jj)"
+  short_description: "Use jj effectively and idiomatically"
+  default_prompt: "Use $jj to work in this repository with idiomatic Jujutsu workflows and commands."

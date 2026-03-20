@@ -93,7 +93,7 @@ Tasks:
 - [x] 05-04: Define the continuous operator feedback loop for extending the active phase.
 - [x] 05-05: Define the end-to-end verification and reviewer-facing documentation contract.
 - [x] 05-06: Implement the executable bootstrap handoff, including resolved roots, durable bootstrap context, and planning-target persistence.
-- [ ] 05-07: Implement reusable prompt assets and the first serial phase-launch loop against the active phase contract.
+- [x] 05-07: Implement reusable prompt assets and the first serial phase-launch loop against the active phase contract.
 - [ ] 05-08: Implement feedback-path planning updates plus the end-to-end verification and reviewer documentation for the executable slice.
 
 ## Progress
@@ -104,4 +104,4 @@ Tasks:
 | 2. Python Foundation | 3/3 | Complete | 2026-03-16 |
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
-| 5. First Executable Slice | 6/8 | In Progress | - |
+| 5. First Executable Slice | 7/8 | In Progress | - |

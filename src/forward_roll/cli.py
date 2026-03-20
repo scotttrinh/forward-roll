@@ -1,5 +1,6 @@
 """CLI entry points for Forward Roll."""
 # @lat: [[workflow#Bootstrap Command]]
+# @lat: [[workflow#Phase Launch Contract]]
 # @lat: [[architecture#CLI Adapter]]
 
 from __future__ import annotations
@@ -19,6 +20,11 @@ from forward_roll.application.bootstrap import (
     BootstrapApplicationError,
     bootstrap_project,
     render_bootstrap_summary,
+)
+from forward_roll.application.phase_launch import (
+    PhaseLaunchError,
+    UnavailableExecutionRunner,
+    launch_phase,
 )
 
 app = typer.Typer(
@@ -73,7 +79,10 @@ def bootstrap(
             file_okay=False,
             dir_okay=True,
             resolve_path=True,
-            help="Planning workspace. Defaults to repo_root/.planning and may live outside the target repository.",
+            help=(
+                "Planning workspace. Defaults to repo_root/.planning and may "
+                "live outside the target repository."
+            ),
         ),
     ] = None,
     project_name: Annotated[
@@ -122,6 +131,49 @@ def bootstrap(
     typer.echo(render_bootstrap_summary(directive))
     typer.echo(f"context_path={artifacts.context_path}")
     typer.echo(f"summary_path={artifacts.summary_path}")
+
+
+@app.command("launch-phase")
+def launch_phase_command(
+    plans_root: Annotated[
+        Path,
+        typer.Option(
+            "--plans-root",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+            help="Planning workspace containing bootstrap-context.json.",
+        ),
+    ] = Path(".planning"),
+    phase: Annotated[
+        str | None,
+        typer.Option(
+            "--phase",
+            help=(
+                "Optional explicit phase selector. Defaults to the active phase "
+                "in bootstrap context."
+            ),
+        ),
+    ] = None,
+) -> None:
+    """Launch the active phase through the serial execution boundary."""
+    try:
+        result = launch_phase(
+            plans_root=plans_root,
+            phase_selector=phase,
+            runner=UnavailableExecutionRunner(),
+        )
+    except PhaseLaunchError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(f"phase_id={result.phase_id}")
+    typer.echo(f"completed_tasks={','.join(result.completed_tasks) or '(none)'}")
+    typer.echo(f"stopped_task={result.stopped_task or '(none)'}")
+    typer.echo(
+        "review_outcome="
+        + ("(none)" if result.review_result is None else result.review_result.outcome)
+    )
 
 
 if __name__ == "__main__":

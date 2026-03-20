@@ -24,6 +24,8 @@ Code references:
 
 - [[src/forward_roll/domain/model.py]]
 - [[src/forward_roll/application/bootstrap.py]]
+- [[src/forward_roll/application/prompts.py]]
+- [[src/forward_roll/application/phase_launch.py]]
 - [[src/forward_roll/adapters/bootstrap_config.py]]
 - [[src/forward_roll/cli.py]]
 
@@ -41,11 +43,14 @@ Code references:
 
 The application layer turns typed directives into stable workflow-facing outputs.
 
-The executable bootstrap slice keeps application logic narrow: it accepts a validated `BootstrapDirective`, writes the durable bootstrap handoff artifacts into `plans_root`, refreshes the minimum planning files needed for later launch, and avoids re-validating adapter input.
+The executable bootstrap slice keeps application logic narrow: it accepts validated input, writes durable bootstrap artifacts, binds stable prompt assets to explicit runtime slots, and runs the serial phase-launch loop through a narrow execution boundary.
 
 Code references:
 
 - [[src/forward_roll/application/bootstrap.py]]
+- [[src/forward_roll/application/prompts.py]]
+- [[src/forward_roll/application/phase_launch.py]]
+- [[tests/test_phase_launch.py]]
 
 ## Adapter Layer
 
@@ -88,6 +93,10 @@ The bootstrap boundary should write resolved roots, project identity, applied de
 Workflow prompt templates should be versioned product assets, not per-run planning outputs.
 
 They should live with the Forward Roll implementation, carry stable role identities and output contracts, and accept runtime context through named slots bound from `specs_root`, `plans_root`, and operator or workspace state. This keeps cacheable instructions separate from project-specific planning data.
+
+Code references:
+
+- [[src/forward_roll/application/prompts.py]]
 
 ## Knowledge and Planning Boundary
 

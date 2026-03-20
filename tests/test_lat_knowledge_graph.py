@@ -3,9 +3,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import re
-
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOC_ROOT = REPO_ROOT / "lat.md"
@@ -48,9 +47,12 @@ def test_knowledge_graph_covers_current_bootstrap_slice() -> None:
     expected_code_refs = {
         "src/forward_roll/domain/model.py",
         "src/forward_roll/application/bootstrap.py",
+        "src/forward_roll/application/prompts.py",
+        "src/forward_roll/application/phase_launch.py",
         "src/forward_roll/adapters/bootstrap_config.py",
         "src/forward_roll/cli.py",
         "tests/test_bootstrap_config.py",
+        "tests/test_phase_launch.py",
         "tests/test_lat_knowledge_graph.py",
     }
     expected_backlinks = {
@@ -64,6 +66,14 @@ def test_knowledge_graph_covers_current_bootstrap_slice() -> None:
             "architecture#Application Layer",
             "workflow#Bootstrap Summary Rendering",
         },
+        "src/forward_roll/application/prompts.py": {
+            "architecture#Workflow Prompt Assets",
+            "workflow#Workflow Prompt Templates",
+        },
+        "src/forward_roll/application/phase_launch.py": {
+            "architecture#Application Layer",
+            "workflow#Phase Launch Contract",
+        },
         "src/forward_roll/adapters/bootstrap_config.py": {
             "architecture#Adapter Layer",
             "workflow#Bootstrap Config Loading",
@@ -71,11 +81,17 @@ def test_knowledge_graph_covers_current_bootstrap_slice() -> None:
         "src/forward_roll/cli.py": {
             "architecture#CLI Adapter",
             "workflow#Bootstrap Command",
+            "workflow#Phase Launch Contract",
         },
         "tests/test_bootstrap_config.py": {
             "domain#Testing Philosophy",
             "workflow#Bootstrap Config Loading",
             "workflow#Bootstrap Summary Rendering",
+        },
+        "tests/test_phase_launch.py": {
+            "domain#Testing Philosophy",
+            "workflow#Workflow Prompt Templates",
+            "workflow#Phase Launch Contract",
         },
         "tests/test_lat_knowledge_graph.py": {
             "domain#Knowledge Graph Validation",

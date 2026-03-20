@@ -83,6 +83,11 @@ The first slice should define three template roles:
 
 Each role should be a versioned asset with stable instructions and named input slots rather than a prompt body rewritten per run.
 
+Code references:
+
+- [[src/forward_roll/application/prompts.py]]
+- [[tests/test_phase_launch.py]]
+
 ### Prompt Runtime Inputs
 
 Runtime prompt inputs should come from explicit slots, not hidden process state.
@@ -90,6 +95,11 @@ Runtime prompt inputs should come from explicit slots, not hidden process state.
 The shared input envelope should include bootstrap context from `plans_root`, relevant spec context from `specs_root`, relevant planning artifacts from `plans_root`, and optional operator or workspace context when the selected role needs them.
 
 Specs and plans should enter as referenced context blocks, excerpts, or attachments. They should not be collapsed into the invariant template instructions.
+
+Code references:
+
+- [[src/forward_roll/application/prompts.py]]
+- [[src/forward_roll/application/phase_launch.py]]
 
 ### Prompt Cacheability
 
@@ -110,6 +120,12 @@ The first supported launch entrypoint should read bootstrap context from `plans_
 
 Launch should fail with stable, reviewable errors when the bootstrap artifact is missing, the active phase cannot be resolved, no incomplete task contracts remain, or the required prompt-template roles are unavailable.
 
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
+- [[src/forward_roll/cli.py]]
+- [[tests/test_phase_launch.py]]
+
 ### Initial Task Sequencing
 
 The first launch slice should prefer a simple serial loop over a broad scheduler.
@@ -118,6 +134,11 @@ Task order should come from the active phase contract. The launcher should execu
 
 When all currently planned tasks in the active phase are complete, the launcher should invoke the `phase_review` template and hand off a reviewer-facing outcome instead of inventing new execution scope on its own.
 
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
+- [[tests/test_phase_launch.py]]
+
 ### Planning and Live Execution Context
 
 Planning artifacts should stay the durable source of truth for scope and sequencing.
@@ -125,6 +146,10 @@ Planning artifacts should stay the durable source of truth for scope and sequenc
 Bootstrap context, active phase and task contracts, and prompt-template identity should remain durable planning inputs. Live execution context should be derived at launch time from those artifacts plus runtime workspace state such as jj status, revision identifiers, bound prompt inputs, and task-local verification results.
 
 The launcher may update planning artifacts only to keep the current focus truthful or because an active task contract explicitly requires a planning-file change. It should not create a separate permanent orchestration state store for the first slice.
+
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
 
 ## Phase Review Loop
 
