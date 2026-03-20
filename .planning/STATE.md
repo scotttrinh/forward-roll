@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Deliver an agentic workflow that remains structurally rigorous, reviewable by humans, and faithful to the domain even as automation increases.
-**Current focus:** Phase 6 - Self-Hosting Skill-Pack Surface (task contracts defined)
+**Current focus:** Phase 6 - Self-Hosting Skill-Pack Surface (06-03 ready for execution)
 
 ## Current Position
 
 Phase: 6 of 11 (Self-Hosting Skill-Pack Surface)
-Task: 06-02 of 3 in current phase
+Task: 06-03 of 3 in current phase
 Status: Ready for execution
-Last activity: 2026-03-20 — Completed task 06-01 by defining the repo-local and user-local skill-pack layout plus whole-pack and per-command copy rules
+Last activity: 2026-03-20 — Completed task 06-02 by defining the stable `fr-*` command surface plus explicit milestone-local selector resolution and error rules
 
-Progress: [█████-----] 48%
+Progress: [██████----] 56%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total tasks completed: 19
-- Planned tasks remaining: 17
+- Total tasks completed: 20
+- Planned tasks remaining: 16
 - Average duration per task: -
 - Total execution time: -
 
@@ -33,7 +33,7 @@ Progress: [█████-----] 48%
 | 3 | 3 | - | - |
 | 4 | 3 | - | - |
 | 5 | 8 | - | - |
-| 6 | 1 | 3 | - |
+| 6 | 2 | 3 | - |
 | 7 | 0 | 3 | - |
 | 8 | 0 | 3 | - |
 | 9 | 0 | 3 | - |
@@ -41,7 +41,7 @@ Progress: [█████-----] 48%
 | 11 | 0 | 3 | - |
 
 **Recent Trend:**
-- Last 5 tasks: 05-05, 05-06, 05-07, 05-08, 06-01
+- Last 5 tasks: 05-06, 05-07, 05-08, 06-01, 06-02
 - Trend: Stable
 
 ## Accumulated Context
@@ -79,6 +79,7 @@ Recent decisions affecting current work:
 - Phase 5: the first executable slice is now verified by end-to-end acceptance and feedback-extension tests, with reviewer docs pointing at the same bootstrap, planning, and phase artifacts.
 - Phase 6+: self-hosting should ship first as copyable Codex skills and agent role descriptors rather than waiting for richer standalone CLI coverage.
 - Phase 6+: self-hosting commands should use milestone-local phase numbers, resolving `phase 1` in the active milestone to the correct durable global phase ID in planning artifacts.
+- Phase 6: the self-hosting command surface stays fixed at four `fr-*` commands, with selector resolution stopping on explicit planning-state errors instead of guessing.
 - Phase 6: the repo-owned self-hosting pack should mirror Codex host boundaries, with command skills under `.agents/skills/fr-*` and role descriptors under `.codex/agents/fr-*`.
 - Phase 6: every `fr-*` skill should assemble shared planning, spec, and jj context before delegating to specialized roles, then finish by validating `lat.md` integrity.
 
@@ -93,5 +94,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-20 11:05 EDT
-Stopped at: Planned Phase 6; next step is executing task `06-01` for the self-hosting skill-pack milestone
+Stopped at: Completed task `06-02`; next step is executing task `06-03` for the self-hosting skill-pack milestone
 Resume file: None

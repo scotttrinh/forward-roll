@@ -303,7 +303,29 @@ Self-hosting commands should resolve phase numbers relative to the active milest
 
 An operator should be able to say `$fr-plan-phase 1`, `$fr-execute-phase 1`, or `$fr-feedback-phase 1` for the first phase of the active milestone even when the durable planning artifacts use a globally unique phase ID such as `PHASE-06.md`. The skill layer should own that translation instead of forcing milestone operators to think in global ordinals.
 
-Commands that accept `<phase-number>` should treat it as a one-based milestone-local selector, resolve it to the durable global phase ID before specialized work begins, and keep the global ID as the canonical planning identifier once the target phase is known. If the active milestone is missing, the selector is out of range, or the resolved phase lacks the required planning contract, the command should stop with a stable, reviewable error instead of guessing.
+Commands that accept `<phase-number>` should treat it as a one-based milestone-local selector, resolve it to the durable global phase ID before specialized work begins, and keep the global ID as the canonical planning identifier once the target phase is known.
+
+Selector resolution should follow this sequence:
+
+1. load the active milestone from durable planning artifacts
+2. load the ordered phase list that belongs to that milestone
+3. map the one-based milestone-local selector to the matching durable global phase ID
+4. hand the resolved global phase ID to downstream planning, execution, or feedback work
+
+The command surface for the first self-hosting milestone should stay fixed at:
+
+1. `$fr-plan-milestone`
+2. `$fr-plan-phase <phase-number>`
+3. `$fr-execute-phase <phase-number>`
+4. `$fr-feedback-phase <phase-number>`
+
+`$fr-plan-milestone` should not accept a phase selector. The other three commands should require `<phase-number>` and should stop with a stable, reviewable error instead of guessing when any of these cases apply:
+
+1. no active milestone can be resolved from planning artifacts
+2. the supplied `<phase-number>` is not a positive integer
+3. the supplied `<phase-number>` is outside the active milestone range
+4. the resolved global phase lacks the durable planning artifact the command needs
+5. the roadmap or milestone state is inconsistent enough that selector resolution would be ambiguous
 
 ### Agent Role Boundaries
 
