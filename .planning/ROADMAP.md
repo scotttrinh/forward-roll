@@ -11,7 +11,7 @@ Forward Roll completed its first milestone by defining the domain, proving `lat.
 - [x] **Phase 3: Knowledge Graph Bootstrap** - Prove `lat.md` as the project knowledge substrate.
 - [x] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
 - [x] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
-- [ ] **Phase 6: Self-Hosting Skill-Pack Surface** - Define the copyable `fr-*` skill pack and milestone-local command model.
+- [x] **Phase 6: Self-Hosting Skill-Pack Surface** - Define the copyable `fr-*` skill pack and milestone-local command model.
 - [ ] **Phase 7: Milestone Planning Skill** - Ship `$fr-plan-milestone` for scaffolding the next milestone.
 - [ ] **Phase 8: Phase Planning Skill** - Ship `$fr-plan-phase` for milestone-local phase planning.
 - [ ] **Phase 9: Phase Execution Skill** - Ship `$fr-execute-phase` for orchestrated task execution.
@@ -116,7 +116,7 @@ Tasks:
 Tasks:
 - [x] 06-01: Define the Forward Roll skill-pack layout and installation story for local Codex directories.
 - [x] 06-02: Define the `fr-*` command surface and milestone-local phase selector semantics.
-- [ ] 06-03: Define the shared context contract for Forward Roll skills, agent roles, `lat.md`, and jj workflows.
+- [x] 06-03: Define the shared context contract for Forward Roll skills, agent roles, `lat.md`, and jj workflows.
 
 ### Phase 7: Milestone Planning Skill
 **Goal**: Ship `$fr-plan-milestone` so the next milestone can be scaffolded through the Forward Roll skill pack.
@@ -202,7 +202,7 @@ Tasks:
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
 | 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
-| 6. Self-Hosting Skill-Pack Surface | 2/3 | In Progress | - |
+| 6. Self-Hosting Skill-Pack Surface | 3/3 | Complete | 2026-03-20 |
 | 7. Milestone Planning Skill | 0/3 | Pending | - |
 | 8. Phase Planning Skill | 0/3 | Pending | - |
 | 9. Phase Execution Skill | 0/3 | Pending | - |

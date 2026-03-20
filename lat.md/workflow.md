@@ -344,7 +344,24 @@ The skill layer should own operator-facing command handling, milestone-local sel
 
 Every Forward Roll skill should load the same core project context first.
 
-Before specialized work begins, a skill should load the active planning artifacts, the relevant `lat.md` sections from `specs_root`, the project agent instructions, and the jj-oriented workflow guidance already defined by the repo. Skills should also reuse the repository `lat` workflow by expanding operator input, searching or locating relevant spec sections before changing plans, updating `lat.md` when workflow behavior changes, and running `lat check` before handoff. This shared context contract should keep all `fr-*` commands aligned with the same specs, plans, and review vocabulary.
+Before specialized work begins, a skill should load the project agent instructions, the active planning artifacts from `plans_root`, the relevant `lat.md` sections from `specs_root`, and the repo-local `lat` plus jj skills or their documented equivalents when those skills are present. For phase-specific commands, that planning context should include `PROJECT.md`, `ROADMAP.md`, `STATE.md`, and the resolved `PHASE-XX.md` contract for the selected global phase ID.
+
+Skills should also reuse the repository `lat` workflow by expanding operator input, searching or locating relevant spec sections before changing plans, updating `lat.md` when workflow behavior changes, and running `lat check` before handoff. They should preserve the jj-native vocabulary already defined by this project by talking about revisions, changes, stacks, and review states instead of Git-shaped fallback terms. This shared context contract should keep all `fr-*` commands aligned with the same specs, plans, and review vocabulary.
+
+### Shared Role Handoff Bundle
+
+Skills should hand specialized roles one explicit, reviewable context bundle.
+
+That shared handoff bundle should include:
+
+1. the operator-facing command intent
+2. the resolved global phase ID when the command targets a phase
+3. the relevant planning artifacts and any derived milestone-local selector context
+4. the relevant `lat.md` spec context gathered for the command
+5. the operator input that triggered the work
+6. any workspace context the selected role needs, such as jj status or active revision information
+
+Skills should own command parsing, selector resolution, shared context assembly, and final `lat check`. Specialized roles should own milestone planning, phase research and planning, plan checking, execution, review, or planning updates only after that bundle is assembled. Python helpers may support parsing, rendering, or validation, but they should remain optional implementation support rather than the primary host boundary.
 
 ## End-to-End Verification
 

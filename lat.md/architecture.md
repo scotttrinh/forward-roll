@@ -137,7 +137,7 @@ Whole-pack installation should copy every `fr-*` skill directory plus the `fr-*`
 
 Skills, role descriptors, and Python helpers should have different jobs.
 
-Operator-facing skills should own command entry, context loading, and final validation. Agent-role descriptors should own specialized planning, execution, review, or planning-update work. Python code may still provide helper logic for parsing, rendering, or validation, but Phase 6 should keep that helper layer optional so the copy/install story remains file-based and host-native.
+Operator-facing skills should own command entry, context loading, milestone-local selector resolution when needed, assembly of the shared planning/spec/workspace handoff bundle, and final validation. Agent-role descriptors should own specialized planning, execution, review, or planning-update work once that bundle is ready. Python code may still provide helper logic for parsing, rendering, or validation, but Phase 6 should keep that helper layer optional so the copy/install story remains file-based and host-native.
 
 ## Knowledge and Planning Boundary
 
