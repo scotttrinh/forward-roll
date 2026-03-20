@@ -9,7 +9,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOC_ROOT = REPO_ROOT / "lat.md"
 SECTION_PATTERN = re.compile(r"^##\s+(?P<section>.+)$", re.MULTILINE)
-CODE_REF_PATTERN = re.compile(r"\[\[(?P<path>(?:src|tests)/[^\]]+)\]\]")
+CODE_REF_PATTERN = re.compile(
+    r"\[\[(?P<path>(?:src|tests|\.agents/skills)/[^\]#]+)(?:#[^\]]+)?\]\]"
+)
 LAT_BACKLINK_PATTERN = re.compile(r"@lat:\s+\[\[(?P<target>[^\]]+)\]\]")
 
 
@@ -42,6 +44,7 @@ def test_knowledge_graph_covers_current_bootstrap_slice() -> None:
             "Bootstrap Config Loading",
             "Bootstrap Summary Rendering",
             "Bootstrap Command",
+            "Milestone Planning Command",
         },
     }
     expected_code_refs = {
@@ -52,6 +55,7 @@ def test_knowledge_graph_covers_current_bootstrap_slice() -> None:
         "src/forward_roll/adapters/bootstrap_config.py",
         "src/forward_roll/cli.py",
         "tests/test_bootstrap_config.py",
+        "tests/test_milestone_planning_skill.py",
         "tests/test_phase_launch.py",
         "tests/test_lat_knowledge_graph.py",
     }
@@ -95,6 +99,10 @@ def test_knowledge_graph_covers_current_bootstrap_slice() -> None:
         },
         "tests/test_lat_knowledge_graph.py": {
             "domain#Knowledge Graph Validation",
+        },
+        "tests/test_milestone_planning_skill.py": {
+            "domain#Testing Philosophy",
+            "workflow#Milestone Planning Command",
         },
     }
 

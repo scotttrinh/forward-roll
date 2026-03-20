@@ -127,9 +127,10 @@ Tasks:
   2. The milestone-planning workflow updates `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md` consistently.
   3. The skill uses the same Codex-first, `lat.md`-grounded workflow model as the rest of the project.
 **Tasks**: 3 tasks
+**Task Contracts**: [Phase 7 task contracts](./PHASE-07.md)
 
 Tasks:
-- [ ] 07-01: Define and implement the `$fr-plan-milestone` skill contract.
+- [x] 07-01: Define and implement the `$fr-plan-milestone` skill contract.
 - [ ] 07-02: Define the milestone-planning orchestrator and supporting agent roles.
 - [ ] 07-03: Verify milestone scaffolding updates the durable planning artifacts consistently.
 
@@ -203,7 +204,7 @@ Tasks:
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
 | 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
 | 6. Self-Hosting Skill-Pack Surface | 3/3 | Complete | 2026-03-20 |
-| 7. Milestone Planning Skill | 0/3 | Pending | - |
+| 7. Milestone Planning Skill | 1/3 | In Progress | - |
 | 8. Phase Planning Skill | 0/3 | Pending | - |
 | 9. Phase Execution Skill | 0/3 | Pending | - |
 | 10. Feedback Extension Skill | 0/3 | Pending | - |

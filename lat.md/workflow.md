@@ -297,6 +297,27 @@ The Phase 6 skill pack should treat each operator-facing command as its own skil
 
 Whole-pack copy should mean copying all four `fr-*` skill directories plus the `fr-*` role descriptors they reference. Command-by-command copy should mean copying one `fr-*` skill directory and the role descriptors that command needs. The first self-hosting milestone should not require a generated manifest, installer, or private registry to make those copies usable.
 
+## Milestone Planning Command
+
+Milestone planning should enter through one host-facing skill that updates the next milestone without guessing.
+
+`$fr-plan-milestone` should be the concrete operator-facing entrypoint for scaffolding the next milestone. It should treat all operator text after the command as milestone-planning intent, not as a phase selector, and it should stop with a stable error when a phase number is supplied anyway.
+
+Before changing planning artifacts, the skill should load the shared project context already defined for the self-hosting pack: project instructions, active planning artifacts, relevant `lat.md` sections, and the repo-local `lat` plus jj skills or their documented equivalents. It should then update the milestone-scoped planning artifacts consistently:
+
+1. `PROJECT.md`
+2. `REQUIREMENTS.md`
+3. `ROADMAP.md`
+4. `STATE.md`
+
+The skill should stay narrow. It should not invent specialized milestone-planning role prompts, drift into phase-planning or execution work, or guess when the milestone objective is too vague to encode reviewably. Those later orchestration boundaries belong to later Phase 7 tasks.
+
+The repo-owned entrypoint for this command lives at `.agents/skills/fr-plan-milestone/SKILL.md`.
+
+Code references:
+
+- [[tests/test_milestone_planning_skill.py]]
+
 ### Milestone-Local Phase Commands
 
 Self-hosting commands should resolve phase numbers relative to the active milestone.
