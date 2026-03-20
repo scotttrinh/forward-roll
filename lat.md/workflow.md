@@ -293,7 +293,9 @@ These commands should reuse the same planning artifacts, task-contract rules, pr
 
 Each `fr-*` command should be a copyable host asset with a stable name.
 
-The Phase 6 skill pack should treat each operator-facing command as its own skill directory so the pack can be copied whole or command-by-command. Shared behavior should come from common planning artifacts, shared role descriptors, and reusable helper assets rather than from hidden host state.
+The Phase 6 skill pack should treat each operator-facing command as its own skill directory so the pack can be copied whole or command-by-command. The operator-facing directory name should match the stable command name, and shared behavior should come from common planning artifacts, shared role descriptors, and reusable helper assets rather than from hidden host state.
+
+Whole-pack copy should mean copying all four `fr-*` skill directories plus the `fr-*` role descriptors they reference. Command-by-command copy should mean copying one `fr-*` skill directory and the role descriptors that command needs. The first self-hosting milestone should not require a generated manifest, installer, or private registry to make those copies usable.
 
 ### Milestone-Local Phase Commands
 

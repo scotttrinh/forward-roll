@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-03-20)
 ## Current Position
 
 Phase: 6 of 11 (Self-Hosting Skill-Pack Surface)
-Task: 06-01 of 3 in current phase
+Task: 06-02 of 3 in current phase
 Status: Ready for execution
-Last activity: 2026-03-20 — Planned Phase 6 with detailed contracts for skill-pack layout, command semantics, and shared skill context
+Last activity: 2026-03-20 — Completed task 06-01 by defining the repo-local and user-local skill-pack layout plus whole-pack and per-command copy rules
 
-Progress: [█████-----] 45%
+Progress: [█████-----] 48%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total tasks completed: 18
-- Planned tasks remaining: 18
+- Total tasks completed: 19
+- Planned tasks remaining: 17
 - Average duration per task: -
 - Total execution time: -
 
@@ -33,7 +33,7 @@ Progress: [█████-----] 45%
 | 3 | 3 | - | - |
 | 4 | 3 | - | - |
 | 5 | 8 | - | - |
-| 6 | 0 | 3 | - |
+| 6 | 1 | 3 | - |
 | 7 | 0 | 3 | - |
 | 8 | 0 | 3 | - |
 | 9 | 0 | 3 | - |
@@ -41,7 +41,7 @@ Progress: [█████-----] 45%
 | 11 | 0 | 3 | - |
 
 **Recent Trend:**
-- Last 5 tasks: 05-04, 05-05, 05-06, 05-07, 05-08
+- Last 5 tasks: 05-05, 05-06, 05-07, 05-08, 06-01
 - Trend: Stable
 
 ## Accumulated Context

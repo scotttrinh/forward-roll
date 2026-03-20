@@ -121,6 +121,18 @@ The Phase 6 boundary should define:
 
 The installation story should support both repo-local self-hosting and user-local copy/install flows. An operator should be able to use the repo-owned `.agents/skills/` plus `.codex/agents/` assets directly, or copy the same assets into user-local Codex directories such as `~/.codex/skills/` and `~/.codex/agents/`, without depending on the Python CLI to bootstrap the pack.
 
+### Skill-Pack Installation Targets
+
+Phase 6 should keep installation file-based and host-native.
+
+Repo-local self-hosting should read the versioned assets in `.agents/skills/` and `.codex/agents/` directly from the repository. User-local installation should copy the same directories into `~/.codex/skills/` and `~/.codex/agents/` without rewriting the asset model or introducing generated host state.
+
+### Whole-Pack and Per-Command Copy Rules
+
+The copy/install contract should work for the full pack and for one command at a time.
+
+Whole-pack installation should copy every `fr-*` skill directory plus the `fr-*` role descriptors they rely on. Per-command installation should copy one operator-facing skill directory with the `fr-*` role descriptors that command references. This boundary should stay explicit in the host assets themselves so the first self-hosting milestone does not depend on a hidden registry, generated manifest, or Python CLI installer.
+
 ### Host Asset Responsibilities
 
 Skills, role descriptors, and Python helpers should have different jobs.

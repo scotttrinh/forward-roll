@@ -114,7 +114,7 @@ Tasks:
 **Task Contracts**: [Phase 6 task contracts](./PHASE-06.md)
 
 Tasks:
-- [ ] 06-01: Define the Forward Roll skill-pack layout and installation story for local Codex directories.
+- [x] 06-01: Define the Forward Roll skill-pack layout and installation story for local Codex directories.
 - [ ] 06-02: Define the `fr-*` command surface and milestone-local phase selector semantics.
 - [ ] 06-03: Define the shared context contract for Forward Roll skills, agent roles, `lat.md`, and jj workflows.
 
@@ -202,7 +202,7 @@ Tasks:
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
 | 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
-| 6. Self-Hosting Skill-Pack Surface | 0/3 | Pending | - |
+| 6. Self-Hosting Skill-Pack Surface | 1/3 | In Progress | - |
 | 7. Milestone Planning Skill | 0/3 | Pending | - |
 | 8. Phase Planning Skill | 0/3 | Pending | - |
 | 9. Phase Execution Skill | 0/3 | Pending | - |
