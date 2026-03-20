@@ -25,6 +25,8 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 - [ ] Make jujutsu-native change management part of the workflow model.
 - [ ] Prove `lat.md` can serve as the initial human-and-agent-readable knowledge graph.
 - [ ] Introduce explicit review and spec-realignment gates between implementation phases.
+- [ ] Ship the next self-hosting milestone as copyable `fr-*` skills and agent roles for Codex before broadening standalone CLI coverage.
+- [ ] Let operators scaffold milestones, plan phases, execute phases, and extend phases with feedback through the same Forward Roll skill pack.
 
 ### Out of Scope
 
@@ -40,6 +42,7 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 - Specifications and plans may need different storage and governance. Forward Roll should therefore model `specs_root` and `plans_root` as independent locations rather than force one shared workspace root.
 - The repo starts greenfield, so the domain model and artifact layout can be designed cleanly instead of inherited from existing code.
 - The intended users care about software architecture, type design, and legible artifacts that can be reviewed by humans as well as consumed by agents.
+- The next milestone should optimize for usable self-hosting inside Codex by shipping copyable skill and agent assets before chasing richer deterministic orchestration or CLI parity.
 
 ## Constraints
 
@@ -48,6 +51,7 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 - **Version control**: jj-native workflow semantics — design should use jujutsu concepts directly.
 - **Documentation**: Planning artifacts must be able to live separately from target repos — poly-repo and public-contribution workflows need this.
 - **Process**: Review checkpoints between phases are mandatory — implementation cannot silently roll into the next phase.
+- **Host integration**: Codex remains the execution host; Forward Roll should integrate with that host through skills and agent roles before it tries to replace host orchestration.
 
 ## Key Decisions
 
@@ -66,6 +70,10 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 | Operator feedback should extend phases through appended task contracts | Review feedback must stay forward-looking without inventing subphases or durable task-review states | Classify operator input as either follow-on task contracts appended with the next phase-local IDs or broader realignment that reshapes later planning |
 | Phase 5 verification should prove both acceptance and feedback extension paths | The first executable slice is only reviewable if humans can validate both the straight-through story and the in-phase follow-up story | Define two high-value end-to-end verification stories, drive them through public slice boundaries, and pair them with reviewer docs that explain what artifacts to inspect |
 | Planning roots must be externalizable | The workflow should work across poly-repos and public contribution contexts | Implemented through explicit repo-root versus planning-root types plus CLI and TOML adapter support |
+| Self-hosting should land first as a Codex skill pack | The fastest route to using Forward Roll on itself is to package the workflow for the host environment rather than wait for CLI parity | The next milestone centers copyable `fr-*` skills plus agent-role descriptors, with Python helpers remaining optional support |
+| Self-hosting phase commands should be milestone-local | Operators think in terms of the active milestone, so `$fr-plan-phase 1` should target the first phase of that milestone rather than the global roadmap ordinal | Skill commands accept milestone-local phase numbers and resolve them to durable global phase IDs in planning artifacts |
+| Self-hosting assets should mirror Codex host layout | Copy/install only stays simple if the repo-owned assets already match the host boundary | Keep command skills under `.agents/skills/fr-*`, role descriptors under `.codex/agents/fr-*`, and support copying the same assets into user-local Codex directories without invoking the Python CLI |
+| Skills should assemble shared project context before delegating | `lat.md`, planning artifacts, and jj rules must stay aligned across every `fr-*` command | Skills own operator input expansion, spec lookup, selector resolution, and final `lat check`, then pass the resolved phase context to specialized planning, execution, review, or planning-update roles |
 
 ---
-*Last updated: 2026-03-19 after end-to-end verification and reviewer-doc contract definition*
+*Last updated: 2026-03-20 after planning Phase 6 of the skill-first self-hosting milestone*

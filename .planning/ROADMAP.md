@@ -2,7 +2,7 @@
 
 ## Overview
 
-Forward Roll starts by defining its own domain and aspirational specs clearly before it tries to automate much. The first milestone builds the specification and code skeleton needed to prove five things: the workflow can be Codex-first, `lat.md` can carry the aspirational specification layer, the planning model can be derived from those specs without being collapsed into them, specs and plans can live under different storage policies, and the implementation can stay strictly typed and reviewable.
+Forward Roll completed its first milestone by defining the domain, proving `lat.md` as the spec substrate, and implementing a narrow executable slice. The next milestone should make Forward Roll usable on itself as a copyable Codex skill pack so operators can scaffold a milestone, plan a phase, execute it, extend it with feedback, and resume execution before richer CLI coverage exists.
 
 ## Phases
 
@@ -11,6 +11,12 @@ Forward Roll starts by defining its own domain and aspirational specs clearly be
 - [x] **Phase 3: Knowledge Graph Bootstrap** - Prove `lat.md` as the project knowledge substrate.
 - [x] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
 - [x] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
+- [ ] **Phase 6: Self-Hosting Skill-Pack Surface** - Define the copyable `fr-*` skill pack and milestone-local command model.
+- [ ] **Phase 7: Milestone Planning Skill** - Ship `$fr-plan-milestone` for scaffolding the next milestone.
+- [ ] **Phase 8: Phase Planning Skill** - Ship `$fr-plan-phase` for milestone-local phase planning.
+- [ ] **Phase 9: Phase Execution Skill** - Ship `$fr-execute-phase` for orchestrated task execution.
+- [ ] **Phase 10: Feedback Extension Skill** - Ship `$fr-feedback-phase` for in-phase task extension.
+- [ ] **Phase 11: Self-Hosting Roundtrip Proof** - Verify the full self-hosting loop and copy/install story.
 
 ## Phase Details
 
@@ -94,7 +100,98 @@ Tasks:
 - [x] 05-05: Define the end-to-end verification and reviewer-facing documentation contract.
 - [x] 05-06: Implement the executable bootstrap handoff, including resolved roots, durable bootstrap context, and planning-target persistence.
 - [x] 05-07: Implement reusable prompt assets and the first serial phase-launch loop against the active phase contract.
-- [ ] 05-08: Implement feedback-path planning updates plus the end-to-end verification and reviewer documentation for the executable slice.
+- [x] 05-08: Implement feedback-path planning updates plus the end-to-end verification and reviewer documentation for the executable slice.
+
+### Phase 6: Self-Hosting Skill-Pack Surface
+**Goal**: Define the copyable Forward Roll skill pack, agent-role boundaries, and milestone-local command surface needed for skill-first self-hosting.
+**Depends on**: Phase 5
+**Requirements**: [SELF-01]
+**Success Criteria** (what must be TRUE):
+  1. Forward Roll has a concrete artifact layout for copyable skills and agent role descriptors.
+  2. The skill pack has a stable user-facing command surface: `$fr-plan-milestone`, `$fr-plan-phase`, `$fr-execute-phase`, and `$fr-feedback-phase`.
+  3. Milestone-local phase selectors are defined clearly enough that `phase 1` in the active milestone maps cleanly to durable global planning artifacts.
+**Tasks**: 3 tasks
+**Task Contracts**: [Phase 6 task contracts](./PHASE-06.md)
+
+Tasks:
+- [ ] 06-01: Define the Forward Roll skill-pack layout and installation story for local Codex directories.
+- [ ] 06-02: Define the `fr-*` command surface and milestone-local phase selector semantics.
+- [ ] 06-03: Define the shared context contract for Forward Roll skills, agent roles, `lat.md`, and jj workflows.
+
+### Phase 7: Milestone Planning Skill
+**Goal**: Ship `$fr-plan-milestone` so the next milestone can be scaffolded through the Forward Roll skill pack.
+**Depends on**: Phase 6
+**Requirements**: [SELF-02]
+**Success Criteria** (what must be TRUE):
+  1. An operator can invoke `$fr-plan-milestone` and get updated milestone-scoped planning artifacts.
+  2. The milestone-planning workflow updates `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md` consistently.
+  3. The skill uses the same Codex-first, `lat.md`-grounded workflow model as the rest of the project.
+**Tasks**: 3 tasks
+
+Tasks:
+- [ ] 07-01: Define and implement the `$fr-plan-milestone` skill contract.
+- [ ] 07-02: Define the milestone-planning orchestrator and supporting agent roles.
+- [ ] 07-03: Verify milestone scaffolding updates the durable planning artifacts consistently.
+
+### Phase 8: Phase Planning Skill
+**Goal**: Ship `$fr-plan-phase` so the first phase of the active milestone can be turned into executable task contracts.
+**Depends on**: Phase 7
+**Requirements**: [SELF-03]
+**Success Criteria** (what must be TRUE):
+  1. An operator can invoke `$fr-plan-phase 1` for the active milestone and produce a durable phase contract.
+  2. The skill resolves milestone-local phase selectors to the correct durable global phase ID.
+  3. The planned task contracts are narrow, reviewable, and ready for phase execution.
+**Tasks**: 3 tasks
+
+Tasks:
+- [ ] 08-01: Define and implement the `$fr-plan-phase` skill contract.
+- [ ] 08-02: Define the planner, researcher, and checker role boundaries for phase planning.
+- [ ] 08-03: Verify planned phase contracts are durable and executable.
+
+### Phase 9: Phase Execution Skill
+**Goal**: Ship `$fr-execute-phase` so a planned phase can be executed through orchestrating Forward Roll agents.
+**Depends on**: Phase 8
+**Requirements**: [SELF-04]
+**Success Criteria** (what must be TRUE):
+  1. An operator can invoke `$fr-execute-phase 1` for the active milestone and start orchestrated task execution.
+  2. Execution roles respect task boundaries, verification expectations, and jj/`lat.md` workflow requirements.
+  3. The phase can progress to a review boundary without hand-written orchestration outside the Forward Roll skill pack.
+**Tasks**: 3 tasks
+
+Tasks:
+- [ ] 09-01: Define and implement the `$fr-execute-phase` skill contract.
+- [ ] 09-02: Define the executor and reviewer role boundaries for phase execution.
+- [ ] 09-03: Verify one planned phase can be executed through the Forward Roll orchestration path.
+
+### Phase 10: Feedback Extension Skill
+**Goal**: Ship `$fr-feedback-phase` so feedback can append in-phase follow-on tasks without breaking the current phase boundary.
+**Depends on**: Phase 9
+**Requirements**: [SELF-05]
+**Success Criteria** (what must be TRUE):
+  1. An operator can invoke `$fr-feedback-phase 1` after review and append follow-on tasks when the phase goal still holds.
+  2. Feedback handling updates `ROADMAP.md`, `STATE.md`, and the active `PHASE-XX.md` contract consistently.
+  3. The workflow distinguishes in-phase follow-on work from broader realignment or clarification stops.
+**Tasks**: 3 tasks
+
+Tasks:
+- [ ] 10-01: Define and implement the `$fr-feedback-phase` skill contract.
+- [ ] 10-02: Define the planning-update role boundary for classifying review and operator feedback.
+- [ ] 10-03: Verify feedback-path updates append durable follow-on tasks inside the active phase.
+
+### Phase 11: Self-Hosting Roundtrip Proof
+**Goal**: Prove the full skill-first self-hosting loop and document how to copy it into local Codex directories.
+**Depends on**: Phase 10
+**Requirements**: [SELF-06, SELF-07, EXEC-01]
+**Success Criteria** (what must be TRUE):
+  1. A user can scaffold the next milestone, plan phase 1, execute phase 1, extend phase 1 with feedback, and rerun execution on the appended tasks through the Forward Roll skill pack.
+  2. The copy/install story for local `.agents/skills` and `.codex/agents` is documented clearly enough to reproduce.
+  3. The roundtrip keeps `lat.md`, planning artifacts, and jj-oriented workflow guidance aligned.
+**Tasks**: 3 tasks
+
+Tasks:
+- [ ] 11-01: Verify the end-to-end self-hosting roundtrip across planning, execution, feedback, and replay.
+- [ ] 11-02: Document the copy/install layout for local skill and agent directories.
+- [ ] 11-03: Capture the operator checklist and validation criteria for the self-hosting milestone.
 
 ## Progress
 
@@ -104,4 +201,10 @@ Tasks:
 | 2. Python Foundation | 3/3 | Complete | 2026-03-16 |
 | 3. Knowledge Graph Bootstrap | 3/3 | Complete | 2026-03-17 |
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
-| 5. First Executable Slice | 7/8 | In Progress | - |
+| 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
+| 6. Self-Hosting Skill-Pack Surface | 0/3 | Pending | - |
+| 7. Milestone Planning Skill | 0/3 | Pending | - |
+| 8. Phase Planning Skill | 0/3 | Pending | - |
+| 9. Phase Execution Skill | 0/3 | Pending | - |
+| 10. Feedback Extension Skill | 0/3 | Pending | - |
+| 11. Self-Hosting Roundtrip Proof | 0/3 | Pending | - |

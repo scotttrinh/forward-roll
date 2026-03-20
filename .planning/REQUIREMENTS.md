@@ -41,6 +41,16 @@
 
 ## v2 Requirements
 
+### Skill-First Self-Hosting
+
+- [ ] **SELF-01**: Operator can install or copy Forward Roll skills and agent role descriptors into the local Codex directories without depending on the Python CLI.
+- [ ] **SELF-02**: Operator can scaffold the next milestone through `$fr-plan-milestone`.
+- [ ] **SELF-03**: Operator can plan a phase in the active milestone through `$fr-plan-phase <phase-number>`.
+- [ ] **SELF-04**: Operator can execute a planned phase through an orchestrating Forward Roll agent with `$fr-execute-phase <phase-number>`.
+- [ ] **SELF-05**: Operator can give feedback that appends in-phase follow-on tasks through `$fr-feedback-phase <phase-number>`.
+- [ ] **SELF-06**: Operator can rerun phase execution and complete appended tasks without leaving the active phase boundary.
+- [ ] **SELF-07**: Forward Roll self-hosting skills keep `lat.md`, planning artifacts, and jj conventions aligned while they operate.
+
 ### Execution
 
 - **EXEC-01**: User can execute complete Forward Roll workflows against a target repository.
@@ -79,12 +89,21 @@
 | CORE-03 | Phase 4 | Pending |
 | PLAN-03 | Phase 5 | Pending |
 | QUAL-01 | Phase 5 | Pending |
+| SELF-01 | Phase 6 | Pending |
+| SELF-02 | Phase 7 | Pending |
+| SELF-03 | Phase 8 | Pending |
+| SELF-04 | Phase 9 | Pending |
+| SELF-05 | Phase 10 | Pending |
+| SELF-06 | Phase 11 | Pending |
+| SELF-07 | Phase 11 | Pending |
+| EXEC-01 | Phase 11 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 16
-- Unmapped: 0
+- v2 requirements: 11 total
+- Mapped to phases: 24
+- Unmapped: 3
 
 ---
 *Requirements defined: 2026-03-16*
-*Last updated: 2026-03-17 after progress audit*
+*Last updated: 2026-03-20 after defining the skill-first self-hosting milestone*

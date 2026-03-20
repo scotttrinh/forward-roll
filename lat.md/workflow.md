@@ -250,11 +250,21 @@ Follow-on tasks belong in the active phase only when the phase goal still stands
 
 When that happens, planning should append the next phase-local task IDs at the end of the current phase order rather than creating subphases or renumbering existing tasks. The active phase stays open, and focus moves to the first new incomplete task.
 
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
+- [[tests/test_phase_launch.py]]
+
 ### Broader Realignment Boundary
 
 Broader realignment should remain distinct from in-phase follow-up work.
 
 If feedback changes the phase goal, success criteria, review boundary, or future roadmap shape, planning should treat that as broader realignment instead of hiding it inside appended tasks. If feedback is too vague to become a reviewable task contract, the loop should stop for clarification rather than fabricating scope.
+
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
+- [[tests/test_phase_launch.py]]
 
 ## First Self-Hosting Slice
 
@@ -266,6 +276,52 @@ That slice should stay narrow by relying on strong task contracts and reusable p
 
 Its bootstrap step should therefore persist the resolved execution context durably in `plans_root` so later prompt and launch steps can start from reviewable planning state rather than ephemeral CLI input.
 
+## Skill-First Self-Hosting
+
+Forward Roll should become usable as a host-loaded Codex skill pack before it grows a richer standalone CLI.
+
+The next milestone should ship copyable `fr-*` skills plus agent-role descriptors that work inside the Codex host environment. The skill pack should provide four operator-facing commands:
+
+1. `$fr-plan-milestone`
+2. `$fr-plan-phase <phase-number>`
+3. `$fr-execute-phase <phase-number>`
+4. `$fr-feedback-phase <phase-number>`
+
+These commands should reuse the same planning artifacts, task-contract rules, prompt-template roles, `lat.md` workflow, and jj-oriented execution guidance already defined in this project.
+
+### Skill-Pack Composition
+
+Each `fr-*` command should be a copyable host asset with a stable name.
+
+The Phase 6 skill pack should treat each operator-facing command as its own skill directory so the pack can be copied whole or command-by-command. Shared behavior should come from common planning artifacts, shared role descriptors, and reusable helper assets rather than from hidden host state.
+
+### Milestone-Local Phase Commands
+
+Self-hosting commands should resolve phase numbers relative to the active milestone.
+
+An operator should be able to say `$fr-plan-phase 1`, `$fr-execute-phase 1`, or `$fr-feedback-phase 1` for the first phase of the active milestone even when the durable planning artifacts use a globally unique phase ID such as `PHASE-06.md`. The skill layer should own that translation instead of forcing milestone operators to think in global ordinals.
+
+Commands that accept `<phase-number>` should treat it as a one-based milestone-local selector, resolve it to the durable global phase ID before specialized work begins, and keep the global ID as the canonical planning identifier once the target phase is known. If the active milestone is missing, the selector is out of range, or the resolved phase lacks the required planning contract, the command should stop with a stable, reviewable error instead of guessing.
+
+### Agent Role Boundaries
+
+Skills should route specialized work through named host roles.
+
+Phase 6 should define a minimal role family for the self-hosting milestone:
+
+1. milestone planning roles for `$fr-plan-milestone`
+2. phase research, planning, and plan-checking roles for `$fr-plan-phase`
+3. execution and review roles for `$fr-execute-phase`
+4. planning-update roles for `$fr-feedback-phase`
+
+The skill layer should own operator-facing command handling, milestone-local selector resolution, and shared context assembly. The role layer should own the specialized planning, execution, review, or feedback-classification work after that shared context is assembled.
+
+### Shared Skill Context
+
+Every Forward Roll skill should load the same core project context first.
+
+Before specialized work begins, a skill should load the active planning artifacts, the relevant `lat.md` sections from `specs_root`, the project agent instructions, and the jj-oriented workflow guidance already defined by the repo. Skills should also reuse the repository `lat` workflow by expanding operator input, searching or locating relevant spec sections before changing plans, updating `lat.md` when workflow behavior changes, and running `lat check` before handoff. This shared context contract should keep all `fr-*` commands aligned with the same specs, plans, and review vocabulary.
+
 ## End-to-End Verification
 
 The first self-hosting slice should be validated by a small set of reviewable end-to-end stories and reviewer docs.
@@ -274,13 +330,25 @@ The first self-hosting slice should be validated by a small set of reviewable en
 
 One verification path should start from linked specs, persist bootstrap context and planning artifacts, launch the active phase, execute the planned tasks, and reach an `accepted` review outcome without manual state reconstruction.
 
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
+- [[tests/test_phase_launch.py]]
+
 ### Feedback-Path Coverage
 
 A second verification path should prove that review plus operator input can append the next phase-local task contracts inside the active phase, update `ROADMAP.md`, `STATE.md`, and the active phase contract consistently, and keep the same phase open.
 
+Code references:
+
+- [[src/forward_roll/application/phase_launch.py]]
+- [[tests/test_phase_launch.py]]
+
 ### Reviewer-Facing Documentation
 
 Reviewer docs should explain the slice entry conditions, bootstrap handoff artifacts, prompt-template roles, phase execution and review loop, operator-feedback append rules, and the artifacts to inspect during the happy-path and feedback-path checks.
+
+The current reviewer guide lives in `README.md` so reviewers can inspect the same boundary and artifact story the end-to-end tests exercise.
 
 ## lat.md Role
 

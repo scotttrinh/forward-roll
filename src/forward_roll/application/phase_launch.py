@@ -1,8 +1,8 @@
 """Application services for serial phase launch."""
 # @lat: [[architecture#Application Layer]]
 # @lat: [[workflow#Phase Launch Contract]]
-# @lat: [[workflow#Phase Launch Contract]]
-# @lat: [[workflow#Phase Launch Contract]]
+# @lat: [[workflow#Continuous Operator Feedback]]
+# @lat: [[workflow#End-to-End Verification]]
 
 from __future__ import annotations
 
@@ -111,6 +111,23 @@ class PhaseReviewResult:
 
 
 @frozen
+class FollowOnTaskUpdate:
+    """A reviewable follow-on task contract draft."""
+
+    title: str
+    contract_body: str
+
+
+@frozen
+class PlanningUpdateResult:
+    """Runner output for operator-feedback planning updates."""
+
+    outcome: Literal["append_tasks", "broader_realignment", "needs_clarification"]
+    summary: str
+    follow_on_tasks: tuple[FollowOnTaskUpdate, ...] = ()
+
+
+@frozen
 class PhaseLaunchResult:
     """Structured outcome of a serial phase launch."""
 
@@ -124,6 +141,16 @@ class PhaseLaunchError(Exception):
     """Raised when phase launch cannot proceed cleanly."""
 
     pass
+
+
+@frozen
+class FeedbackApplicationResult:
+    """Structured outcome of applying operator feedback."""
+
+    phase_id: str
+    outcome: Literal["append_tasks", "broader_realignment", "needs_clarification"]
+    summary: str
+    appended_task_ids: tuple[str, ...]
 
 
 class ExecutionRunner(Protocol):
@@ -142,6 +169,15 @@ class ExecutionRunner(Protocol):
         *,
         phase: PhaseContract,
     ) -> PhaseReviewResult: ...
+
+    def run_planning_update(
+        self,
+        prompt: BoundPrompt,
+        *,
+        phase: PhaseContract,
+        review_result: PhaseReviewResult,
+        operator_input: str,
+    ) -> PlanningUpdateResult: ...
 
 
 class UnavailableExecutionRunner:
@@ -164,6 +200,18 @@ class UnavailableExecutionRunner:
         phase: PhaseContract,
     ) -> PhaseReviewResult:
         del prompt, phase
+        msg = "phase launch requires a configured execution runner adapter"
+        raise PhaseLaunchError(msg)
+
+    def run_planning_update(
+        self,
+        prompt: BoundPrompt,
+        *,
+        phase: PhaseContract,
+        review_result: PhaseReviewResult,
+        operator_input: str,
+    ) -> PlanningUpdateResult:
+        del prompt, phase, review_result, operator_input
         msg = "phase launch requires a configured execution runner adapter"
         raise PhaseLaunchError(msg)
 
@@ -308,6 +356,91 @@ def launch_phase(
         completed_tasks=tuple(completed_tasks),
         stopped_task=None,
         review_result=review_result,
+    )
+
+
+def apply_operator_feedback(
+    *,
+    plans_root: Path,
+    runner: ExecutionRunner,
+    review_result: PhaseReviewResult,
+    operator_input: str,
+    phase_selector: str | None = None,
+    prompt_assets: dict[str, PromptTemplateAsset] | None = None,
+) -> FeedbackApplicationResult:
+    """Classify operator feedback into durable planning updates."""
+    normalized_operator_input = operator_input.strip()
+    if not normalized_operator_input:
+        msg = "operator feedback must be non-empty"
+        raise PhaseLaunchError(msg)
+
+    bootstrap_context = load_bootstrap_context(plans_root)
+    templates = load_workflow_prompt_assets() if prompt_assets is None else prompt_assets
+    _require_prompt_roles(templates, required_roles=("planning_update",))
+
+    phase_contract = load_phase_contract(
+        plans_root=bootstrap_context.plans_root,
+        active_target=bootstrap_context.active_target,
+        phase_selector=phase_selector,
+    )
+    planning_prompt = bind_prompt_template(
+        templates["planning_update"],
+        slot_values={
+            "bootstrap_context": bootstrap_context.raw_json.rstrip(),
+            "spec_context": render_context_documents(
+                _load_phase_spec_context(
+                    bootstrap_context=bootstrap_context,
+                    phase_contract=phase_contract,
+                )
+            ),
+            "planning_context": render_context_documents(
+                _load_phase_planning_context(
+                    plans_root=bootstrap_context.plans_root,
+                    phase_contract=phase_contract,
+                )
+            ),
+            "operator_input": _render_operator_feedback(
+                review_result=review_result,
+                operator_input=normalized_operator_input,
+            ),
+        },
+    )
+    planning_result = runner.run_planning_update(
+        planning_prompt,
+        phase=phase_contract,
+        review_result=review_result,
+        operator_input=normalized_operator_input,
+    )
+
+    if planning_result.outcome == "append_tasks":
+        if not planning_result.follow_on_tasks:
+            msg = "planning update chose append_tasks without any follow-on task contracts"
+            raise PhaseLaunchError(msg)
+        appended_task_ids = _append_follow_on_tasks(
+            plans_root=bootstrap_context.plans_root,
+            phase_contract=phase_contract,
+            follow_on_tasks=planning_result.follow_on_tasks,
+            review_result=review_result,
+            summary=planning_result.summary,
+        )
+        return FeedbackApplicationResult(
+            phase_id=phase_contract.phase_id,
+            outcome=planning_result.outcome,
+            summary=planning_result.summary,
+            appended_task_ids=appended_task_ids,
+        )
+
+    _update_state_for_feedback_boundary(
+        plans_root=bootstrap_context.plans_root,
+        phase_contract=phase_contract,
+        planning_result=planning_result,
+        review_result=review_result,
+    )
+    return FeedbackApplicationResult(
+        phase_id=phase_contract.phase_id,
+        outcome=planning_result.outcome,
+        summary=planning_result.summary,
+        appended_task_ids=(),
     )
 
 
@@ -771,6 +904,256 @@ def _update_state_for_phase_review(
         replacement=f"Last activity: phase review returned `{review_result.outcome}`",
     )
     state_path.write_text(updated, encoding="utf-8")
+
+
+def _append_follow_on_tasks(
+    *,
+    plans_root: Path,
+    phase_contract: PhaseContract,
+    follow_on_tasks: tuple[FollowOnTaskUpdate, ...],
+    review_result: PhaseReviewResult,
+    summary: str,
+) -> tuple[str, ...]:
+    appended_task_ids = _next_follow_on_task_ids(
+        phase_id=phase_contract.phase_id,
+        existing_tasks=phase_contract.tasks,
+        count=len(follow_on_tasks),
+    )
+    _append_tasks_to_phase_contract(
+        phase_path=phase_contract.path,
+        appended_task_ids=appended_task_ids,
+        follow_on_tasks=follow_on_tasks,
+    )
+    _append_tasks_to_roadmap(
+        roadmap_path=plans_root / "ROADMAP.md",
+        phase_id=phase_contract.phase_id,
+        appended_task_ids=appended_task_ids,
+        follow_on_tasks=follow_on_tasks,
+    )
+    refreshed_phase_contract = load_phase_contract(
+        plans_root=plans_root,
+        active_target=ActiveTarget(
+            phase_id=phase_contract.phase_id,
+            phase_name=phase_contract.phase_name,
+            phase_document=phase_contract.path.name,
+            task_id=phase_contract.tasks[-1].task_id,
+            task_title=phase_contract.tasks[-1].title,
+        ),
+        phase_selector=phase_contract.phase_id,
+    )
+    next_task = next(task for task in refreshed_phase_contract.tasks if task.state != "done")
+    _update_state_after_feedback_extension(
+        state_path=plans_root / "STATE.md",
+        phase_contract=refreshed_phase_contract,
+        next_task=next_task,
+        review_result=review_result,
+        summary=summary,
+    )
+    return appended_task_ids
+
+
+def _next_follow_on_task_ids(
+    *,
+    phase_id: str,
+    existing_tasks: tuple[PhaseTaskContract, ...],
+    count: int,
+) -> tuple[str, ...]:
+    if count < 1:
+        return ()
+    next_index = max(int(task.task_id.split("-")[1]) for task in existing_tasks) + 1
+    return tuple(f"{phase_id}-{task_index:02d}" for task_index in range(next_index, next_index + count))
+
+
+def _append_tasks_to_phase_contract(
+    *,
+    phase_path: Path,
+    appended_task_ids: tuple[str, ...],
+    follow_on_tasks: tuple[FollowOnTaskUpdate, ...],
+) -> None:
+    phase_text = phase_path.read_text(encoding="utf-8").rstrip()
+    rendered_sections = "\n\n".join(
+        _render_follow_on_task_contract(task_id=task_id, follow_on_task=follow_on_task)
+        for task_id, follow_on_task in zip(appended_task_ids, follow_on_tasks, strict=True)
+    )
+    phase_path.write_text(phase_text + "\n\n" + rendered_sections + "\n", encoding="utf-8")
+
+
+def _render_follow_on_task_contract(
+    *,
+    task_id: str,
+    follow_on_task: FollowOnTaskUpdate,
+) -> str:
+    contract_body = follow_on_task.contract_body.strip()
+    if not contract_body:
+        msg = f"follow-on task contract body is empty for {task_id}"
+        raise PhaseLaunchError(msg)
+    return "\n".join(
+        [
+            f"### Task {task_id}: {follow_on_task.title}",
+            "",
+            contract_body,
+        ]
+    )
+
+
+def _append_tasks_to_roadmap(
+    *,
+    roadmap_path: Path,
+    phase_id: str,
+    appended_task_ids: tuple[str, ...],
+    follow_on_tasks: tuple[FollowOnTaskUpdate, ...],
+) -> None:
+    lines = roadmap_path.read_text(encoding="utf-8").splitlines()
+    target_start: int | None = None
+    target_end = len(lines)
+    last_task_index: int | None = None
+    task_count_line_index: int | None = None
+
+    for index, line in enumerate(lines):
+        phase_match = _ROADMAP_PHASE_PATTERN.match(line)
+        if phase_match is not None:
+            if target_start is not None:
+                target_end = index
+                break
+            if phase_match.group("phase_id").zfill(2) == phase_id:
+                target_start = index
+            continue
+        if target_start is None:
+            continue
+        if line.startswith("**Tasks**:"):
+            task_count_line_index = index
+        elif line.startswith("Tasks:") and task_count_line_index is None:
+            task_count_line_index = index
+        if _ROADMAP_TASK_PATTERN.match(line) is not None:
+            last_task_index = index
+
+    if target_start is None or last_task_index is None:
+        msg = f"cannot append follow-on tasks for phase {phase_id}: roadmap section is incomplete"
+        raise PhaseLaunchError(msg)
+
+    for index in range(target_start, target_end):
+        task_match = _ROADMAP_TASK_PATTERN.match(lines[index])
+        if task_match is None:
+            continue
+        if task_match.group("state") == "-":
+            lines[index] = f"- [ ] {task_match.group('task_id')}: {task_match.group('task_title').strip()}"
+
+    appended_lines = [
+        (
+            f"- [-] {task_id}: {follow_on_task.title}"
+            if task_index == 0
+            else f"- [ ] {task_id}: {follow_on_task.title}"
+        )
+        for task_index, (task_id, follow_on_task) in enumerate(
+            zip(appended_task_ids, follow_on_tasks, strict=True)
+        )
+    ]
+    lines[last_task_index + 1 : last_task_index + 1] = appended_lines
+
+    if task_count_line_index is not None:
+        task_count = len(
+            [
+                line
+                for line in lines[target_start:target_end + len(appended_lines)]
+                if _ROADMAP_TASK_PATTERN.match(line) is not None
+            ]
+        )
+        prefix = "**Tasks**" if lines[task_count_line_index].startswith("**Tasks**:") else "Tasks"
+        lines[task_count_line_index] = f"{prefix}: {task_count} tasks"
+
+    roadmap_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _update_state_after_feedback_extension(
+    *,
+    state_path: Path,
+    phase_contract: PhaseContract,
+    next_task: PhaseTaskContract,
+    review_result: PhaseReviewResult,
+    summary: str,
+) -> None:
+    state_text = state_path.read_text(encoding="utf-8")
+    updated = _replace_state_line(
+        state_text,
+        prefix="**Current focus:**",
+        replacement=(
+            f"**Current focus:** Phase {phase_contract.phase_id} - {phase_contract.phase_name} "
+            f"(next task `{next_task.task_id}`)"
+        ),
+    )
+    updated = _replace_state_line(
+        updated,
+        prefix="Task:",
+        replacement=(
+            f"Task: {next_task.task_id} of {len(phase_contract.tasks)} in current phase"
+        ),
+    )
+    updated = _replace_state_line(updated, prefix="Status:", replacement="Status: Ready to execute")
+    updated = _replace_state_line(
+        updated,
+        prefix="Last activity:",
+        replacement=(
+            "Last activity: appended "
+            f"`{next_task.task_id}` after review outcome `{review_result.outcome}` ({summary})"
+        ),
+    )
+    state_path.write_text(updated, encoding="utf-8")
+
+
+def _update_state_for_feedback_boundary(
+    *,
+    plans_root: Path,
+    phase_contract: PhaseContract,
+    planning_result: PlanningUpdateResult,
+    review_result: PhaseReviewResult,
+) -> None:
+    state_path = plans_root / "STATE.md"
+    state_text = state_path.read_text(encoding="utf-8")
+    if planning_result.outcome == "broader_realignment":
+        focus_suffix = "broader realignment"
+        status = "Status: Awaiting broader realignment"
+    else:
+        focus_suffix = "clarification"
+        status = "Status: Awaiting operator clarification"
+
+    updated = _replace_state_line(
+        state_text,
+        prefix="**Current focus:**",
+        replacement=(
+            f"**Current focus:** Phase {phase_contract.phase_id} - {phase_contract.phase_name} "
+            f"({focus_suffix})"
+        ),
+    )
+    updated = _replace_state_line(
+        updated,
+        prefix="Task:",
+        replacement="Task: Planning follow-up outside the active phase",
+    )
+    updated = _replace_state_line(updated, prefix="Status:", replacement=status)
+    updated = _replace_state_line(
+        updated,
+        prefix="Last activity:",
+        replacement=(
+            f"Last activity: review outcome `{review_result.outcome}` classified as "
+            f"`{planning_result.outcome}` ({planning_result.summary})"
+        ),
+    )
+    state_path.write_text(updated, encoding="utf-8")
+
+
+def _render_operator_feedback(
+    *,
+    review_result: PhaseReviewResult,
+    operator_input: str,
+) -> str:
+    return "\n".join(
+        [
+            f"review_outcome={review_result.outcome}",
+            f"review_summary={review_result.summary}",
+            "operator_feedback:",
+            operator_input,
+        ]
+    )
 
 
 def _replace_state_line(state_text: str, *, prefix: str, replacement: str) -> str:

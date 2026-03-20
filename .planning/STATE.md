@@ -2,24 +2,25 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-19)
+See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Deliver an agentic workflow that remains structurally rigorous, reviewable by humans, and faithful to the domain even as automation increases.
-**Current focus:** Phase 5 - First Executable Slice (next task `05-08`)
+**Current focus:** Phase 6 - Self-Hosting Skill-Pack Surface (task contracts defined)
 
 ## Current Position
 
-Phase: 5 of 5 (First Executable Slice)
-Task: 05-08 of 8 in current phase
-Status: Ready to execute
-Last activity: 2026-03-20 — Completed `05-07` by adding stable prompt assets, typed slot binding, and the serial phase-launch boundary
+Phase: 6 of 11 (Self-Hosting Skill-Pack Surface)
+Task: 06-01 of 3 in current phase
+Status: Ready for execution
+Last activity: 2026-03-20 — Planned Phase 6 with detailed contracts for skill-pack layout, command semantics, and shared skill context
 
-Progress: [█████████░] 88%
+Progress: [█████-----] 45%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total tasks completed: 17
+- Total tasks completed: 18
+- Planned tasks remaining: 18
 - Average duration per task: -
 - Total execution time: -
 
@@ -32,9 +33,15 @@ Progress: [█████████░] 88%
 | 3 | 3 | - | - |
 | 4 | 3 | - | - |
 | 5 | 8 | - | - |
+| 6 | 0 | 3 | - |
+| 7 | 0 | 3 | - |
+| 8 | 0 | 3 | - |
+| 9 | 0 | 3 | - |
+| 10 | 0 | 3 | - |
+| 11 | 0 | 3 | - |
 
 **Recent Trend:**
-- Last 5 tasks: 05-03, 05-04, 05-05, 05-06, 05-07
+- Last 5 tasks: 05-04, 05-05, 05-06, 05-07, 05-08
 - Trend: Stable
 
 ## Accumulated Context
@@ -69,10 +76,15 @@ Recent decisions affecting current work:
 - Phase 5: phase launch should consume durable planning context, execute task contracts serially to reviewable jj revisions, and stop at phase review rather than inventing new execution scope.
 - Phase 5: launch should bind stable workflow assets to explicit bootstrap, spec, planning, and workspace slots, then update durable planning truth between serial task steps.
 - Phase 5: operator feedback should enter through a planning update that either appends the next phase-local task contracts or triggers broader realignment without turning raw comments into durable plan state.
+- Phase 5: the first executable slice is now verified by end-to-end acceptance and feedback-extension tests, with reviewer docs pointing at the same bootstrap, planning, and phase artifacts.
+- Phase 6+: self-hosting should ship first as copyable Codex skills and agent role descriptors rather than waiting for richer standalone CLI coverage.
+- Phase 6+: self-hosting commands should use milestone-local phase numbers, resolving `phase 1` in the active milestone to the correct durable global phase ID in planning artifacts.
+- Phase 6: the repo-owned self-hosting pack should mirror Codex host boundaries, with command skills under `.agents/skills/fr-*` and role descriptors under `.codex/agents/fr-*`.
+- Phase 6: every `fr-*` skill should assemble shared planning, spec, and jj context before delegating to specialized roles, then finish by validating `lat.md` integrity.
 
 ### Pending Todos
 
-- `05-08`: Implement feedback-path planning updates, high-value end-to-end verification, and reviewer-facing documentation.
+- None.
 
 ### Blockers/Concerns
 
@@ -81,5 +93,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-20 11:05 EDT
-Stopped at: Completed `05-07`; next step is `05-08`
+Stopped at: Planned Phase 6; next step is executing task `06-01` for the self-hosting skill-pack milestone
 Resume file: None

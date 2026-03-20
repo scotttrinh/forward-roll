@@ -43,7 +43,7 @@ Code references:
 
 The application layer turns typed directives into stable workflow-facing outputs.
 
-The executable bootstrap slice keeps application logic narrow: it accepts validated input, writes durable bootstrap artifacts, binds stable prompt assets to explicit runtime slots, and runs the serial phase-launch loop through a narrow execution boundary.
+The executable bootstrap slice keeps application logic narrow: it accepts validated input, writes durable bootstrap artifacts, binds stable prompt assets to explicit runtime slots, runs the serial phase-launch loop, and applies operator-feedback planning updates through the same typed boundary.
 
 Code references:
 
@@ -97,6 +97,35 @@ They should live with the Forward Roll implementation, carry stable role identit
 Code references:
 
 - [[src/forward_roll/application/prompts.py]]
+
+## Host Skill-Pack Boundary
+
+Forward Roll should integrate with Codex first as a copyable skill pack.
+
+The next milestone should package Forward Roll as reusable `SKILL.md` assets plus agent-role descriptors that can be copied into local Codex directories. The Python implementation may still supply helper logic, but Codex remains the execution host and primary runtime boundary for self-hosting.
+
+Related:
+
+- [[workflow#Skill-First Self-Hosting]]
+- [[workflow#Workflow Prompt Templates]]
+
+### Skill-Pack Artifact Layout
+
+The self-hosting pack should mirror the host directories it targets.
+
+The Phase 6 boundary should define:
+
+1. repository-owned operator skills under `.agents/skills/fr-*`, one directory per user-facing command
+2. copyable agent-role descriptors under `.codex/agents/fr-*`, with paired `.md` instructions and optional `.toml` runtime metadata when a role needs both
+3. shared helper code or prompt assets outside those host directories when they are implementation details rather than installable host assets
+
+The installation story should support both repo-local self-hosting and user-local copy/install flows. An operator should be able to use the repo-owned `.agents/skills/` plus `.codex/agents/` assets directly, or copy the same assets into user-local Codex directories such as `~/.codex/skills/` and `~/.codex/agents/`, without depending on the Python CLI to bootstrap the pack.
+
+### Host Asset Responsibilities
+
+Skills, role descriptors, and Python helpers should have different jobs.
+
+Operator-facing skills should own command entry, context loading, and final validation. Agent-role descriptors should own specialized planning, execution, review, or planning-update work. Python code may still provide helper logic for parsing, rendering, or validation, but Phase 6 should keep that helper layer optional so the copy/install story remains file-based and host-native.
 
 ## Knowledge and Planning Boundary
 
