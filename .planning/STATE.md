@@ -2,25 +2,25 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-20)
+See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Deliver an agentic workflow that remains structurally rigorous, reviewable by humans, and faithful to the domain even as automation increases.
-**Current focus:** Phase 7 - Milestone Planning Skill (07-03 ready for execution)
+**Current focus:** Phase 7 - Milestone Planning Bootstrap (07-03 ready for execution)
 
 ## Current Position
 
-Phase: 7 of 11 (Milestone Planning Skill)
+Phase: 7 of 9 (Milestone Planning Bootstrap)
 Task: 07-03 of 3 in current phase
 Status: Ready for execution
-Last activity: 2026-03-20 — Completed task 07-02 by defining the milestone-planning orchestrator, planner, and plan-checker role boundaries plus the skill handoff to those roles
+Last activity: 2026-03-21 — Realigned the self-hosting roadmap so `07-03` now covers idempotent bootstrap materialization of the milestone-planning host assets and indirect `lat`-based spec resolution
 
-Progress: [██████----] 62%
+Progress: [███████---] 74%
 
 ## Performance Metrics
 
 **Velocity:**
 - Total tasks completed: 23
-- Planned tasks remaining: 14
+- Planned tasks remaining: 8
 - Average duration per task: -
 - Total execution time: -
 
@@ -37,8 +37,6 @@ Progress: [██████----] 62%
 | 7 | 2 | 3 | - |
 | 8 | 0 | 3 | - |
 | 9 | 0 | 3 | - |
-| 10 | 0 | 3 | - |
-| 11 | 0 | 3 | - |
 
 **Recent Trend:**
 - Last 5 tasks: 06-01, 06-02, 06-03, 07-01, 07-02
@@ -85,6 +83,9 @@ Recent decisions affecting current work:
 - Phase 6: `fr-*` skills must keep the repository `lat` workflow and jj-native vocabulary mandatory, with specialized roles consuming that prepared bundle rather than rediscovering project truth themselves.
 - Phase 7: `$fr-plan-milestone` is now a concrete no-phase-selector skill contract that updates `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md` while stopping on milestone ambiguity or later-phase workflow drift.
 - Phase 7: milestone planning now delegates through `fr-milestone-planning-orchestrator`, `fr-milestone-planner`, and `fr-milestone-plan-checker`, keeping command parsing and final validation in the skill while specialized milestone edits and consistency checks live in `.codex/agents/`.
+- Phase 7 feedback: self-hosting templates should ask `lat` to resolve relevant spec and code context indirectly instead of pinning exact `lat.md` files inside skill text.
+- Phase 7 feedback: bootstrap should become an idempotent path for materializing or refreshing repo-local and user-local host assets from versioned templates.
+- After `07-03`, the next planned phase should fill the remaining `fr-*` skill and role templates in one minimal pass instead of splitting the first coverage across separate per-command phases.
 
 ### Pending Todos
 
@@ -96,6 +97,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-20 11:05 EDT
-Stopped at: Completed task `07-02`; next step is executing task `07-03` to verify milestone scaffolding updates the durable planning artifacts consistently
+Last session: 2026-03-21 10:20 EDT
+Stopped at: Realigned Phase 7 and the downstream self-hosting roadmap; next step is executing task `07-03` to add templated bootstrap support for the milestone-planning host assets
 Resume file: None

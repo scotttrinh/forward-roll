@@ -1,12 +1,12 @@
-# Phase 7: Milestone Planning Skill
+# Phase 7: Milestone Planning Bootstrap
 
 ## Purpose
 
-Phase 7 ships the first concrete milestone-planning entrypoint in the Forward Roll skill pack.
+Phase 7 ships the first concrete milestone-planning entrypoint and its templated bootstrap path in the Forward Roll self-hosting pack.
 
 ## Status
 
-Contract coverage in progress for `07-01` through `07-02`
+Contract coverage in progress for `07-01` through `07-03`
 
 ## Task Contracts
 
@@ -164,3 +164,84 @@ Define the specialized milestone-planning orchestrator and supporting role descr
 - Escalate if milestone planning cannot stay within the four milestone-scoped planning artifacts.
 - Escalate if the orchestrator needs a phase selector or unresolved hidden state to stay coherent.
 - Escalate if the supporting roles would need to absorb final command validation that belongs in the skill.
+
+### Task 07-03: templated bootstrap for milestone-planning host assets
+
+**Objective**  
+Extend the bootstrap CLI flow so it can materialize or refresh the milestone-planning skill and supporting role descriptors from versioned templates, while updating those templates to rely on indirect `lat.md` resolution instead of hard-coded spec-file references.
+
+**Why**  
+`07-02` proved the first repo-owned skill and role family, but the current path still depends on directly authored host assets that point too specifically at `lat.md` files. Forward Roll needs an idempotent bootstrap path that can load the latest skill and role templates into this repo or another configured host target, and those templates should ask `lat` to resolve relevant spec and code context rather than pinning exact spec filenames.
+
+**Scope**  
+- Define how bootstrap resolves the host-asset target directories alongside existing repo, specs, and plans roots.
+- Add or update versioned templates for `.agents/skills/fr-plan-milestone/` and its supporting `.codex/agents/fr-*` descriptors.
+- Make bootstrap materialization idempotent so rerunning it refreshes the generated host assets without hidden state.
+- Update the templated skill and role text to request relevant planning and spec context indirectly through the `lat` workflow.
+- Update Phase 7 planning artifacts so `07-03` is represented as a contract-level task.
+
+**Out of Scope**  
+- Filling in the remaining `$fr-plan-phase`, `$fr-execute-phase`, or `$fr-feedback-phase` templates.
+- Expanding milestone planning beyond `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+- Replacing the host-native skill-pack layout with a generated registry or non-file-based installer.
+- Tightening every future skill and role prompt beyond the minimum template pass needed for bootstrap.
+
+**References**  
+- `lat.md/workflow.md`
+- `lat.md/architecture.md`
+- `.planning/PROJECT.md`
+- `.planning/REQUIREMENTS.md`
+- `.planning/ROADMAP.md`
+- `.planning/STATE.md`
+- `.agents/skills/fr-plan-milestone/SKILL.md`
+- `.codex/agents/fr-milestone-planning-orchestrator.md`
+- `.codex/agents/fr-milestone-planner.md`
+- `.codex/agents/fr-milestone-plan-checker.md`
+- `src/forward_roll/application/bootstrap.py`
+- `src/forward_roll/adapters/bootstrap_config.py`
+- `tests/test_bootstrap_config.py`
+
+**Design Constraints**  
+- Bootstrap must preserve the existing distinction between `repo_root`, `specs_root`, and `plans_root` while adding any host-asset target resolution reviewably.
+- Materialized host assets must stay in the same host-visible layout: `.agents/skills/fr-*` and `.codex/agents/fr-*`.
+- The bootstrap path must be idempotent: rerunning it should refresh templated assets predictably instead of accumulating divergent copies or hidden state.
+- The templated skill and role text must ask `lat` to search or locate the relevant planning, spec, and code context; they must not depend on exact `lat.md/*.md` filenames to stay useful.
+- `07-03` should materialize only the milestone-planning skill family; the broader pack fill belongs to the next phase.
+
+**Implementation Notes**  
+- Treat the current `07-02` skill and role contents as the source material for the first template set rather than inventing a second prompt family.
+- Resolve target directories from bootstrap config or defaults so the repo can refresh its own local `.agents/skills/` and `.codex/agents/` directories through the same bootstrap path it will later expose to other repos.
+- Prefer a narrow materialization contract: write or update only the templated milestone-planning host assets, and surface a reviewable summary of what changed.
+- Keep the templated text explicit about the `lat` workflow: `lat expand` first, `lat search` when available, `lat locate` plus direct reads as fallback, and final `lat check`.
+
+**Required Stops**  
+- Bootstrap cannot identify a reviewable target location for the host assets.
+- The materialization story would require hidden host state, non-idempotent rewrites, or a generated registry.
+- The template text still needs exact spec-file links to stay coherent.
+- The requested work expands into filling the other `fr-*` skills or unrelated bootstrap behavior.
+- The bootstrap boundary would need to take over live milestone planning rather than refreshing host assets.
+
+**Automated Verification**  
+- Run `uv run pytest`.
+- Run `lat check`.
+
+**Manual Verification**  
+- Confirm rerunning bootstrap would refresh the milestone-planning host assets without manual cleanup.
+- Confirm the templated skill and role text asks `lat` to resolve relevant spec context indirectly instead of hard-coding specific `lat.md` files.
+- Confirm the resulting host assets still match the repo-owned `.agents/skills/fr-*` and `.codex/agents/fr-*` layout.
+
+**Definition of Done**  
+- Phase 7 planning artifacts clearly show `07-03` as a specified task contract.
+- Bootstrap has a reviewable contract for materializing the milestone-planning host assets from versioned templates.
+- The milestone-planning skill family is represented as templates that rely on `lat`-mediated context lookup rather than explicit spec-file links.
+- `lat check` passes.
+
+**Dependencies**  
+- The `07-01` and `07-02` milestone-planning skill and role contracts.
+- Existing bootstrap root-resolution and durable handoff behavior from Phase 5.
+- Existing Phase 6 host-asset layout and shared-context rules.
+
+**Escalation Rules**  
+- Escalate if bootstrap cannot stay a materialization boundary and starts absorbing live planning behavior.
+- Escalate if the templated assets cannot stay host-native under `.agents/skills/` and `.codex/agents/`.
+- Escalate if idempotent refresh requires hidden state or spec-file pinning that conflicts with the `lat`-first lookup model.

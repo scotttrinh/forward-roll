@@ -2,7 +2,7 @@
 
 ## Overview
 
-Forward Roll completed its first milestone by defining the domain, proving `lat.md` as the spec substrate, and implementing a narrow executable slice. The next milestone should make Forward Roll usable on itself as a copyable Codex skill pack so operators can scaffold a milestone, plan a phase, execute it, extend it with feedback, and resume execution before richer CLI coverage exists.
+Forward Roll completed its first milestone by defining the domain, proving `lat.md` as the spec substrate, and implementing a narrow executable slice. The next milestone should make Forward Roll usable on itself through versioned Codex host assets that can be copied directly or refreshed idempotently by bootstrap so operators can scaffold a milestone, plan a phase, execute it, extend it with feedback, and resume execution.
 
 ## Phases
 
@@ -12,11 +12,9 @@ Forward Roll completed its first milestone by defining the domain, proving `lat.
 - [x] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
 - [x] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
 - [x] **Phase 6: Self-Hosting Skill-Pack Surface** - Define the copyable `fr-*` skill pack and milestone-local command model.
-- [ ] **Phase 7: Milestone Planning Skill** - Ship `$fr-plan-milestone` for scaffolding the next milestone.
-- [ ] **Phase 8: Phase Planning Skill** - Ship `$fr-plan-phase` for milestone-local phase planning.
-- [ ] **Phase 9: Phase Execution Skill** - Ship `$fr-execute-phase` for orchestrated task execution.
-- [ ] **Phase 10: Feedback Extension Skill** - Ship `$fr-feedback-phase` for in-phase task extension.
-- [ ] **Phase 11: Self-Hosting Roundtrip Proof** - Verify the full self-hosting loop and copy/install story.
+- [ ] **Phase 7: Milestone Planning Bootstrap** - Ship `$fr-plan-milestone` and bootstrap its templated host assets.
+- [ ] **Phase 8: Minimal Self-Hosting Templates** - Fill the remaining `fr-*` skill and role templates with minimal initial coverage.
+- [ ] **Phase 9: Self-Hosting Roundtrip Proof** - Verify the full self-hosting loop and bootstrap refresh story.
 
 ## Phase Details
 
@@ -118,81 +116,52 @@ Tasks:
 - [x] 06-02: Define the `fr-*` command surface and milestone-local phase selector semantics.
 - [x] 06-03: Define the shared context contract for Forward Roll skills, agent roles, `lat.md`, and jj workflows.
 
-### Phase 7: Milestone Planning Skill
-**Goal**: Ship `$fr-plan-milestone` so the next milestone can be scaffolded through the Forward Roll skill pack.
+### Phase 7: Milestone Planning Bootstrap
+**Goal**: Ship `$fr-plan-milestone` and the templated bootstrap path for its host assets so the next milestone can be scaffolded through Forward Roll on itself.
 **Depends on**: Phase 6
-**Requirements**: [SELF-02]
+**Requirements**: [SELF-01, SELF-02]
 **Success Criteria** (what must be TRUE):
   1. An operator can invoke `$fr-plan-milestone` and get updated milestone-scoped planning artifacts.
   2. The milestone-planning workflow updates `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md` consistently.
-  3. The skill uses the same Codex-first, `lat.md`-grounded workflow model as the rest of the project.
+  3. Bootstrap can materialize or refresh the milestone-planning skill family from versioned templates without hidden host state.
+  4. The templated milestone-planning assets use the same Codex-first, `lat.md`-grounded workflow model as the rest of the project, including indirect spec resolution through `lat`.
 **Tasks**: 3 tasks
 **Task Contracts**: [Phase 7 task contracts](./PHASE-07.md)
 
 Tasks:
 - [x] 07-01: Define and implement the `$fr-plan-milestone` skill contract.
 - [x] 07-02: Define the milestone-planning orchestrator and supporting agent roles.
-- [ ] 07-03: Verify milestone scaffolding updates the durable planning artifacts consistently.
+- [ ] 07-03: Add templated bootstrap support for the milestone-planning skill family and indirect `lat`-based spec resolution.
 
-### Phase 8: Phase Planning Skill
-**Goal**: Ship `$fr-plan-phase` so the first phase of the active milestone can be turned into executable task contracts.
+### Phase 8: Minimal Self-Hosting Templates
+**Goal**: Fill the remaining `fr-*` skill and role templates with minimal but usable coverage so bootstrap can materialize a complete first-pass self-hosting pack.
 **Depends on**: Phase 7
-**Requirements**: [SELF-03]
+**Requirements**: [SELF-03, SELF-04, SELF-05]
 **Success Criteria** (what must be TRUE):
-  1. An operator can invoke `$fr-plan-phase 1` for the active milestone and produce a durable phase contract.
-  2. The skill resolves milestone-local phase selectors to the correct durable global phase ID.
-  3. The planned task contracts are narrow, reviewable, and ready for phase execution.
+  1. Bootstrap can materialize minimal templates for `$fr-plan-phase`, `$fr-execute-phase`, and `$fr-feedback-phase` plus their supporting roles.
+  2. The templated skills resolve milestone-local phase selectors and indirect `lat` context consistently enough to be reviewed and iterated on in use.
+  3. The resulting host asset pack stays minimal and reviewable instead of overcommitting to mature orchestration details too early.
 **Tasks**: 3 tasks
 
 Tasks:
-- [ ] 08-01: Define and implement the `$fr-plan-phase` skill contract.
-- [ ] 08-02: Define the planner, researcher, and checker role boundaries for phase planning.
-- [ ] 08-03: Verify planned phase contracts are durable and executable.
+- [ ] 08-01: Define the shared template contract and pack-materialization rules for the remaining `fr-*` skills and roles.
+- [ ] 08-02: Add minimal `$fr-plan-phase` skill and role templates.
+- [ ] 08-03: Add minimal `$fr-execute-phase` and `$fr-feedback-phase` skill and role templates plus pack-level verification.
 
-### Phase 9: Phase Execution Skill
-**Goal**: Ship `$fr-execute-phase` so a planned phase can be executed through orchestrating Forward Roll agents.
+### Phase 9: Self-Hosting Roundtrip Proof
+**Goal**: Prove the templated self-hosting loop and document how bootstrap refreshes repo-local or user-local Codex assets.
 **Depends on**: Phase 8
-**Requirements**: [SELF-04]
-**Success Criteria** (what must be TRUE):
-  1. An operator can invoke `$fr-execute-phase 1` for the active milestone and start orchestrated task execution.
-  2. Execution roles respect task boundaries, verification expectations, and jj/`lat.md` workflow requirements.
-  3. The phase can progress to a review boundary without hand-written orchestration outside the Forward Roll skill pack.
-**Tasks**: 3 tasks
-
-Tasks:
-- [ ] 09-01: Define and implement the `$fr-execute-phase` skill contract.
-- [ ] 09-02: Define the executor and reviewer role boundaries for phase execution.
-- [ ] 09-03: Verify one planned phase can be executed through the Forward Roll orchestration path.
-
-### Phase 10: Feedback Extension Skill
-**Goal**: Ship `$fr-feedback-phase` so feedback can append in-phase follow-on tasks without breaking the current phase boundary.
-**Depends on**: Phase 9
-**Requirements**: [SELF-05]
-**Success Criteria** (what must be TRUE):
-  1. An operator can invoke `$fr-feedback-phase 1` after review and append follow-on tasks when the phase goal still holds.
-  2. Feedback handling updates `ROADMAP.md`, `STATE.md`, and the active `PHASE-XX.md` contract consistently.
-  3. The workflow distinguishes in-phase follow-on work from broader realignment or clarification stops.
-**Tasks**: 3 tasks
-
-Tasks:
-- [ ] 10-01: Define and implement the `$fr-feedback-phase` skill contract.
-- [ ] 10-02: Define the planning-update role boundary for classifying review and operator feedback.
-- [ ] 10-03: Verify feedback-path updates append durable follow-on tasks inside the active phase.
-
-### Phase 11: Self-Hosting Roundtrip Proof
-**Goal**: Prove the full skill-first self-hosting loop and document how to copy it into local Codex directories.
-**Depends on**: Phase 10
 **Requirements**: [SELF-06, SELF-07, EXEC-01]
 **Success Criteria** (what must be TRUE):
-  1. A user can scaffold the next milestone, plan phase 1, execute phase 1, extend phase 1 with feedback, and rerun execution on the appended tasks through the Forward Roll skill pack.
-  2. The copy/install story for local `.agents/skills` and `.codex/agents` is documented clearly enough to reproduce.
+  1. A user can refresh the latest host assets, scaffold the next milestone, plan phase 1, execute phase 1, extend phase 1 with feedback, and resume execution through the same self-hosting pack.
+  2. The bootstrap refresh path is idempotent and reviewable for repo-local self-hosting and user-local installation targets.
   3. The roundtrip keeps `lat.md`, planning artifacts, and jj-oriented workflow guidance aligned.
 **Tasks**: 3 tasks
 
 Tasks:
-- [ ] 11-01: Verify the end-to-end self-hosting roundtrip across planning, execution, feedback, and replay.
-- [ ] 11-02: Document the copy/install layout for local skill and agent directories.
-- [ ] 11-03: Capture the operator checklist and validation criteria for the self-hosting milestone.
+- [ ] 09-01: Verify the end-to-end self-hosting roundtrip across bootstrap refresh, planning, execution, feedback, and replay.
+- [ ] 09-02: Document the templated bootstrap and installation layout for repo-local and user-local Codex asset directories.
+- [ ] 09-03: Capture the operator checklist and validation criteria for refreshing and using the self-hosting pack.
 
 ## Progress
 
@@ -204,8 +173,6 @@ Tasks:
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
 | 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
 | 6. Self-Hosting Skill-Pack Surface | 3/3 | Complete | 2026-03-20 |
-| 7. Milestone Planning Skill | 2/3 | In Progress | - |
-| 8. Phase Planning Skill | 0/3 | Pending | - |
-| 9. Phase Execution Skill | 0/3 | Pending | - |
-| 10. Feedback Extension Skill | 0/3 | Pending | - |
-| 11. Self-Hosting Roundtrip Proof | 0/3 | Pending | - |
+| 7. Milestone Planning Bootstrap | 2/3 | In Progress | - |
+| 8. Minimal Self-Hosting Templates | 0/3 | Pending | - |
+| 9. Self-Hosting Roundtrip Proof | 0/3 | Pending | - |

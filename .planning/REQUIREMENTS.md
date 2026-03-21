@@ -43,13 +43,13 @@
 
 ### Skill-First Self-Hosting
 
-- [ ] **SELF-01**: Operator can install or copy Forward Roll skills and agent role descriptors into the local Codex directories without depending on the Python CLI.
+- [ ] **SELF-01**: Operator can install, copy, or materialize Forward Roll skills and agent role descriptors into the local Codex directories from versioned templates without hidden host state.
 - [ ] **SELF-02**: Operator can scaffold the next milestone through `$fr-plan-milestone`.
 - [ ] **SELF-03**: Operator can plan a phase in the active milestone through `$fr-plan-phase <phase-number>`.
 - [ ] **SELF-04**: Operator can execute a planned phase through an orchestrating Forward Roll agent with `$fr-execute-phase <phase-number>`.
 - [ ] **SELF-05**: Operator can give feedback that appends in-phase follow-on tasks through `$fr-feedback-phase <phase-number>`.
 - [ ] **SELF-06**: Operator can rerun phase execution and complete appended tasks without leaving the active phase boundary.
-- [ ] **SELF-07**: Forward Roll self-hosting skills keep `lat.md`, planning artifacts, and jj conventions aligned while they operate.
+- [ ] **SELF-07**: Forward Roll self-hosting skills resolve relevant spec context through `lat`, and keep `lat.md`, planning artifacts, and jj conventions aligned while they operate.
 
 ### Execution
 
@@ -89,14 +89,14 @@
 | CORE-03 | Phase 4 | Pending |
 | PLAN-03 | Phase 5 | Pending |
 | QUAL-01 | Phase 5 | Pending |
-| SELF-01 | Phase 6 | Pending |
+| SELF-01 | Phases 6-7 | Pending |
 | SELF-02 | Phase 7 | Pending |
 | SELF-03 | Phase 8 | Pending |
-| SELF-04 | Phase 9 | Pending |
-| SELF-05 | Phase 10 | Pending |
-| SELF-06 | Phase 11 | Pending |
-| SELF-07 | Phase 11 | Pending |
-| EXEC-01 | Phase 11 | Pending |
+| SELF-04 | Phase 8 | Pending |
+| SELF-05 | Phase 8 | Pending |
+| SELF-06 | Phase 9 | Pending |
+| SELF-07 | Phase 9 | Pending |
+| EXEC-01 | Phase 9 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
@@ -106,4 +106,4 @@
 
 ---
 *Requirements defined: 2026-03-16*
-*Last updated: 2026-03-20 after defining the skill-first self-hosting milestone*
+*Last updated: 2026-03-21 after realigning self-hosting around templated bootstrap and minimal template fill*

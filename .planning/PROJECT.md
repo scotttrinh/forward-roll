@@ -25,7 +25,7 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 - [ ] Make jujutsu-native change management part of the workflow model.
 - [ ] Prove `lat.md` can serve as the initial human-and-agent-readable knowledge graph.
 - [ ] Introduce explicit review and spec-realignment gates between implementation phases.
-- [ ] Ship the next self-hosting milestone as copyable `fr-*` skills and agent roles for Codex before broadening standalone CLI coverage.
+- [ ] Ship the next self-hosting milestone as versioned `fr-*` skills and agent roles for Codex that can be copied directly or refreshed through bootstrap before broadening standalone CLI coverage.
 - [ ] Let operators scaffold milestones, plan phases, execute phases, and extend phases with feedback through the same Forward Roll skill pack.
 
 ### Out of Scope
@@ -42,7 +42,7 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 - Specifications and plans may need different storage and governance. Forward Roll should therefore model `specs_root` and `plans_root` as independent locations rather than force one shared workspace root.
 - The repo starts greenfield, so the domain model and artifact layout can be designed cleanly instead of inherited from existing code.
 - The intended users care about software architecture, type design, and legible artifacts that can be reviewed by humans as well as consumed by agents.
-- The next milestone should optimize for usable self-hosting inside Codex by shipping copyable skill and agent assets before chasing richer deterministic orchestration or CLI parity.
+- The next milestone should optimize for usable self-hosting inside Codex by shipping versioned skill and agent templates that stay host-native, can be copied directly, and can also be refreshed idempotently through bootstrap.
 
 ## Constraints
 
@@ -76,6 +76,8 @@ Deliver an agentic workflow that remains structurally rigorous, reviewable by hu
 | Skills should assemble an explicit shared context bundle before delegating | `lat.md`, planning artifacts, and jj rules must stay aligned across every `fr-*` command | Skills own operator input expansion, spec lookup, selector resolution, bundle assembly, and final `lat check`, then pass command intent, resolved phase context, relevant planning/spec inputs, and workspace context to specialized planning, execution, review, or planning-update roles |
 | `$fr-plan-milestone` should stay a no-phase-selector planning skill | The first milestone-planning entrypoint needs a concrete host-facing contract before specialized orchestration exists | Implement the repo-owned skill at `.agents/skills/fr-plan-milestone/SKILL.md`, keep its durable edits limited to `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`, and stop when milestone scope is ambiguous or would drift into later phase commands |
 | Milestone planning should delegate through a small role family | The skill boundary is clearer and more copyable when specialized planning work lives in host role descriptors instead of the command entrypoint | Use `.codex/agents/fr-milestone-planning-orchestrator.md` to route milestone work through `.codex/agents/fr-milestone-planner.md` and `.codex/agents/fr-milestone-plan-checker.md`, while the skill retains command parsing and final validation |
+| Self-hosting assets should be materialized from versioned templates | Repo-owned host assets will drift if local self-hosting depends on hand-edited copies instead of a refreshable source | Extend bootstrap so it can resolve host target directories and write or refresh the `fr-*` skill and role assets idempotently from versioned templates |
+| Skill text should describe context needs indirectly and let `lat` resolve specifics | Hard-coded spec-file paths make copied skills brittle across repos and storage layouts | Prefer template instructions that ask `lat` to search or locate the relevant planning, spec, and code context instead of pinning exact `lat.md/*.md` files |
 
 ---
-*Last updated: 2026-03-20 after completing task 07-02 for the skill-first self-hosting milestone*
+*Last updated: 2026-03-21 after realigning Phase 7 around templated bootstrap for self-hosting assets*

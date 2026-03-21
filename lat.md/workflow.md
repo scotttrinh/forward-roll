@@ -297,13 +297,19 @@ The Phase 6 skill pack should treat each operator-facing command as its own skil
 
 Whole-pack copy should mean copying all four `fr-*` skill directories plus the `fr-*` role descriptors they reference. Command-by-command copy should mean copying one `fr-*` skill directory and the role descriptors that command needs. The first self-hosting milestone should not require a generated manifest, installer, or private registry to make those copies usable.
 
+### Templated Host-Asset Bootstrap
+
+Bootstrap should be able to refresh host assets from versioned templates idempotently.
+
+The CLI bootstrap flow should resolve repo, specs, and plans roots plus any configured host-asset targets, then materialize or refresh the relevant `fr-*` skills and role descriptors from versioned templates. Rerunning bootstrap should load the latest template text predictably without relying on hidden host state or manual cleanup.
+
 ## Milestone Planning Command
 
 Milestone planning should enter through one host-facing skill that updates the next milestone without guessing.
 
 `$fr-plan-milestone` should be the concrete operator-facing entrypoint for scaffolding the next milestone. It should treat all operator text after the command as milestone-planning intent, not as a phase selector, and it should stop with a stable error when a phase number is supplied anyway.
 
-Before changing planning artifacts, the skill should load the shared project context already defined for the self-hosting pack: project instructions, active planning artifacts, relevant `lat.md` sections, and the repo-local `lat` plus jj skills or their documented equivalents. It should then update the milestone-scoped planning artifacts consistently:
+Before changing planning artifacts, the skill should load the shared project context already defined for the self-hosting pack: project instructions, active planning artifacts, relevant spec context resolved through `lat`, and the repo-local `lat` plus jj skills or their documented equivalents. It should then update the milestone-scoped planning artifacts consistently:
 
 1. `PROJECT.md`
 2. `REQUIREMENTS.md`
@@ -373,9 +379,9 @@ For milestone planning, the first concrete role family should be:
 
 Every Forward Roll skill should load the same core project context first.
 
-Before specialized work begins, a skill should load the project agent instructions, the active planning artifacts from `plans_root`, the relevant `lat.md` sections from `specs_root`, and the repo-local `lat` plus jj skills or their documented equivalents when those skills are present. For phase-specific commands, that planning context should include `PROJECT.md`, `ROADMAP.md`, `STATE.md`, and the resolved `PHASE-XX.md` contract for the selected global phase ID.
+Before specialized work begins, a skill should load the project agent instructions, the active planning artifacts from `plans_root`, the relevant spec context from `specs_root` as resolved through `lat`, and the repo-local `lat` plus jj skills or their documented equivalents when those skills are present. For phase-specific commands, that planning context should include `PROJECT.md`, `ROADMAP.md`, `STATE.md`, and the resolved `PHASE-XX.md` contract for the selected global phase ID.
 
-Skills should also reuse the repository `lat` workflow by expanding operator input, searching or locating relevant spec sections before changing plans, updating `lat.md` when workflow behavior changes, and running `lat check` before handoff. They should preserve the jj-native vocabulary already defined by this project by talking about revisions, changes, stacks, and review states instead of Git-shaped fallback terms. This shared context contract should keep all `fr-*` commands aligned with the same specs, plans, and review vocabulary.
+Skills should name the kind of planning, spec, and code context they need instead of hard-coding exact `lat.md/*.md` files into the host asset text. They should then reuse the repository `lat` workflow by expanding operator input, searching or locating relevant sections and code references before changing plans, updating `lat.md` when workflow behavior changes, and running `lat check` before handoff. They should preserve the jj-native vocabulary already defined by this project by talking about revisions, changes, stacks, and review states instead of Git-shaped fallback terms. This shared context contract should keep all `fr-*` commands aligned with the same specs, plans, and review vocabulary.
 
 ### Shared Role Handoff Bundle
 
