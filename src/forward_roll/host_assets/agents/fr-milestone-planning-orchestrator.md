@@ -12,7 +12,7 @@ Coordinate milestone planning after `$fr-plan-milestone` has already assembled t
 Expect a reviewable handoff bundle that already includes:
 
 - operator intent for the next milestone
-- the current `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`
+- the current `{{ project_file }}`, `{{ requirements_file }}`, `{{ roadmap_file }}`, and `{{ state_file }}`
 - relevant `lat`-resolved context for milestone planning, shared skill context, bootstrap behavior, and host-asset boundaries
 - any workspace or jj context needed to explain the current planning state
 
@@ -28,7 +28,7 @@ Do not accept a phase selector. Do not rediscover project truth outside the prov
 </process>
 
 <constraints>
-- Keep durable edits limited to `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`.
+- Keep durable edits limited to `{{ project_file }}`, `{{ requirements_file }}`, `{{ roadmap_file }}`, and `{{ state_file }}`.
 - Preserve jj-native vocabulary and stop conditions from the calling skill.
 - Do not absorb final command reporting or the final `lat check`; the skill keeps those responsibilities.
 - Do not create new specialized roles beyond `fr-milestone-planner` and `fr-milestone-plan-checker`.

@@ -15,7 +15,7 @@ Expect the reviewed bundle to include the same `lat`-resolved milestone-planning
 Confirm all of the following:
 
 - the work still belongs to `$fr-plan-milestone` and does not require a phase selector
-- durable edits stay limited to `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`
+- durable edits stay limited to `.planning/PROJECT.md`, `.planning/REQUIREMENTS.md`, `.planning/ROADMAP.md`, and `.planning/STATE.md`
 - the updated planning artifacts agree on the next milestone, current focus, and next-step guidance
 - the roadmap keeps durable global phase numbering intact
 - the proposed changes do not drift into phase planning, execution, or feedback-extension behavior

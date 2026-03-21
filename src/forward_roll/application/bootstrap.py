@@ -1,12 +1,13 @@
 """Application services for bootstrap-oriented workflows."""
 # @lat: [[architecture#Application Layer]]
 # @lat: [[workflow#Bootstrap Summary Rendering]]
-# @lat: [[workflow#Skill-First Self-Hosting#Templated Host-Asset Bootstrap]]
+# @lat: [[workflow#Plugin-First Self-Hosting#Bootstrap Skill And Runtime Config]]
 
 from __future__ import annotations
 
 from importlib import resources
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -31,6 +32,9 @@ class BootstrapApplicationError(Exception):
     pass
 
 
+_HOST_ASSET_TEMPLATE_TOKEN = re.compile(r"{{\s*([a-z0-9_]+)\s*}}")
+
+
 def bootstrap_project(directive: BootstrapDirective) -> BootstrapArtifacts:
     """Persist the executable bootstrap handoff artifacts in plans_root."""
     source_plans_root = directive.identity.repo_root / ".planning"
@@ -46,6 +50,7 @@ def bootstrap_project(directive: BootstrapDirective) -> BootstrapArtifacts:
 
     planning_files = (
         "PROJECT.md",
+        "REQUIREMENTS.md",
         "ROADMAP.md",
         "STATE.md",
         directive.active_target.phase_document,
@@ -123,6 +128,7 @@ def _refresh_planning_file(*, source_path: Path, target_path: Path) -> Path:
 
 def _refresh_milestone_planning_host_assets(directive: BootstrapDirective) -> tuple[Path, ...]:
     template_root = resources.files("forward_roll.host_assets")
+    template_context = _build_host_asset_template_context(directive)
     written_assets: list[Path] = []
 
     for asset_group, relative_parts in (
@@ -138,9 +144,77 @@ def _refresh_milestone_planning_host_assets(directive: BootstrapDirective) -> tu
         template_text = template_root.joinpath(asset_group, *relative_parts).read_text(
             encoding="utf-8"
         )
-        written_assets.append(_refresh_text_file(target_path=target_path, content=template_text))
+        rendered_text = _render_host_asset_template(
+            template_text=template_text,
+            template_context=template_context,
+        )
+        written_assets.append(_refresh_text_file(target_path=target_path, content=rendered_text))
 
     return tuple(written_assets)
+
+
+def _build_host_asset_template_context(directive: BootstrapDirective) -> dict[str, str]:
+    repo_root = directive.identity.repo_root
+    plans_root = directive.plans_root
+    skills_root = directive.host_asset_targets.skills_root
+    agents_root = directive.host_asset_targets.agents_root
+    return {
+        "plans_root": _render_host_asset_path(path=plans_root, repo_root=repo_root),
+        "host_skills_root": _render_host_asset_path(path=skills_root, repo_root=repo_root),
+        "host_agents_root": _render_host_asset_path(path=agents_root, repo_root=repo_root),
+        "project_file": _render_host_asset_path(path=plans_root / "PROJECT.md", repo_root=repo_root),
+        "requirements_file": _render_host_asset_path(
+            path=plans_root / "REQUIREMENTS.md",
+            repo_root=repo_root,
+        ),
+        "roadmap_file": _render_host_asset_path(path=plans_root / "ROADMAP.md", repo_root=repo_root),
+        "state_file": _render_host_asset_path(path=plans_root / "STATE.md", repo_root=repo_root),
+        "skill_file": _render_host_asset_path(
+            path=skills_root / "fr-plan-milestone" / "SKILL.md",
+            repo_root=repo_root,
+        ),
+        "orchestrator_file": _render_host_asset_path(
+            path=agents_root / "fr-milestone-planning-orchestrator.md",
+            repo_root=repo_root,
+        ),
+        "planner_file": _render_host_asset_path(
+            path=agents_root / "fr-milestone-planner.md",
+            repo_root=repo_root,
+        ),
+        "checker_file": _render_host_asset_path(
+            path=agents_root / "fr-milestone-plan-checker.md",
+            repo_root=repo_root,
+        ),
+    }
+
+
+def _render_host_asset_path(*, path: Path, repo_root: Path) -> str:
+    try:
+        return path.relative_to(repo_root).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def _render_host_asset_template(
+    *,
+    template_text: str,
+    template_context: dict[str, str],
+) -> str:
+    missing_tokens: set[str] = set()
+
+    def replace_token(match: re.Match[str]) -> str:
+        token = match.group(1)
+        if token not in template_context:
+            missing_tokens.add(token)
+            return match.group(0)
+        return template_context[token]
+
+    rendered_text = _HOST_ASSET_TEMPLATE_TOKEN.sub(replace_token, template_text)
+    if missing_tokens:
+        missing = ", ".join(sorted(missing_tokens))
+        msg = f"host asset template references undefined variable(s): {missing}"
+        raise BootstrapApplicationError(msg)
+    return rendered_text
 
 
 def _refresh_text_file(*, target_path: Path, content: str) -> Path:

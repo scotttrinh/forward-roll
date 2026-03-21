@@ -374,6 +374,7 @@ def _write_launch_fixture(tmp_path: Path) -> Path:
     plans_root = tmp_path / "plans"
     plans_root.mkdir()
     (plans_root / "PROJECT.md").write_text("# Project\n", encoding="utf-8")
+    (plans_root / "REQUIREMENTS.md").write_text("# Requirements\n", encoding="utf-8")
     (plans_root / "STATE.md").write_text(
         "\n".join(
             [
@@ -468,6 +469,7 @@ def _write_bootstrap_source_fixture(repo_root: Path) -> Path:
     planning_root = repo_root / ".planning"
     planning_root.mkdir()
     (planning_root / "PROJECT.md").write_text("# Project\n", encoding="utf-8")
+    (planning_root / "REQUIREMENTS.md").write_text("# Requirements\n", encoding="utf-8")
     (planning_root / "STATE.md").write_text(
         "\n".join(
             [

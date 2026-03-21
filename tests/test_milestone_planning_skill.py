@@ -41,7 +41,8 @@ def test_fr_plan_milestone_skill_covers_required_artifacts_and_guards() -> None:
         "lat locate",
         "lat check",
         "Do not accept a phase selector or milestone-local phase number.",
-        "Do not invent specialized milestone-planning roles here; Phase `07-02` owns that boundary.",
+        "Treat `$fr-plan-milestone` as the milestone-planning entrypoint only.",
+        "keep command parsing, final reporting, and the final `lat check` in this skill",
         ".codex/agents/fr-milestone-planning-orchestrator.md",
         ".codex/agents/fr-milestone-planner.md",
         ".codex/agents/fr-milestone-plan-checker.md",
@@ -50,6 +51,8 @@ def test_fr_plan_milestone_skill_covers_required_artifacts_and_guards() -> None:
     for fragment in required_fragments:
         assert fragment in skill_text
 
+    assert "{{" not in skill_text
+    assert "07-02" not in skill_text
     assert "lat.md/workflow.md" not in skill_text
     assert "lat.md/architecture.md" not in skill_text
 
@@ -61,16 +64,20 @@ def test_milestone_planning_role_descriptors_cover_orchestration_and_review() ->
 
     assert "fr-milestone-planner" in orchestrator_text
     assert "fr-milestone-plan-checker" in orchestrator_text
-    assert "PROJECT.md" in planner_text
-    assert "REQUIREMENTS.md" in planner_text
-    assert "ROADMAP.md" in planner_text
-    assert "STATE.md" in planner_text
+    assert "`.planning/PROJECT.md`" in orchestrator_text
+    assert "`.planning/PROJECT.md`" in planner_text
+    assert "`.planning/REQUIREMENTS.md`" in planner_text
+    assert "`.planning/ROADMAP.md`" in planner_text
+    assert "`.planning/STATE.md`" in planner_text
     assert "`lat`-resolved" in orchestrator_text
     assert "`lat`-resolved" in planner_text
     assert "`lat`-resolved" in checker_text
     assert "phase planning" in checker_text
     assert "feedback-extension" in checker_text
     assert "lat check" in checker_text
+    assert "{{" not in orchestrator_text
+    assert "{{" not in planner_text
+    assert "{{" not in checker_text
 
 
 def test_phase_7_planning_artifacts_close_phase_7_and_advance_to_phase_8() -> None:

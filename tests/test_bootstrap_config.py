@@ -2,7 +2,7 @@
 # @lat: [[domain#Testing Philosophy]]
 # @lat: [[workflow#Bootstrap Config Loading]]
 # @lat: [[workflow#Bootstrap Summary Rendering]]
-# @lat: [[workflow#Skill-First Self-Hosting#Templated Host-Asset Bootstrap]]
+# @lat: [[workflow#Plugin-First Self-Hosting#Bootstrap Skill And Runtime Config]]
 
 from __future__ import annotations
 
@@ -117,6 +117,7 @@ def test_bootstrap_project_persists_artifacts_for_external_roots(tmp_path: Path)
 
     assert {
         plans_root / "PROJECT.md",
+        plans_root / "REQUIREMENTS.md",
         plans_root / "ROADMAP.md",
         plans_root / "STATE.md",
         plans_root / "PHASE-05.md",
@@ -152,11 +153,25 @@ def test_bootstrap_project_persists_artifacts_for_external_roots(tmp_path: Path)
     skill_text = (host_skills_root / "fr-plan-milestone" / "SKILL.md").read_text(
         encoding="utf-8"
     )
+    skill_template_text = (
+        Path("src/forward_roll/host_assets/skills/fr-plan-milestone/SKILL.md")
+    ).read_text(encoding="utf-8")
+    planner_text = (host_agents_root / "fr-milestone-planner.md").read_text(encoding="utf-8")
     assert "lat expand" in skill_text
     assert "lat search" in skill_text
     assert "lat locate" in skill_text
     assert "lat.md/workflow.md" not in skill_text
     assert "lat.md/architecture.md" not in skill_text
+    assert "{{ project_file }}" in skill_template_text
+    assert "{{ orchestrator_file }}" in skill_template_text
+    assert "{{" not in skill_text
+    assert "{{" not in planner_text
+    assert "07-02" not in skill_text
+    assert f"`{plans_root / 'PROJECT.md'}`" in skill_text
+    assert f"`{plans_root / 'REQUIREMENTS.md'}`" in skill_text
+    assert f"`{host_agents_root / 'fr-milestone-planning-orchestrator.md'}`" in skill_text
+    assert f"`{plans_root / 'PROJECT.md'}`" in planner_text
+    assert f"`{plans_root / 'ROADMAP.md'}`" in planner_text
 
     stale_skill_path = host_skills_root / "fr-plan-milestone" / "SKILL.md"
     stale_skill_path.write_text("stale\n", encoding="utf-8")
@@ -173,6 +188,7 @@ def _write_repo_fixture(repo_root: Path) -> Path:
     planning_root = repo_root / ".planning"
     planning_root.mkdir()
     (planning_root / "PROJECT.md").write_text("# Project\n", encoding="utf-8")
+    (planning_root / "REQUIREMENTS.md").write_text("# Requirements\n", encoding="utf-8")
     (planning_root / "STATE.md").write_text("# State\n", encoding="utf-8")
     (planning_root / "PHASE-05.md").write_text("# Phase 5\n", encoding="utf-8")
     (planning_root / "ROADMAP.md").write_text(
