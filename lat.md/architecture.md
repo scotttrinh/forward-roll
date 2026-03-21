@@ -98,55 +98,48 @@ Code references:
 
 - [[src/forward_roll/application/prompts.py]]
 
-## Host Skill-Pack Boundary
+## Plugin Boundary
 
-Forward Roll should integrate with Codex first as a copyable skill pack.
+Forward Roll should integrate with Codex first as a static plugin.
 
-The next milestone should package Forward Roll as reusable `SKILL.md` assets plus agent-role descriptors that can be copied into local Codex directories. The Python implementation may still supply helper logic, but Codex remains the execution host and primary runtime boundary for self-hosting.
+The next milestone should package Forward Roll as one Codex plugin with a required `.codex-plugin/plugin.json`, bundled `fr-*` skills, and plugin-local helper scripts that resolve config and runtime context deterministically. The Python implementation in this repository may remain as a reference or migration aid, but the plugin should become the primary product and runtime boundary for self-hosting.
 
 Related:
 
-- [[workflow#Skill-First Self-Hosting]]
+- [[workflow#Plugin-First Self-Hosting]]
 - [[workflow#Workflow Prompt Templates]]
 
-### Skill-Pack Artifact Layout
+### Plugin Artifact Layout
 
-The self-hosting pack should mirror the host directories it targets.
+The self-hosting package should mirror the Codex plugin layout it ships.
 
-The Phase 6 boundary should define:
+The plugin boundary should define:
 
-1. repository-owned operator skills under `.agents/skills/fr-*`, one directory per user-facing command
-2. copyable agent-role descriptors under `.codex/agents/fr-*`, with paired `.md` instructions and optional `.toml` runtime metadata when a role needs both
-3. shared helper code or prompt assets outside those host directories when they are implementation details rather than installable host assets
+1. one plugin root under `plugins/forward-roll/`
+2. `.codex-plugin/plugin.json` as the required package manifest
+3. bundled operator-facing skills under `skills/fr-*`, one directory per user-facing command
+4. plugin-local scripts and prompt assets that skills can call to resolve config, locate planning or spec roots, and assemble runtime context without rewriting installed `SKILL.md` files
 
-The installation story should support both repo-local self-hosting and user-local copy/install flows. An operator should be able to use the repo-owned `.agents/skills/` plus `.codex/agents/` assets directly, or copy the same assets into user-local Codex directories such as `~/.codex/skills/` and `~/.codex/agents/`, without depending on the Python CLI to bootstrap the pack.
+The installation story should support both repo-local and user-local marketplace flows. An operator should be able to point a repo marketplace at the versioned plugin folder during development or install the same plugin through a personal marketplace without depending on a generated CLI bootstrap step.
 
-### Skill-Pack Installation Targets
+### Plugin Installation Targets
 
-Phase 6 should keep installation file-based and host-native.
+Phase 6 should keep installation plugin-based and host-native.
 
-Repo-local self-hosting should read the versioned assets in `.agents/skills/` and `.codex/agents/` directly from the repository. User-local installation should copy the same directories into `~/.codex/skills/` and `~/.codex/agents/` without rewriting the asset model or introducing generated host state.
-
-Bootstrap should resolve `host_skills_root` and `host_agents_root` separately so it can refresh repo-local or user-local host assets from the same versioned template set. The first templated bootstrap pass should stay limited to the milestone-planning skill family instead of inventing a broader registry or installer.
+Repo-local self-hosting should expose the plugin through `.agents/plugins/marketplace.json` and a repo plugin directory such as `plugins/forward-roll/`. User-local installation should use a personal marketplace that points at a user-local plugin directory. The product should not require copying loose skill directories into host roots or rewriting plugin files after install.
 
 Code references:
 
 - [[src/forward_roll/application/bootstrap.py]]
 - [[src/forward_roll/adapters/bootstrap_config.py]]
 
-### Whole-Pack and Per-Command Copy Rules
+### Runtime Configuration Responsibilities
 
-The copy/install contract should work for the full pack and for one command at a time.
+Skills, plugin-local scripts, and any retained Python helpers should have different jobs.
 
-Whole-pack installation should copy every `fr-*` skill directory plus the `fr-*` role descriptors they rely on. Per-command installation should copy one operator-facing skill directory with the `fr-*` role descriptors that command references. This boundary should stay explicit in the host assets themselves so the first self-hosting milestone does not depend on a hidden registry, generated manifest, or Python CLI installer.
+Operator-facing skills should own command entry, config loading, milestone-local selector resolution when needed, assembly of the shared planning/spec/workspace handoff bundle, and final validation. Plugin-local scripts should own deterministic config discovery, path resolution, and repeatable context assembly so installed skill text can stay static. Python code in this repository may still provide reference implementations or reusable logic, but the shipped plugin should not rely on post-install templating or mutation of bundled skills.
 
-### Host Asset Responsibilities
-
-Skills, role descriptors, and Python helpers should have different jobs.
-
-Operator-facing skills should own command entry, context loading, milestone-local selector resolution when needed, assembly of the shared planning/spec/workspace handoff bundle, and final validation. Agent-role descriptors should own specialized planning, execution, review, or planning-update work once that bundle is ready. Python code may still provide helper logic for parsing, rendering, or validation, but Phase 6 should keep that helper layer optional so the copy/install story remains file-based and host-native.
-
-For milestone planning, the repo-owned skill should delegate that specialized work through `.codex/agents/fr-milestone-planning-orchestrator.md`, which can route the prepared bundle through `.codex/agents/fr-milestone-planner.md` and `.codex/agents/fr-milestone-plan-checker.md`. This keeps command parsing and final validation in the skill while the role layer handles milestone edits and consistency review.
+The plugin should therefore include one bootstrap skill that creates or refreshes the expected config file and explains the resolved runtime roots. After that, the other `fr-*` skills should read config and resolve context at runtime instead of depending on a separate bootstrap CLI command.
 
 ## Knowledge and Planning Boundary
 

@@ -276,11 +276,11 @@ That slice should stay narrow by relying on strong task contracts and reusable p
 
 Its bootstrap step should therefore persist the resolved execution context durably in `plans_root` so later prompt and launch steps can start from reviewable planning state rather than ephemeral CLI input.
 
-## Skill-First Self-Hosting
+## Plugin-First Self-Hosting
 
-Forward Roll should become usable as a host-loaded Codex skill pack before it grows a richer standalone CLI.
+Forward Roll should become usable as a host-loaded Codex plugin before it grows any richer standalone interface.
 
-The next milestone should ship copyable `fr-*` skills plus agent-role descriptors that work inside the Codex host environment. The skill pack should provide four operator-facing commands:
+The next milestone should ship one static Forward Roll plugin whose bundled `fr-*` skills provide four operator-facing commands:
 
 1. `$fr-plan-milestone`
 2. `$fr-plan-phase <phase-number>`
@@ -289,21 +289,23 @@ The next milestone should ship copyable `fr-*` skills plus agent-role descriptor
 
 These commands should reuse the same planning artifacts, task-contract rules, prompt-template roles, `lat.md` workflow, and jj-oriented execution guidance already defined in this project.
 
-### Skill-Pack Composition
+### Plugin Composition
 
-Each `fr-*` command should be a copyable host asset with a stable name.
+Each `fr-*` command should be a bundled skill inside one static plugin with a stable name.
 
-The Phase 6 skill pack should treat each operator-facing command as its own skill directory so the pack can be copied whole or command-by-command. The operator-facing directory name should match the stable command name, and shared behavior should come from common planning artifacts, shared role descriptors, and reusable helper assets rather than from hidden host state.
+The self-hosting plugin should treat each operator-facing command as its own skill directory under the plugin `skills/` root. Shared behavior should come from plugin-local scripts, shared planning artifacts, and reusable prompt assets rather than from mutating installed `SKILL.md` files or relying on hidden host state.
 
-Whole-pack copy should mean copying all four `fr-*` skill directories plus the `fr-*` role descriptors they reference. Command-by-command copy should mean copying one `fr-*` skill directory and the role descriptors that command needs. The first self-hosting milestone should not require a generated manifest, installer, or private registry to make those copies usable.
+The plugin manifest should stay stable while runtime config changes. Skills should therefore read repo or user-local config and call deterministic helper scripts to resolve paths, validate setup, and assemble context instead of expecting bootstrap to rewrite their text.
 
-### Templated Host-Asset Bootstrap
+### Bootstrap Skill And Runtime Config
 
-Bootstrap should be able to refresh host assets from versioned templates idempotently.
+Bootstrap should become a host-facing skill, not a separate installer script.
 
-The CLI bootstrap flow should resolve repo, specs, plans, `host_skills_root`, and `host_agents_root`, then materialize or refresh the milestone-planning `fr-*` host assets from versioned templates. Rerunning bootstrap should load the latest template text predictably without relying on hidden host state or manual cleanup.
+The plugin should include a bootstrap skill that creates or refreshes the expected config file, explains the resolved repo, specs, and plans roots, and leaves later skills with a deterministic config contract to read. Rerunning that skill should be idempotent and should update config or derived files predictably without rewriting the packaged plugin assets.
 
-The milestone-planning template set should stay narrow for now: `.agents/skills/fr-plan-milestone/SKILL.md` plus the three `.codex/agents/fr-milestone-*.md` role descriptors. Those templates should ask `lat` to search or locate the relevant milestone-planning, shared-context, bootstrap, and host-asset sections instead of pinning exact `lat.md/*.md` filenames into copied host assets.
+The first runtime-config contract should stay narrow: it only needs to support the roots and project identity that the milestone-planning and phase commands need. Skills should ask `lat` to search or locate the relevant milestone-planning, shared-context, plugin-boundary, and runtime-config sections instead of pinning exact `lat.md/*.md` filenames into bundled instructions.
+
+Any path or runtime slot that varies per installation should live in config or in deterministic derived files produced by the bootstrap skill. Bundled `SKILL.md` files should read as direct runtime instructions for the invoked command and should not contain templated host-specific paths.
 
 Code references:
 
@@ -317,7 +319,7 @@ Milestone planning should enter through one host-facing skill that updates the n
 
 `$fr-plan-milestone` should be the concrete operator-facing entrypoint for scaffolding the next milestone. It should treat all operator text after the command as milestone-planning intent, not as a phase selector, and it should stop with a stable error when a phase number is supplied anyway.
 
-Before changing planning artifacts, the skill should load the shared project context already defined for the self-hosting pack: project instructions, active planning artifacts, relevant spec context resolved through `lat`, and the repo-local `lat` plus jj skills or their documented equivalents. It should then update the milestone-scoped planning artifacts consistently:
+Before changing planning artifacts, the skill should load the shared project context already defined for the self-hosting plugin: project instructions, active planning artifacts, relevant spec context resolved through `lat`, runtime config resolved by the bootstrap skill, and the repo-local `lat` plus jj skills or their documented equivalents. It should then update the milestone-scoped planning artifacts consistently:
 
 1. `PROJECT.md`
 2. `REQUIREMENTS.md`
@@ -326,9 +328,9 @@ Before changing planning artifacts, the skill should load the shared project con
 
 The skill should stay narrow. It should not invent specialized milestone-planning role prompts, drift into phase-planning or execution work, or guess when the milestone objective is too vague to encode reviewably. Those later orchestration boundaries belong to later Phase 7 tasks.
 
-The repo-owned entrypoint for this command lives at `.agents/skills/fr-plan-milestone/SKILL.md`.
+The shipped plugin entrypoint for this command should live under the plugin `skills/` tree. During development, the repository may continue to keep source templates or source assets elsewhere, but installation should happen through the plugin package and marketplace metadata rather than by copying loose skills directly into host roots.
 
-Once that skill has assembled the shared milestone-planning bundle, specialized work should flow through a small repo-owned role family under `.codex/agents/`: `fr-milestone-planning-orchestrator.md`, `fr-milestone-planner.md`, and `fr-milestone-plan-checker.md`. The skill should keep command parsing and final `lat check`, while the roles handle milestone-scoped planning edits and consistency review.
+Once that skill has assembled the shared milestone-planning bundle, any specialized prompting or helper logic should flow through plugin-local assets that the skill can invoke deterministically. The skill should keep command parsing and final `lat check`, while helper assets handle milestone-scoped planning edits and consistency review.
 
 Code references:
 
@@ -364,36 +366,31 @@ The command surface for the first self-hosting milestone should stay fixed at:
 4. the resolved global phase lacks the durable planning artifact the command needs
 5. the roadmap or milestone state is inconsistent enough that selector resolution would be ambiguous
 
-### Agent Role Boundaries
+### Helper Asset Boundaries
 
-Skills should route specialized work through named host roles.
+Skills should route specialized work through stable plugin-local helper assets.
 
-Phase 6 should define a minimal role family for the self-hosting milestone:
+Phase 6 should define a minimal helper layer for the self-hosting milestone:
 
-1. milestone planning roles for `$fr-plan-milestone`
-2. phase research, planning, and plan-checking roles for `$fr-plan-phase`
-3. execution and review roles for `$fr-execute-phase`
-4. planning-update roles for `$fr-feedback-phase`
+1. config-resolution helpers shared by every `fr-*` command
+2. milestone planning helpers for `$fr-plan-milestone`
+3. phase research, planning, and plan-checking helpers for `$fr-plan-phase`
+4. execution and review helpers for `$fr-execute-phase`
+5. planning-update helpers for `$fr-feedback-phase`
 
-The skill layer should own operator-facing command handling, milestone-local selector resolution, and shared context assembly. The role layer should own the specialized planning, execution, review, or feedback-classification work after that shared context is assembled.
-
-For milestone planning, the first concrete role family should be:
-
-1. `fr-milestone-planning-orchestrator` to validate the shared bundle, route the work, and preserve the stop conditions
-2. `fr-milestone-planner` to produce the minimal milestone-scoped edits in `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `STATE.md`
-3. `fr-milestone-plan-checker` to confirm those edits stay inside the milestone boundary and keep the planning artifacts mutually consistent
+The skill layer should own operator-facing command handling, milestone-local selector resolution, config loading, and shared context assembly. Helper assets should own specialized planning, execution, review, or feedback-classification work after that shared context is assembled.
 
 ### Shared Skill Context
 
 Every Forward Roll skill should load the same core project context first.
 
-Before specialized work begins, a skill should load the project agent instructions, the active planning artifacts from `plans_root`, the relevant spec context from `specs_root` as resolved through `lat`, and the repo-local `lat` plus jj skills or their documented equivalents when those skills are present. For phase-specific commands, that planning context should include `PROJECT.md`, `ROADMAP.md`, `STATE.md`, and the resolved `PHASE-XX.md` contract for the selected global phase ID.
+Before specialized work begins, a skill should load the project agent instructions, runtime config, the active planning artifacts from `plans_root`, the relevant spec context from `specs_root` as resolved through `lat`, and the repo-local `lat` plus jj skills or their documented equivalents when those skills are present. For phase-specific commands, that planning context should include `PROJECT.md`, `ROADMAP.md`, `STATE.md`, and the resolved `PHASE-XX.md` contract for the selected global phase ID.
 
 Skills should name the kind of planning, spec, and code context they need instead of hard-coding exact `lat.md/*.md` files into the host asset text. They should then reuse the repository `lat` workflow by expanding operator input, searching or locating relevant sections and code references before changing plans, updating `lat.md` when workflow behavior changes, and running `lat check` before handoff. They should preserve the jj-native vocabulary already defined by this project by talking about revisions, changes, stacks, and review states instead of Git-shaped fallback terms. This shared context contract should keep all `fr-*` commands aligned with the same specs, plans, and review vocabulary.
 
-### Shared Role Handoff Bundle
+### Shared Helper Handoff Bundle
 
-Skills should hand specialized roles one explicit, reviewable context bundle.
+Skills should hand specialized helper assets one explicit, reviewable context bundle.
 
 That shared handoff bundle should include:
 
@@ -404,7 +401,7 @@ That shared handoff bundle should include:
 5. the operator input that triggered the work
 6. any workspace context the selected role needs, such as jj status or active revision information
 
-Skills should own command parsing, selector resolution, shared context assembly, and final `lat check`. Specialized roles should own milestone planning, phase research and planning, plan checking, execution, review, or planning updates only after that bundle is assembled. Python helpers may support parsing, rendering, or validation, but they should remain optional implementation support rather than the primary host boundary.
+Skills should own command parsing, selector resolution, config loading, shared context assembly, and final `lat check`. Specialized helper assets should own milestone planning, phase research and planning, plan checking, execution, review, or planning updates only after that bundle is assembled. Plugin-local scripts may support parsing, rendering, or validation, but they should remain deterministic implementation support rather than a reason to mutate the packaged skills.
 
 ## End-to-End Verification
 
