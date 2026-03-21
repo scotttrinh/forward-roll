@@ -2,6 +2,7 @@
 # @lat: [[domain#Testing Philosophy]]
 # @lat: [[workflow#Bootstrap Config Loading]]
 # @lat: [[workflow#Bootstrap Summary Rendering]]
+# @lat: [[workflow#Skill-First Self-Hosting#Templated Host-Asset Bootstrap]]
 
 from __future__ import annotations
 
@@ -26,6 +27,8 @@ def test_load_bootstrap_directive_from_toml(tmp_path: Path) -> None:
         """
 specs_root = "specs"
 plans_root = "planning"
+host_skills_root = "codex-skills"
+host_agents_root = "codex-agents"
 
 [project]
 name = "Forward Roll"
@@ -42,6 +45,8 @@ repo_root = "repo"
     assert directive.identity.repo_root == repo_root
     assert directive.specs_root == (tmp_path / "specs").resolve()
     assert directive.plans_root == (tmp_path / "planning").resolve()
+    assert directive.host_asset_targets.skills_root == (tmp_path / "codex-skills").resolve()
+    assert directive.host_asset_targets.agents_root == (tmp_path / "codex-agents").resolve()
     assert directive.active_target.task_id == "05-06"
     assert directive.values == ValueSet.default()
 
@@ -50,6 +55,8 @@ repo_root = "repo"
     assert f"repo_root={repo_root}" in summary
     assert f"specs_root={(tmp_path / 'specs').resolve()}" in summary
     assert f"plans_root={(tmp_path / 'planning').resolve()}" in summary
+    assert f"host_skills_root={(tmp_path / 'codex-skills').resolve()}" in summary
+    assert f"host_agents_root={(tmp_path / 'codex-agents').resolve()}" in summary
 
 
 def test_resolve_bootstrap_directive_applies_defaults(tmp_path: Path) -> None:
@@ -60,7 +67,16 @@ def test_resolve_bootstrap_directive_applies_defaults(tmp_path: Path) -> None:
     assert directive.identity.name == repo_root.name
     assert directive.specs_root == repo_root / "lat.md"
     assert directive.plans_root == repo_root / ".planning"
-    assert directive.defaults_applied == ("specs_root", "plans_root", "project.name", "values")
+    assert directive.host_asset_targets.skills_root == repo_root / ".agents" / "skills"
+    assert directive.host_asset_targets.agents_root == repo_root / ".codex" / "agents"
+    assert directive.defaults_applied == (
+        "specs_root",
+        "plans_root",
+        "host_skills_root",
+        "host_agents_root",
+        "project.name",
+        "values",
+    )
     assert directive.active_target.phase_document == "PHASE-05.md"
 
 
@@ -85,11 +101,15 @@ def test_bootstrap_project_persists_artifacts_for_external_roots(tmp_path: Path)
     specs_root = tmp_path / "external-specs"
     specs_root.mkdir()
     plans_root = tmp_path / "external-plans"
+    host_skills_root = tmp_path / "user-codex" / "skills"
+    host_agents_root = tmp_path / "user-codex" / "agents"
 
     directive = resolve_bootstrap_directive(
         repo_root=repo_root,
         specs_root=specs_root,
         plans_root=plans_root,
+        host_skills_root=host_skills_root,
+        host_agents_root=host_agents_root,
         project_name="External Planning Project",
     )
 
@@ -101,6 +121,12 @@ def test_bootstrap_project_persists_artifacts_for_external_roots(tmp_path: Path)
         plans_root / "STATE.md",
         plans_root / "PHASE-05.md",
     } <= set(artifacts.planning_files)
+    assert {
+        host_skills_root / "fr-plan-milestone" / "SKILL.md",
+        host_agents_root / "fr-milestone-planning-orchestrator.md",
+        host_agents_root / "fr-milestone-planner.md",
+        host_agents_root / "fr-milestone-plan-checker.md",
+    } == set(artifacts.host_assets)
     assert artifacts.context_path == plans_root / "bootstrap-context.json"
     assert artifacts.summary_path == plans_root / "BOOTSTRAP.md"
 
@@ -109,13 +135,36 @@ def test_bootstrap_project_persists_artifacts_for_external_roots(tmp_path: Path)
     assert context["project"]["repo_root"] == str(repo_root)
     assert context["specs_root"] == str(specs_root)
     assert context["plans_root"] == str(plans_root)
+    assert context["host_assets"]["skills_root"] == str(host_skills_root)
+    assert context["host_assets"]["agents_root"] == str(host_agents_root)
+    assert set(context["host_assets"]["materialized"]) == {str(path) for path in artifacts.host_assets}
     assert context["active_target"]["task_id"] == "05-06"
     assert context["defaults_applied"] == ["values"]
 
     summary = artifacts.summary_path.read_text(encoding="utf-8")
     assert f"specs_root={specs_root}" in summary
     assert f"plans_root={plans_root}" in summary
+    assert f"host_skills_root={host_skills_root}" in summary
+    assert f"host_agents_root={host_agents_root}" in summary
     assert "active_task=05-06" in summary
+    assert "materialized_host_assets=4" in summary
+
+    skill_text = (host_skills_root / "fr-plan-milestone" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    assert "lat expand" in skill_text
+    assert "lat search" in skill_text
+    assert "lat locate" in skill_text
+    assert "lat.md/workflow.md" not in skill_text
+    assert "lat.md/architecture.md" not in skill_text
+
+    stale_skill_path = host_skills_root / "fr-plan-milestone" / "SKILL.md"
+    stale_skill_path.write_text("stale\n", encoding="utf-8")
+
+    refreshed_artifacts = bootstrap_project(directive)
+
+    assert refreshed_artifacts.host_assets == artifacts.host_assets
+    assert stale_skill_path.read_text(encoding="utf-8") == skill_text
 
 
 def _write_repo_fixture(repo_root: Path) -> Path:

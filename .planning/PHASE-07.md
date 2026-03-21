@@ -6,7 +6,7 @@ Phase 7 ships the first concrete milestone-planning entrypoint and its templated
 
 ## Status
 
-Contract coverage in progress for `07-01` through `07-03`
+Contract coverage complete for `07-01` through `07-03`
 
 ## Task Contracts
 

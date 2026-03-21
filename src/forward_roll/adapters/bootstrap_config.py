@@ -16,6 +16,7 @@ from cattrs import Converter
 from forward_roll.domain.model import (
     ActivePlanningTarget,
     BootstrapDirective,
+    HostAssetTargets,
     ProjectIdentity,
     ValueSet,
 )
@@ -84,6 +85,14 @@ def structure_bootstrap_directive(
             plans_root_value if plans_root_value is not None else legacy_planning_root_value,
             base_path,
         ),
+        host_skills_root=_resolve_optional_path(
+            config_document.get("host_skills_root"),
+            base_path,
+        ),
+        host_agents_root=_resolve_optional_path(
+            config_document.get("host_agents_root"),
+            base_path,
+        ),
         project_name=project_section.get("name"),
         values=values,
     )
@@ -94,6 +103,8 @@ def resolve_bootstrap_directive(
     repo_root: Path,
     specs_root: Path | None = None,
     plans_root: Path | None = None,
+    host_skills_root: Path | None = None,
+    host_agents_root: Path | None = None,
     project_name: str | None = None,
     values: ValueSet | None = None,
 ) -> BootstrapDirective:
@@ -117,6 +128,20 @@ def resolve_bootstrap_directive(
         resolved_plans_root = plans_root.expanduser().resolve()
     _require_writable_directory_or_parent(resolved_plans_root, "plans_root")
 
+    if host_skills_root is None:
+        resolved_host_skills_root = resolved_repo_root / ".agents" / "skills"
+        defaults_applied.append("host_skills_root")
+    else:
+        resolved_host_skills_root = host_skills_root.expanduser().resolve()
+    _require_writable_directory_or_parent(resolved_host_skills_root, "host_skills_root")
+
+    if host_agents_root is None:
+        resolved_host_agents_root = resolved_repo_root / ".codex" / "agents"
+        defaults_applied.append("host_agents_root")
+    else:
+        resolved_host_agents_root = host_agents_root.expanduser().resolve()
+    _require_writable_directory_or_parent(resolved_host_agents_root, "host_agents_root")
+
     if project_name is None:
         resolved_project_name = resolved_repo_root.name
         defaults_applied.append("project.name")
@@ -137,6 +162,10 @@ def resolve_bootstrap_directive(
         identity=ProjectIdentity(name=resolved_project_name, repo_root=resolved_repo_root),
         specs_root=resolved_specs_root,
         plans_root=resolved_plans_root,
+        host_asset_targets=HostAssetTargets(
+            skills_root=resolved_host_skills_root,
+            agents_root=resolved_host_agents_root,
+        ),
         values=resolved_values,
         active_target=active_target,
         defaults_applied=tuple(defaults_applied),

@@ -85,6 +85,32 @@ def bootstrap(
             ),
         ),
     ] = None,
+    host_skills_root: Annotated[
+        Path | None,
+        typer.Option(
+            "--host-skills-root",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+            help=(
+                "Host skill target directory. Defaults to repo_root/.agents/skills and "
+                "may point at a user-local Codex skills directory."
+            ),
+        ),
+    ] = None,
+    host_agents_root: Annotated[
+        Path | None,
+        typer.Option(
+            "--host-agents-root",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+            help=(
+                "Host agent target directory. Defaults to repo_root/.codex/agents and "
+                "may point at a user-local Codex agents directory."
+            ),
+        ),
+    ] = None,
     project_name: Annotated[
         str | None,
         typer.Option(
@@ -116,6 +142,8 @@ def bootstrap(
                 repo_root=repo_root,
                 specs_root=specs_root,
                 plans_root=plans_root,
+                host_skills_root=host_skills_root,
+                host_agents_root=host_agents_root,
                 project_name=project_name,
             )
         except BootstrapConfigError as exc:
@@ -128,7 +156,7 @@ def bootstrap(
         typer.echo(str(exc), err=True)
         raise typer.Exit(code=1) from exc
 
-    typer.echo(render_bootstrap_summary(directive))
+    typer.echo(render_bootstrap_summary(directive, host_assets=artifacts.host_assets))
     typer.echo(f"context_path={artifacts.context_path}")
     typer.echo(f"summary_path={artifacts.summary_path}")
 

@@ -83,12 +83,21 @@ class ActivePlanningTarget:
 
 
 @frozen
+class HostAssetTargets:
+    """Resolved host-visible skill and agent target directories."""
+
+    skills_root: Path
+    agents_root: Path
+
+
+@frozen
 class BootstrapDirective:
     """Typed bootstrap input for the executable bootstrap handoff."""
 
     identity: ProjectIdentity
     specs_root: Path
     plans_root: Path
+    host_asset_targets: HostAssetTargets
     values: ValueSet
     active_target: ActivePlanningTarget
     defaults_applied: tuple[str, ...] = field(factory=tuple)

@@ -50,6 +50,9 @@ def test_fr_plan_milestone_skill_covers_required_artifacts_and_guards() -> None:
     for fragment in required_fragments:
         assert fragment in skill_text
 
+    assert "lat.md/workflow.md" not in skill_text
+    assert "lat.md/architecture.md" not in skill_text
+
 
 def test_milestone_planning_role_descriptors_cover_orchestration_and_review() -> None:
     orchestrator_text = _read_text(".codex/agents/fr-milestone-planning-orchestrator.md")
@@ -62,17 +65,26 @@ def test_milestone_planning_role_descriptors_cover_orchestration_and_review() ->
     assert "REQUIREMENTS.md" in planner_text
     assert "ROADMAP.md" in planner_text
     assert "STATE.md" in planner_text
+    assert "`lat`-resolved" in orchestrator_text
+    assert "`lat`-resolved" in planner_text
+    assert "`lat`-resolved" in checker_text
     assert "phase planning" in checker_text
     assert "feedback-extension" in checker_text
     assert "lat check" in checker_text
 
 
-def test_phase_7_planning_artifacts_advance_to_the_next_task() -> None:
+def test_phase_7_planning_artifacts_close_phase_7_and_advance_to_phase_8() -> None:
     roadmap_text = _read_text(".planning/ROADMAP.md")
     state_text = _read_text(".planning/STATE.md")
 
     assert "**Task Contracts**: [Phase 7 task contracts](./PHASE-07.md)" in roadmap_text
     assert "- [x] 07-01: Define and implement the `$fr-plan-milestone` skill contract." in roadmap_text
     assert "- [x] 07-02: Define the milestone-planning orchestrator and supporting agent roles." in roadmap_text
-    assert "Task: 07-03 of 3 in current phase" in state_text
-    assert "Completed task `07-02`" in state_text
+    assert (
+        "- [x] 07-03: Add templated bootstrap support for the milestone-planning skill family "
+        "and indirect `lat`-based spec resolution."
+    ) in roadmap_text
+    assert "| 7. Milestone Planning Bootstrap | 3/3 | Complete | 2026-03-21 |" in roadmap_text
+    assert "Phase 8 - Minimal Self-Hosting Templates (08-01 ready for execution)" in state_text
+    assert "Task: 08-01 of 3 in current phase" in state_text
+    assert "Completed `07-03`" in state_text

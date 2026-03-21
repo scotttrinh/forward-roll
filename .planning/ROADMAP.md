@@ -12,7 +12,7 @@ Forward Roll completed its first milestone by defining the domain, proving `lat.
 - [x] **Phase 4: jj Review Workflow** - Model jj-native workflow semantics and review gates.
 - [x] **Phase 5: First Executable Slice** - Implement the first self-hosting spec-to-plan-and-execute loop.
 - [x] **Phase 6: Self-Hosting Skill-Pack Surface** - Define the copyable `fr-*` skill pack and milestone-local command model.
-- [ ] **Phase 7: Milestone Planning Bootstrap** - Ship `$fr-plan-milestone` and bootstrap its templated host assets.
+- [x] **Phase 7: Milestone Planning Bootstrap** - Ship `$fr-plan-milestone` and bootstrap its templated host assets.
 - [ ] **Phase 8: Minimal Self-Hosting Templates** - Fill the remaining `fr-*` skill and role templates with minimal initial coverage.
 - [ ] **Phase 9: Self-Hosting Roundtrip Proof** - Verify the full self-hosting loop and bootstrap refresh story.
 
@@ -131,7 +131,7 @@ Tasks:
 Tasks:
 - [x] 07-01: Define and implement the `$fr-plan-milestone` skill contract.
 - [x] 07-02: Define the milestone-planning orchestrator and supporting agent roles.
-- [ ] 07-03: Add templated bootstrap support for the milestone-planning skill family and indirect `lat`-based spec resolution.
+- [x] 07-03: Add templated bootstrap support for the milestone-planning skill family and indirect `lat`-based spec resolution.
 
 ### Phase 8: Minimal Self-Hosting Templates
 **Goal**: Fill the remaining `fr-*` skill and role templates with minimal but usable coverage so bootstrap can materialize a complete first-pass self-hosting pack.
@@ -173,6 +173,6 @@ Tasks:
 | 4. jj Review Workflow | 3/3 | Complete | 2026-03-17 |
 | 5. First Executable Slice | 8/8 | Complete | 2026-03-20 |
 | 6. Self-Hosting Skill-Pack Surface | 3/3 | Complete | 2026-03-20 |
-| 7. Milestone Planning Bootstrap | 2/3 | In Progress | - |
+| 7. Milestone Planning Bootstrap | 3/3 | Complete | 2026-03-21 |
 | 8. Minimal Self-Hosting Templates | 0/3 | Pending | - |
 | 9. Self-Hosting Roundtrip Proof | 0/3 | Pending | - |

@@ -127,6 +127,13 @@ Phase 6 should keep installation file-based and host-native.
 
 Repo-local self-hosting should read the versioned assets in `.agents/skills/` and `.codex/agents/` directly from the repository. User-local installation should copy the same directories into `~/.codex/skills/` and `~/.codex/agents/` without rewriting the asset model or introducing generated host state.
 
+Bootstrap should resolve `host_skills_root` and `host_agents_root` separately so it can refresh repo-local or user-local host assets from the same versioned template set. The first templated bootstrap pass should stay limited to the milestone-planning skill family instead of inventing a broader registry or installer.
+
+Code references:
+
+- [[src/forward_roll/application/bootstrap.py]]
+- [[src/forward_roll/adapters/bootstrap_config.py]]
+
 ### Whole-Pack and Per-Command Copy Rules
 
 The copy/install contract should work for the full pack and for one command at a time.

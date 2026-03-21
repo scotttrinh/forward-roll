@@ -301,7 +301,15 @@ Whole-pack copy should mean copying all four `fr-*` skill directories plus the `
 
 Bootstrap should be able to refresh host assets from versioned templates idempotently.
 
-The CLI bootstrap flow should resolve repo, specs, and plans roots plus any configured host-asset targets, then materialize or refresh the relevant `fr-*` skills and role descriptors from versioned templates. Rerunning bootstrap should load the latest template text predictably without relying on hidden host state or manual cleanup.
+The CLI bootstrap flow should resolve repo, specs, plans, `host_skills_root`, and `host_agents_root`, then materialize or refresh the milestone-planning `fr-*` host assets from versioned templates. Rerunning bootstrap should load the latest template text predictably without relying on hidden host state or manual cleanup.
+
+The milestone-planning template set should stay narrow for now: `.agents/skills/fr-plan-milestone/SKILL.md` plus the three `.codex/agents/fr-milestone-*.md` role descriptors. Those templates should ask `lat` to search or locate the relevant milestone-planning, shared-context, bootstrap, and host-asset sections instead of pinning exact `lat.md/*.md` filenames into copied host assets.
+
+Code references:
+
+- [[src/forward_roll/application/bootstrap.py]]
+- [[src/forward_roll/adapters/bootstrap_config.py]]
+- [[tests/test_bootstrap_config.py]]
 
 ## Milestone Planning Command
 

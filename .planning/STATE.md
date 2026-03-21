@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Deliver an agentic workflow that remains structurally rigorous, reviewable by humans, and faithful to the domain even as automation increases.
-**Current focus:** Phase 7 - Milestone Planning Bootstrap (07-03 ready for execution)
+**Current focus:** Phase 8 - Minimal Self-Hosting Templates (08-01 ready for execution)
 
 ## Current Position
 
-Phase: 7 of 9 (Milestone Planning Bootstrap)
-Task: 07-03 of 3 in current phase
+Phase: 8 of 9 (Minimal Self-Hosting Templates)
+Task: 08-01 of 3 in current phase
 Status: Ready for execution
-Last activity: 2026-03-21 — Realigned the self-hosting roadmap so `07-03` now covers idempotent bootstrap materialization of the milestone-planning host assets and indirect `lat`-based spec resolution
+Last activity: 2026-03-21 — Completed `07-03` by teaching bootstrap to materialize or refresh the milestone-planning host assets from versioned templates with indirect `lat`-based spec resolution
 
-Progress: [███████---] 74%
+Progress: [████████--] 77%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total tasks completed: 23
-- Planned tasks remaining: 8
+- Total tasks completed: 24
+- Planned tasks remaining: 7
 - Average duration per task: -
 - Total execution time: -
 
@@ -34,12 +34,12 @@ Progress: [███████---] 74%
 | 4 | 3 | - | - |
 | 5 | 8 | - | - |
 | 6 | 3 | 3 | - |
-| 7 | 2 | 3 | - |
+| 7 | 3 | 3 | - |
 | 8 | 0 | 3 | - |
 | 9 | 0 | 3 | - |
 
 **Recent Trend:**
-- Last 5 tasks: 06-01, 06-02, 06-03, 07-01, 07-02
+- Last 5 tasks: 06-02, 06-03, 07-01, 07-02, 07-03
 - Trend: Stable
 
 ## Accumulated Context
@@ -85,6 +85,7 @@ Recent decisions affecting current work:
 - Phase 7: milestone planning now delegates through `fr-milestone-planning-orchestrator`, `fr-milestone-planner`, and `fr-milestone-plan-checker`, keeping command parsing and final validation in the skill while specialized milestone edits and consistency checks live in `.codex/agents/`.
 - Phase 7 feedback: self-hosting templates should ask `lat` to resolve relevant spec and code context indirectly instead of pinning exact `lat.md` files inside skill text.
 - Phase 7 feedback: bootstrap should become an idempotent path for materializing or refreshing repo-local and user-local host assets from versioned templates.
+- Phase 7: bootstrap now resolves `host_skills_root` and `host_agents_root`, then refreshes only the milestone-planning host assets from versioned templates.
 - After `07-03`, the next planned phase should fill the remaining `fr-*` skill and role templates in one minimal pass instead of splitting the first coverage across separate per-command phases.
 
 ### Pending Todos
@@ -98,5 +99,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-21 10:20 EDT
-Stopped at: Realigned Phase 7 and the downstream self-hosting roadmap; next step is executing task `07-03` to add templated bootstrap support for the milestone-planning host assets
+Stopped at: Completed Phase 7; next step is executing task `08-01` to define the shared template contract for the remaining `fr-*` skills and roles
 Resume file: None
