@@ -1,223 +1,162 @@
 # Workflow
 
-This document defines Forward Roll's plugin-first command model, planning loop, and jj-native review flow.
+This document defines Forward Roll's operator-facing workflow.
 
-## Bootstrap Flow
+## Main Loop
 
-Bootstrap should establish a deterministic runtime contract for the plugin.
+Forward Roll should feel fluid to use while still enforcing high-signal context and clear review boundaries.
 
-The bootstrap flow should identify `repo_root`, `specs_root`, `plans_root`, project identity, and any required runtime conventions, then write those results into explicit config or derived files that every shipped skill can read. It should stop once later skills can resolve the same runtime view without guessing.
-
-Related:
-
-- [[architecture#Planning Storage]]
-- [[architecture#Runtime Contract]]
-
-## Executable Bootstrap Contract
-
-Bootstrap should create runtime truth, not an install-time variant of the plugin.
-
-For the plugin-shaped product, bootstrap should:
-
-1. accept or discover `repo_root`, `specs_root`, `plans_root`, and project identity
-2. validate that those roots are readable or writable where required
-3. persist a machine-readable runtime contract the later skills can consume
-4. explain the resolved runtime view in a concise human-readable summary
-5. stop before milestone planning, phase execution, or review work begins
-
-The durable outputs should make the rest of the plugin reproducible. If two runs begin from the same workspace and config inputs, later skills should resolve the same runtime context bundle.
-
-## Bootstrap Config Loading
-
-Bootstrap config loading should turn explicit configuration into a stable runtime contract.
-
-Config should resolve installation-specific paths and conventions without requiring bundled skills to be rewritten. Loading should apply stable defaults, normalize paths, fail with reviewable errors when required inputs are missing or invalid, and keep the runtime contract legible enough for both humans and scripts to inspect.
-
-## Bootstrap Summary Rendering
-
-Bootstrap summary rendering should report the runtime contract clearly.
-
-The bootstrap summary should surface the resolved repository, specs, and plans roots, the project identity, and any important runtime conventions the rest of the plugin will use. It should stay short enough to review quickly while still making the installation-specific context explicit.
-
-## Bootstrap Command
-
-The bootstrap command should be a shipped skill, not a standalone product entrypoint.
-
-Operators should use a bootstrap skill to create or refresh runtime config, review the resolved roots, and confirm the plugin can see the expected planning and spec context. Repo-local CLI helpers may exist during development, but the product boundary should be the bootstrap skill inside the plugin.
-
-## Workflow Prompt Templates
-
-Forward Roll should ship stable workflow instructions rather than generating bespoke instructions for each run.
-
-The plugin should include reusable prompt or instruction assets for planning, execution, review, and feedback-classification work. Those assets should accept runtime context through explicit inputs and keep their structure stable enough that the product boundary remains understandable and reproducible.
-
-## Phase Launch Contract
-
-Phase launch should consume planning truth and run one bounded phase to its review boundary.
-
-The execution flow should read the active phase contract, resolve its ordered tasks, perform the required work, update planning artifacts only where the task or review boundary requires it, and stop at a reviewer-facing phase outcome. It should fail with stable errors when required planning context, runtime config, or execution assets are missing.
-
-## Phase Review Loop
-
-Every phase should end at an explicit review boundary.
-
-Execution should produce reviewable jj revisions, then stop for a reviewer-facing outcome: accept the phase, extend the phase with concrete follow-on work, or trigger broader realignment. Review is part of the product loop, not an optional afterthought.
-
-## Planning Units
-
-Forward Roll uses milestones, phases, and tasks as distinct workflow units.
-
-A milestone is the broad product objective. A phase is the review boundary that should produce a meaningful deliverable. A task is the smallest bounded unit that one skill, script, or future subagent can execute with a clear scope, verification story, and definition of done.
-
-## Specification and Planning Flow
-
-Specs and planning should remain separate layers of one workflow.
-
-The intended loop is:
-
-1. shape the aspirational product in linked spec documents
-2. derive or update plans that move toward that product
-3. execute the active phase against those plans
-4. review the result and either accept it, extend it, or realign the plan
-
-Specs should define what Forward Roll is trying to become. Planning artifacts should define the next concrete work needed to get there.
-
-## jj Workflow Vocabulary
-
-Forward Roll should use jj-native language throughout the workflow.
-
-A revision is the reviewable output. A change is the mutable thing still being edited. A stack is the ordered revision context under review. Review states should describe the phase deliverable, not incidental local execution history.
-
-## jj Execution Loop
-
-Execution should optimize for reviewable jj output, not raw local history.
-
-Agents or scripts may use whatever local editing flow is practical, but the workflow should surface task-sized revisions and meaningful stacks at review time. The product should preserve jj-native concepts instead of translating them into Git-shaped abstractions.
-
-## Reviewer Loop
-
-The reviewer loop should decide the next forward action.
-
-The baseline review outcomes are:
-
-- `accepted`
-- `extend phase with follow-on task(s)`
-- `needs broader realignment`
-
-The workflow should update planning truth to reflect what happens next rather than trying to preserve a full execution transcript in the planning artifacts.
-
-## Planning Updates After Review
-
-Planning artifacts should be updated to show the next intended work.
-
-`STATE.md` should keep the current focus legible. `ROADMAP.md` should reflect the next real tasks or phases. If review reveals more work inside the same phase boundary, append follow-on tasks. If review changes the phase boundary or milestone shape, treat that as broader realignment.
-
-## Continuous Operator Feedback
-
-Operator feedback should enter the workflow through explicit planning updates.
-
-Raw comments are not durable planning state. Feedback must be turned into either concrete in-phase follow-on tasks, broader realignment, or a request for clarification before plans change.
-
-## Plugin-First Self-Hosting
-
-Forward Roll should ship first as one static Codex plugin.
-
-The plugin should provide these operator-facing skills:
+The main loop is:
 
 1. `$fr-bootstrap`
-2. `$fr-plan-milestone`
-3. `$fr-plan-phase <phase-number>`
-4. `$fr-execute-phase <phase-number>`
-5. `$fr-feedback-phase <phase-number>`
+2. `$fr-research`
+3. `$fr-shape`
+4. `$fr-do`
+5. `$fr-review`
+6. `$fr-feedback`
 
-These skills should be understandable as static shipped assets. Installation-specific behavior should come from config and deterministic scripts, not from rewriting the shipped instructions.
+These commands are the product surface. Everything else exists to support them.
 
-## Plugin Composition
+## `$fr-bootstrap`
 
-Each operator-facing command should be one bundled skill under the plugin `skills/` tree.
+Bootstrap establishes the operator's working contract for one project.
 
-The plugin should ship static skill text, bundled scripts, reusable instruction assets, and marketplace metadata. A reviewer should be able to inspect the plugin package and understand what commands exist, what runtime helpers exist, and how config drives the installation-specific parts of behavior.
+It should:
 
-## Bootstrap Skill And Runtime Config
+1. resolve `repo_root`
+2. resolve or accept `specs_root`
+3. resolve or accept `plans_root`
+4. resolve or accept `research_root`
+5. detect jj availability and basic workflow assumptions
+6. record whether those roots are in-repo, out-of-repo, or gitignored
+7. persist the runtime contract
+8. summarize the resolved environment and stop
 
-Bootstrap should be a skill that creates or refreshes config.
+Bootstrap must not turn into a broad setup installer. Its job is to make the workflow usable here and now.
 
-The bootstrap skill should discover or accept the relevant roots, validate them, write the runtime contract, and report the resolved view. It must not rewrite bundled skills, rewrite the plugin manifest for one installation, install dependencies, or recreate the old pattern of copying host-visible assets into place as the normal runtime path.
+## `$fr-research`
 
-## Refactor Target State
+Research creates the high-signal context bundle for a bounded slice of work.
 
-The big refactor should end with a plugin-native product boundary.
+It should:
 
-The target state is:
+1. inspect the relevant code and repository context
+2. inspect the relevant spec and planning context
+3. identify constraints, likely failure modes, and open questions
+4. identify likely validation requirements
+5. produce a compact research artifact for later shaping and execution
 
-1. Forward Roll ships as one plugin package with marketplace wiring.
-2. The plugin contains static skills and deterministic runtime scripts.
-3. `$fr-bootstrap` creates or refreshes config only.
-4. Other skills resolve runtime context from config and shared conventions.
-5. The runtime does not depend on a shared installable Python package or dependency installation.
-6. Future subagent support can slot into pre-defined handoff boundaries without changing the operator-facing commands.
+The purpose of research is aggressive context filtering. Raw exploration is not the final handoff artifact.
 
-## Milestone Planning Command
+## `$fr-shape`
 
-Milestone planning should enter through one host-facing skill that updates the next milestone without guessing.
+Shaping defines the next bounded work slice.
 
-`$fr-plan-milestone` should treat all trailing operator text as milestone-planning intent, not as a phase selector. Before editing planning artifacts, it should load runtime config, active planning artifacts, the relevant spec excerpts or references identified for this project, and any jj or workspace context needed to keep the planning update reviewable.
+It should:
 
-The skill should update milestone-scoped planning artifacts consistently:
+1. read the current specs
+2. read the current plans
+3. read the relevant research artifact
+4. define the goal of the next work slice
+5. define scope boundaries
+6. define acceptance criteria
+7. define the intended testing strategy
+8. define the intended jj review shape
 
-1. `PROJECT.md`
-2. `REQUIREMENTS.md`
-3. `ROADMAP.md`
-4. `STATE.md`
+Shaping should stop once the slice is small enough to execute and review clearly.
 
-It should stay narrow, stop instead of guessing when the milestone objective is vague, and hand specialized work to deterministic helper assets or future subagents without giving up final reporting and final spec-and-plan validation.
+## `$fr-do`
 
-## Milestone-Local Phase Commands
+Execution performs one bounded work slice.
 
-Phase commands should resolve `<phase-number>` relative to the active milestone.
+It should:
 
-An operator should be able to say `$fr-plan-phase 1`, `$fr-execute-phase 1`, or `$fr-feedback-phase 1` for the first phase of the active milestone even when planning artifacts use global phase IDs. The skill layer should own that translation and should stop with a stable error when the selector is invalid or ambiguous.
+1. read the runtime contract
+2. read the shaping artifact
+3. read the relevant research artifact
+4. perform only the scoped work
+5. update specs when behavior or workflow expectations change
+6. update planning state when the next intended action becomes clearer
+7. run the required validation
+8. leave the result in a reviewable jj state
 
-## Agent Role Boundaries
+Execution should prefer a coherent revision story over preserving every local iteration step.
 
-Forward Roll should define subagent boundaries even before plugins can rely on subagent support.
+## `$fr-review`
 
-The aspirational product should include specialized planning, execution, review, and feedback-classification roles. Until plugin subagents exist, skills and scripts should preserve those same handoff boundaries in deterministic local logic so the product does not have to be conceptually redesigned later.
+Review produces a concise handoff for human judgment.
 
-## Shared Skill Context
+It should summarize:
 
-Every Forward Roll skill should load the same core context first.
+- what changed
+- why it changed
+- what validation ran
+- what remains uncertain
+- what kind of feedback is needed
 
-That shared context should include:
+The review step should make it easy for the operator to respond without first reconstructing the entire execution history.
 
-1. runtime config
-2. the active planning artifacts from `plans_root`
-3. the relevant spec context from `specs_root`
-4. operator input
-5. any jj or workspace context the command needs
+## `$fr-feedback`
 
-Skills should name the kind of context they need instead of hard-coding one fixed repository shape into the instructions. They should identify the relevant spec sections or files through explicit references, project conventions, or deterministic lookup rules, and they should keep the spec layer current when workflow behavior changes.
+Feedback turns operator comments into durable workflow state.
 
-## Shared Helper Handoff Bundle
+Feedback should resolve into exactly one of these outcomes:
 
-Skills should hand helper scripts or future subagents one explicit context bundle.
+- `accept`
+- `revise current slice`
+- `queue follow-up`
+- `reshape plan`
 
-That bundle should include the operator-facing intent, the selected milestone or phase context, the relevant planning artifacts, the relevant spec context, and the workspace facts needed for bounded execution. It should be reproducible from the same config and workspace inputs.
+The plugin should make those transitions easy and explicit. Feedback should not force a heavy re-planning ceremony unless the feedback actually changes the scope or direction of the work.
 
-## End-to-End Verification
+## Fluid Refinement
 
-The first self-hosting slice should be validated with a small number of reviewable end-to-end stories.
+Forward Roll should optimize for easy refinement after agent work.
 
-One story should prove the happy path from specs and config through planning, execution, and accepted review. Another should prove the feedback path where review plus operator input appends follow-on work inside the same phase boundary. Reviewer-facing docs should explain the same boundary and artifact story those tests exercise.
+The normal case is:
 
-## Specification Role
+1. run a bounded slice
+2. review it
+3. refine it with targeted feedback
+4. fold that refinement into the same work stream until it is ready
 
-Forward Roll should rely on a generic spec layer rather than one required spec tool.
+The workflow should feel conversational and iterative, not phase-gated.
 
-The spec layer should describe the product we want, the boundaries we intend to preserve, and the workflow ideas that should survive refactors. Planning should respond to that spec layer; it should not replace it. This repository may continue to maintain those specs in `specs/`, but the shipped plugin should treat them as ordinary project documents and explicit references rather than assuming any repo-specific spec tooling exists at runtime.
+## jj Review Model
 
-## jujutsu Role
+Forward Roll should stay jj-native in language and intent.
 
-Forward Roll should remain jj-native in both language and workflow intent.
+The workflow should talk about:
 
-The product should talk about revisions, changes, stacks, and review states directly, and should avoid falling back to Git-shaped assumptions when describing how work is planned, executed, or reviewed.
+- changes
+- revisions
+- stacks
+- squashing
+- splitting
+- reviewable history
+
+The operator should end up with a small number of readable revisions that tell a coherent story. Local agent iteration should be folded into that readable history before finalization whenever practical.
+
+## Planning Model
+
+Plans should support execution, not dominate the user experience.
+
+Forward Roll may still keep planning artifacts that describe larger goals, active work, and queued follow-ups, but the user-facing workflow should center on shaping and executing the next useful bounded slice rather than managing a heavy phase machine.
+
+## Relationship To GSD
+
+Forward Roll should borrow several useful ideas from Get Shit Done:
+
+- explicit durable state
+- bounded work units
+- research before execution
+- verification as part of the loop
+- feedback that updates durable state instead of living as loose chat
+
+Forward Roll should diverge in a few deliberate ways:
+
+- more fluid operator experience
+- stronger jj-first posture
+- lighter user-facing planning ceremony
+- stronger emphasis on personal tooling and external artifact roots
+- explicit support for fast refinement after an agent run
