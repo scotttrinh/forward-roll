@@ -1,0 +1,36 @@
+{
+  "project_name": "forward-roll",
+  "generated_at": "2026-04-03T15:00:28+00:00",
+  "repo_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll",
+  "runtime_path": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/runtime.json",
+  "specs_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/specs",
+  "plans_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/plans",
+  "planning_layout": {
+    "epics_dir": "epics",
+    "epic_file": "EPIC.md",
+    "slices_dir": "slices",
+    "feedback_dir": "feedback",
+    "reviews_dir": "reviews"
+  },
+  "roots": {
+    "specs": {
+      "path": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/specs",
+      "location": "in-repo",
+      "exists": true,
+      "gitignored": false
+    },
+    "plans": {
+      "path": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/plans",
+      "location": "in-repo",
+      "exists": true,
+      "gitignored": false
+    }
+  },
+  "jj": {
+    "available": true,
+    "version": "jj 0.39.0-d9689cd9b51b4139d2842fcf6c30f65f4eed8cd1",
+    "repo_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll",
+    "workflow": "squash"
+  },
+  "testing_posture": "Prefer high-signal end-to-end validation first, property-based tests for invariants, and targeted unit tests only for narrow edge cases."
+}

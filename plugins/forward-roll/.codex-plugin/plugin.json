@@ -1,0 +1,40 @@
+{
+  "name": "forward-roll",
+  "version": "0.1.0",
+  "description": "A personal, jj-first Codex workflow plugin for specs, epics, and bounded development slices.",
+  "author": {
+    "name": "Scott Trinh",
+    "email": "noreply@example.com",
+    "url": "https://github.com/scotttrinh"
+  },
+  "homepage": "https://github.com/scotttrinh/forward-roll",
+  "repository": "https://github.com/scotttrinh/forward-roll",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "jj",
+    "workflow",
+    "planning"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Forward Roll",
+    "shortDescription": "Bootstrap, specify, plan epics, and execute bounded slices.",
+    "longDescription": "Forward Roll is a lightweight Codex plugin for personal development workflows. It keeps specs, epics, slices, feedback, and jj-native execution aligned without imposing a heavy project framework.",
+    "developerName": "Scott Trinh",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/scotttrinh/forward-roll",
+    "privacyPolicyURL": "https://github.com/scotttrinh/forward-roll",
+    "termsOfServiceURL": "https://github.com/scotttrinh/forward-roll",
+    "defaultPrompt": [
+      "Bootstrap Forward Roll for this repo.",
+      "Specify the project at a high level.",
+      "Plan the next epic and bounded slice."
+    ],
+    "brandColor": "#1F6F78"
+  }
+}

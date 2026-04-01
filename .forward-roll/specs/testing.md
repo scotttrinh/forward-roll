@@ -15,6 +15,7 @@ The default testing strategy should prioritize:
 1. high-signal end-to-end tests for primary workflows
 2. property-based tests for invariants and broad input spaces
 3. targeted unit tests for edge cases and tricky logic
+4. static validation for deterministic helper scripts
 
 Forward Roll should avoid defaulting to large numbers of narrow example tests when broader or more meaningful tests would validate the behavior better.
 
@@ -59,8 +60,23 @@ Unit tests should be reserved for edge cases, narrow tricky logic, and failure h
 
 They should not become the default answer to every change.
 
+## Script Validation
+
+Forward Roll should validate its deterministic helper scripts with repository-local tooling.
+
+That validation should include:
+
+- linting with `ruff`
+- type-checking with `mypy`
+- a stdlib-only import check for shipped runtime scripts
+- bundle-shape validation for distributed skills
+
+Those checks are development tooling, not runtime dependencies. They should live at the repository level and may use a local tool environment, while the distributed plugin scripts remain self-contained and stdlib-only.
+
 ## Validation During Execution
 
-Every shaped work slice should name the validation it expects to run.
+Every planned slice should name the validation it expects to run.
 
 The execution workflow should choose the smallest validation set that still gives strong evidence for the scoped change. Validation should be part of the bounded slice definition, not a generic afterthought.
+
+Slice logs should record what validation was actually run so that follow-up agents and epic reviews can compare intent against reality.

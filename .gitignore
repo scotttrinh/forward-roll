@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+.forward-roll/runtime.json
+.forward-roll/plans/
+.forward-roll/research/
