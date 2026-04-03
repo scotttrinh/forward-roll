@@ -47,6 +47,20 @@
     },
     {
       "kind": "static-file",
+      "source": "src/skill-templates/fr-bootstrap/scripts/bootstrap.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-bootstrap/scripts/bootstrap.py"
+      ]
+    },
+    {
+      "kind": "static-file",
+      "source": "src/skill-templates/fr-bootstrap/scripts/validate_skill_bundle.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-bootstrap/scripts/validate_skill_bundle.py"
+      ]
+    },
+    {
+      "kind": "static-file",
       "source": "src/skill-templates/fr-specify/SKILL.md",
       "targets": [
         "plugins/forward-roll/skills/fr-specify/SKILL.md"
@@ -95,6 +109,7 @@
     "The generated distribution bundle should be reproducible from src in CI and local development.",
     "Slice 01-05 extends the shared resolve_context.py source across fr-specify, planning, execution, feedback, and review skill bundles.",
     "Slice 01-06 moves the generated plugin root README and .codex-plugin metadata into src/plugin-shell/ as authored source.",
-    "Slice 01-07 moves every skill SKILL.md into src/skill-templates/ and generates those definitions into the distributed plugin bundle."
+    "Slice 01-07 moves every skill SKILL.md into src/skill-templates/ and generates those definitions into the distributed plugin bundle.",
+    "Slice 01-08 moves the fr-bootstrap authored Python scripts into src/skill-templates/fr-bootstrap/scripts/ and generates them into the distributed plugin bundle."
   ]
 }

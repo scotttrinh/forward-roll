@@ -29,6 +29,12 @@ Slice `01-07` moves the generated skill definitions under source control:
 - `skill-templates/<skill>/SKILL.md` is the authored source of truth for the generated `plugins/forward-roll/skills/<skill>/SKILL.md`
 - `python3 src/build.py` now emits those static skill markdown assets alongside the plugin shell assets and shared helper paths
 
+Slice `01-08` starts moving skill-owned Python entrypoints into the source tree:
+
+- `skill-templates/fr-bootstrap/scripts/bootstrap.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-bootstrap/scripts/bootstrap.py`
+- `skill-templates/fr-bootstrap/scripts/validate_skill_bundle.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-bootstrap/scripts/validate_skill_bundle.py`
+- `python3 src/build.py` now emits those bootstrap skill scripts alongside the generated shell assets, skill markdown, and shared helper paths
+
 Later slices may add:
 
 - more shared authored helper sources
