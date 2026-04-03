@@ -10,12 +10,13 @@
 
 ## Goal
 
-Introduce a source-driven plugin authoring layout that renders templates and shared logic into self-contained Codex skill bundles.
+Introduce a source-driven plugin authoring layout that uses top-level `src/` as the source of truth and builds the distributable plugin bundle at `plugins/forward-roll/`.
 
 ## Why
 
 - The current plugin duplicates identical helper scripts across skills because Codex plugins only expose skill-local files and no top-level shared scripts directory.
 - A deterministic build step would let the repository author shared functionality once while still shipping the self-contained skill layout the plugin runtime expects.
+- A generated plugin bundle under `plugins/forward-roll/` makes local development and CI agree on the same packaging boundary instead of treating the distributed layout as authored source.
 
 ## Spec Impact
 
@@ -25,12 +26,15 @@ Introduce a source-driven plugin authoring layout that renders templates and sha
 
 - Each Forward Roll skill lives directly under plugins/forward-roll/skills/<skill> with its own SKILL.md and stdlib-only scripts/ directory.
 - resolve_context.py is copied verbatim across multiple skills, showing real authored-repo duplication already exists.
-- Plugin metadata points Codex at a static ./skills/ directory, so the shipped layout is the authoring layout today.
+- Plugin metadata points Codex at a static ./skills/ directory, so the distributed plugin layout is still conflated with the authored layout today.
+- The current authored-source scaffolding also lives under plugins/forward-roll/, which means the source and distribution boundaries are still mixed together.
 
 ## Proposed Change Shape
 
-- Add a repository-local source tree for shared script logic, skill templates, and any reusable prompt fragments used during plugin authoring.
-- Add a deterministic build command that materializes plugins/forward-roll/.codex-plugin and plugins/forward-roll/skills from source templates and shared assets.
+- Add a top-level `src/` tree for shared script logic, skill templates, prompt fragments, build metadata, and any other inputs needed to build the plugin from scratch.
+- Move the current authored-source scaffolding out of `plugins/forward-roll/` and into `src/` so the generated plugin bundle has a clean distribution boundary.
+- Add a deterministic build command that materializes a complete `plugins/forward-roll/` bundle, including `.codex-plugin` metadata and generated `skills/`, from source templates and shared assets.
+- Make `plugins/forward-roll/` disposable build output so CI and local development both regenerate the same plugin artifact instead of relying on checked-in generated files as source.
 - Ensure generated skill bundles remain self-contained, stdlib-only, and free of cross-skill runtime imports.
 
 ## Relevant Code References
@@ -50,29 +54,29 @@ Introduce a source-driven plugin authoring layout that renders templates and sha
 
 ## Definition Of Done
 
-- The repository has an explicit source/build layout for authoring plugin assets and generating final skill bundles.
+- The repository has an explicit source/build layout with top-level `src/` as the source of truth and `plugins/forward-roll/` as the generated plugin bundle.
 - At least one currently duplicated helper path is sourced from shared authored code and emitted into multiple generated skills.
-- Documentation explains which directories are source-of-truth, which are generated, and how to rebuild the plugin layout.
+- Documentation explains which directories are source-of-truth, which are generated, and how to rebuild `plugins/forward-roll/` from scratch.
 
 ## Acceptance Criteria
 
-- A contributor can edit shared plugin logic once, run the build step, and see the change reflected in every affected generated skill bundle.
+- A contributor can edit shared plugin logic once under top-level `src/`, run the build step, and see the change reflected in the generated plugin bundle under `plugins/forward-roll/`.
 - Generated skills pass the existing bundle validation checks and preserve the current operator-facing command surface.
-- The build process fails clearly when source templates or required generated outputs are inconsistent.
+- The build process can recreate `plugins/forward-roll/` from source after the generated bundle has been removed or relocated and fails clearly when source templates are inconsistent.
 
 ## Manual Verification
 
-- Modify a shared source asset, run the build command, and confirm the corresponding generated files under plugins/forward-roll/skills change as expected.
+- Move aside or remove the generated plugin bundle under `plugins/forward-roll/`, modify a shared source asset under top-level `src/`, run the build command, and confirm the expected generated files reappear under `plugins/forward-roll/`.
 - Run the skill-bundle validator and Python constraint checks against the generated output.
-- Inspect a generated skill directory to confirm it remains self-contained with no imports from sibling skills or top-level runtime packages.
+- Inspect a generated skill directory under `plugins/forward-roll/skills/` to confirm it remains self-contained with no imports from sibling skills or top-level runtime packages.
 
 ## Slice Plan
 
-- Define the source-of-truth layout and build contract, including what is generated versus hand-authored.
-- Implement the build pipeline and migrate one duplicated helper/template path to shared authored sources.
-- Migrate the remaining duplicated skill assets, then update validation and contributor documentation around generated output.
+- Define the source-of-truth layout and build contract, including top-level `src/` as the full authoring root and `plugins/forward-roll/` as the generated distribution boundary.
+- Move the existing authored-source scaffolding into its eventual home under `src/` and keep the generated bundle boundary explicit.
+- Implement the build pipeline and migrate duplicated helper or template paths to shared authored sources.
+- Update validation, packaging, and contributor documentation around generated output.
 
 ## Open Questions
 
-- Should generated plugin assets remain checked in, or should the build become a required packaging step for release and local validation?
 - Do SKILL.md files need full templating support, or is shared script generation the primary requirement for the first pass?

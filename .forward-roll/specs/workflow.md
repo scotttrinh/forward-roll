@@ -20,6 +20,8 @@ These commands are the product surface. Everything else exists to support them.
 
 The internal plugin authoring workflow may use a repository-local build step to assemble those commands into the final Codex plugin layout, as long as the shipped skill bundles remain self-contained and the operator-facing command surface does not change.
 
+For this repository, the build contract treats top-level `src/` as the complete authoring root and `plugins/forward-roll/` as the generated plugin distribution bundle.
+
 ## `$fr-bootstrap`
 
 Bootstrap establishes the operator's working contract for one project.

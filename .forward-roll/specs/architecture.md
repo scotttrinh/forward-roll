@@ -36,6 +36,14 @@ The repository used to author the plugin may still contain a shared source tree 
 - the build output must preserve the distributed plugin contract: each shipped skill remains self-contained and runnable without cross-skill imports or a plugin-global runtime package
 - source-time sharing is allowed specifically to reduce duplication in the authored repository, not to reintroduce runtime coupling inside the distributed plugin
 
+For the Forward Roll repository itself, the authoring/build contract is:
+
+- `src/` is the source-of-truth root for all version-controlled plugin inputs needed to build the distributable plugin from scratch
+- `plugins/forward-roll/` is the generated distribution root for the plugin bundle, including `.codex-plugin/` metadata and self-contained `skills/` output
+- the build manifest and repository-local build entrypoint should live under `src/` or another authoring-side path rather than inside the generated distribution tree
+- `plugins/forward-roll/` should be safe to regenerate entirely from `src/` in CI or locally
+- the repository should treat top-level `src/` as the long-term source of truth and `plugins/forward-roll/` as generated distribution output
+
 ## Runtime Contract
 
 Before the workflow begins, Forward Roll should resolve a machine-readable runtime contract.
