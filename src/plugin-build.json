@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "source_root": "src",
+  "generated_roots": [
+    "plugins/forward-roll"
+  ],
+  "generated_outputs_checked_in": false,
+  "authoring_roots": {
+    "shared_scripts": "src/shared-scripts",
+    "skill_templates": "src/skill-templates",
+    "prompt_fragments": "src/prompt-fragments"
+  },
+  "generated_assets": [
+    {
+      "kind": "shared-script",
+      "source": "src/shared-scripts/resolve_context.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-plan-epic/scripts/resolve_context.py",
+        "plugins/forward-roll/skills/fr-plan-slice/scripts/resolve_context.py",
+        "plugins/forward-roll/skills/fr-do/scripts/resolve_context.py",
+        "plugins/forward-roll/skills/fr-feedback/scripts/resolve_context.py",
+        "plugins/forward-roll/skills/fr-review/scripts/resolve_context.py"
+      ]
+    }
+  ],
+  "build_entrypoint": "python3 src/build.py",
+  "notes": [
+    "Generated skill bundles must remain self-contained and stdlib-only.",
+    "Authoring-time sharing is allowed only in source roots, not via runtime imports between shipped skills.",
+    "The generated distribution bundle should be reproducible from src in CI and local development.",
+    "Slice 01-04 extends the shared resolve_context.py source across the planning, execution, feedback, and review skill bundles."
+  ]
+}

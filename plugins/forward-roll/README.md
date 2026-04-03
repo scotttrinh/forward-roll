@@ -14,9 +14,19 @@ This first pass turns the repository specs into a usable plugin skeleton:
 
 ## Layout
 
-- `.codex-plugin/plugin.json`: plugin metadata
-- `skills/`: one skill per workflow command
-- `skills/<command>/scripts/*.py`: self-contained standard-library helper scripts for that skill
+- `src/`: repository-local authoring inputs for generated plugin assets
+- `src/plugin-build.json`: deterministic build manifest describing authored roots and generated outputs
+- `src/build.py`: repository-local build entrypoint for validating and materializing generated plugin assets
+- `src/shared-scripts/resolve_context.py`: authored shared helper currently generated into the planning, execution, feedback, and review skills
+- `.codex-plugin/plugin.json`: current generated plugin metadata location
+- `skills/`: current generated skill bundle location
+
+The current contract is:
+
+- top-level `src/` is the source of truth for all inputs required to build the plugin from scratch
+- `plugins/forward-roll/` is the generated distribution output for the plugin bundle
+- `python3 src/build.py` currently regenerates the shared `resolve_context.py` helper for `fr-plan-epic`, `fr-plan-slice`, `fr-do`, `fr-feedback`, and `fr-review` from `src/shared-scripts/resolve_context.py`
+- `plugins/forward-roll/` should be rebuildable locally and in CI as additional generation paths land
 
 ## Local Development
 
@@ -58,4 +68,16 @@ Use `uv` only for development tooling. Runtime scripts stay self-contained and s
 ```bash
 uv run --group dev ruff check plugins/forward-roll/skills
 uv run --group dev mypy plugins/forward-roll/skills
+```
+
+Validate the plugin authoring/build contract:
+
+```bash
+python3 src/build.py --check
+```
+
+Generate the shared authored helper into the targeted skill scripts:
+
+```bash
+python3 src/build.py
 ```
