@@ -25,6 +25,12 @@ Stay above implementation detail. The result should help recreate the project or
 <tooling>
 If the runtime contract does not exist yet, run bootstrap first.
 
+Resolve the current context first:
+
+```bash
+python3 plugins/forward-roll/skills/fr-specify/scripts/resolve_context.py
+```
+
 Create a specification work artifact with:
 
 ```bash
@@ -33,9 +39,10 @@ python3 plugins/forward-roll/skills/fr-specify/scripts/specify.py <slug> --mode 
 </tooling>
 
 <process>
-1. Read the runtime contract before gathering context.
-2. Load only the specs, code, and repository facts that materially constrain the requested specification work.
-3. Create or update the specification work artifact under `<specs_root>/specify/<slug>.md`.
-4. Keep the artifact high-level and decision-oriented; do not dump raw exploration.
-5. Update durable spec documents directly when the resulting project truth is clear enough.
+1. Run `resolve_context.py` first to load the runtime, specs root, and plans root before deeper exploration.
+2. Read the runtime contract before gathering context.
+3. Load only the specs, code, and repository facts that materially constrain the requested specification work.
+4. Create or update the specification work artifact under `<specs_root>/specify/<slug>.md`.
+5. Keep the artifact high-level and decision-oriented; do not dump raw exploration.
+6. Update durable spec documents directly when the resulting project truth is clear enough.
 </process>
