@@ -18,6 +18,8 @@ The main loop is:
 
 These commands are the product surface. Everything else exists to support them.
 
+The internal plugin authoring workflow may use a repository-local build step to assemble those commands into the final Codex plugin layout, as long as the shipped skill bundles remain self-contained and the operator-facing command surface does not change.
+
 ## `$fr-bootstrap`
 
 Bootstrap establishes the operator's working contract for one project.
@@ -111,6 +113,8 @@ Execution should prefer a coherent revision story over preserving every local it
 `$fr-do` should own the end-of-run summary. A separate handoff step is unnecessary when the slice itself can carry both the durable scope definition and the execution history.
 
 Execution helpers should stay local to the skill bundle that uses them. A work slice may update several artifacts, but the runtime implementation should still preserve skill-local script boundaries and stdlib-only execution.
+
+During plugin development, those helpers may be generated from shared source files or templates before distribution. The generated result must still preserve the same skill-local runtime boundary seen by operators.
 
 ## `$fr-feedback`
 

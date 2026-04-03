@@ -16,6 +16,7 @@ That means the plugin may contain:
 
 - static `SKILL.md` files
 - deterministic helper scripts bundled inside each skill's `scripts/` directory
+- generated skill assets produced from repository-local source templates or shared source files
 - optional prompt assets
 - plugin metadata
 
@@ -27,6 +28,13 @@ Each skill should remain a self-contained bundle:
 - `scripts/` contains only the deterministic helpers that skill needs
 - skill scripts do not import code from other skills
 - the plugin runtime does not rely on a shared helper library across skills
+
+The repository used to author the plugin may still contain a shared source tree and a build step.
+
+- shared code, templates, and prompt fragments may live under a repository-local source root such as `src/`
+- build tooling may render templates, inline shared logic, and copy common assets into multiple skill bundles
+- the build output must preserve the distributed plugin contract: each shipped skill remains self-contained and runnable without cross-skill imports or a plugin-global runtime package
+- source-time sharing is allowed specifically to reduce duplication in the authored repository, not to reintroduce runtime coupling inside the distributed plugin
 
 ## Runtime Contract
 
@@ -93,6 +101,8 @@ Avoid:
 - imports between skill bundles
 - long-lived service processes
 - broad implicit assumptions about repository layout
+
+Repository-local development and build tooling may be richer than the shipped runtime when needed to assemble the final plugin layout. That tooling should remain a development concern, produce deterministic outputs, and leave the distributed plugin compatible with constrained execution environments.
 
 Forward Roll may still use repository-local development tooling for authoring and validation, but that tooling should remain outside the distributed plugin runtime. Development helpers may lint and type-check the skill scripts, while the shipped skill scripts themselves remain stdlib-only.
 
