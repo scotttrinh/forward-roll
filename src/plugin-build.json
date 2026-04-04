@@ -68,9 +68,23 @@
     },
     {
       "kind": "static-file",
+      "source": "src/skill-templates/fr-specify/scripts/specify.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-specify/scripts/specify.py"
+      ]
+    },
+    {
+      "kind": "static-file",
       "source": "src/skill-templates/fr-plan-epic/SKILL.md",
       "targets": [
         "plugins/forward-roll/skills/fr-plan-epic/SKILL.md"
+      ]
+    },
+    {
+      "kind": "static-file",
+      "source": "src/skill-templates/fr-plan-epic/scripts/plan_epic.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-plan-epic/scripts/plan_epic.py"
       ]
     },
     {
@@ -82,9 +96,23 @@
     },
     {
       "kind": "static-file",
+      "source": "src/skill-templates/fr-plan-slice/scripts/plan_slice.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-plan-slice/scripts/plan_slice.py"
+      ]
+    },
+    {
+      "kind": "static-file",
       "source": "src/skill-templates/fr-do/SKILL.md",
       "targets": [
         "plugins/forward-roll/skills/fr-do/SKILL.md"
+      ]
+    },
+    {
+      "kind": "static-file",
+      "source": "src/skill-templates/fr-do/scripts/do.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-do/scripts/do.py"
       ]
     },
     {
@@ -96,9 +124,23 @@
     },
     {
       "kind": "static-file",
+      "source": "src/skill-templates/fr-feedback/scripts/feedback.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-feedback/scripts/feedback.py"
+      ]
+    },
+    {
+      "kind": "static-file",
       "source": "src/skill-templates/fr-review/SKILL.md",
       "targets": [
         "plugins/forward-roll/skills/fr-review/SKILL.md"
+      ]
+    },
+    {
+      "kind": "static-file",
+      "source": "src/skill-templates/fr-review/scripts/review.py",
+      "targets": [
+        "plugins/forward-roll/skills/fr-review/scripts/review.py"
       ]
     }
   ],
@@ -110,6 +152,7 @@
     "Slice 01-05 extends the shared resolve_context.py source across fr-specify, planning, execution, feedback, and review skill bundles.",
     "Slice 01-06 moves the generated plugin root README and .codex-plugin metadata into src/plugin-shell/ as authored source.",
     "Slice 01-07 moves every skill SKILL.md into src/skill-templates/ and generates those definitions into the distributed plugin bundle.",
-    "Slice 01-08 moves the fr-bootstrap authored Python scripts into src/skill-templates/fr-bootstrap/scripts/ and generates them into the distributed plugin bundle."
+    "Slice 01-08 moves the fr-bootstrap authored Python scripts into src/skill-templates/fr-bootstrap/scripts/ and generates them into the distributed plugin bundle.",
+    "Slice 01-09 moves the remaining skill-owned Python entrypoints into src/skill-templates/*/scripts/ and generates them into the distributed plugin bundle."
   ]
 }

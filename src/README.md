@@ -8,6 +8,7 @@ This directory is the source-of-truth authoring root for Forward Roll plugin ass
 - future shared script sources, templates, and prompt fragments should live under this tree
 - generated plugin output should be emitted under `../plugins/forward-roll/`
 - `src/` should contain everything needed to rebuild `../plugins/forward-roll/` entirely from scratch
+- `python3 src/build.py` clears declared generated roots before regenerating them so missing directories are recreated and stale generated files cannot survive source removals
 
 ## Scope
 
@@ -35,8 +36,23 @@ Slice `01-08` starts moving skill-owned Python entrypoints into the source tree:
 - `skill-templates/fr-bootstrap/scripts/validate_skill_bundle.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-bootstrap/scripts/validate_skill_bundle.py`
 - `python3 src/build.py` now emits those bootstrap skill scripts alongside the generated shell assets, skill markdown, and shared helper paths
 
+Slice `01-09` finishes moving the remaining skill-owned Python entrypoints into the source tree:
+
+- `skill-templates/fr-specify/scripts/specify.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-specify/scripts/specify.py`
+- `skill-templates/fr-plan-epic/scripts/plan_epic.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-plan-epic/scripts/plan_epic.py`
+- `skill-templates/fr-plan-slice/scripts/plan_slice.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-plan-slice/scripts/plan_slice.py`
+- `skill-templates/fr-do/scripts/do.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-do/scripts/do.py`
+- `skill-templates/fr-feedback/scripts/feedback.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-feedback/scripts/feedback.py`
+- `skill-templates/fr-review/scripts/review.py` is the authored source of truth for the generated `plugins/forward-roll/skills/fr-review/scripts/review.py`
+- `python3 src/build.py` now emits every shipped skill-owned Python entrypoint from `src/skill-templates/` into the generated plugin bundle
+
 Later slices may add:
 
 - more shared authored helper sources
 - prompt fragments
 - broader file generation logic that materializes more of the distributed plugin bundle
+
+## Verification
+
+- `python3 src/build.py --check` validates the authored contract without requiring `plugins/forward-roll/` to already exist
+- `python3 scripts/verify_plugin_rebuild.py` moves aside the generated plugin bundle, rebuilds it from `src/`, checks that every declared target reappears, confirms stale files are removed on rebuild, and validates the shipped skill bundles before restoring the original tree

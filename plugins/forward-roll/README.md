@@ -27,7 +27,7 @@ The current contract is:
 
 - top-level `src/` is the source of truth for all inputs required to build the plugin from scratch
 - `plugins/forward-roll/` is the generated distribution output for the plugin bundle
-- `python3 src/build.py` currently regenerates the plugin root `README.md`, `.codex-plugin/plugin.json`, and the shared `resolve_context.py` helper for `fr-specify`, `fr-plan-epic`, `fr-plan-slice`, `fr-do`, `fr-feedback`, and `fr-review`
+- `python3 src/build.py` clears the declared generated roots, recreates missing generated parent directories, and regenerates the plugin root `README.md`, `.codex-plugin/plugin.json`, every `SKILL.md`, the shared `resolve_context.py` helper, and every shipped skill-owned Python entrypoint
 - `plugins/forward-roll/` should be rebuildable locally and in CI as additional generation paths land
 
 ## Local Development
@@ -78,7 +78,13 @@ Validate the plugin authoring/build contract:
 python3 src/build.py --check
 ```
 
-Generate the authored plugin shell assets and shared helper into the targeted plugin bundle paths:
+Verify that the generated plugin bundle can be rebuilt from a missing `plugins/forward-roll/` tree:
+
+```bash
+python3 scripts/verify_plugin_rebuild.py
+```
+
+Generate the authored plugin shell assets, skill definitions, and skill scripts into the targeted plugin bundle paths:
 
 ```bash
 python3 src/build.py

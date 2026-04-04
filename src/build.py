@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 from pathlib import Path
 from typing import Any, cast
@@ -26,6 +27,48 @@ def manifest_path(script_path: Path) -> Path:
 
 def load_manifest(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def normalized_path(repo_root: Path, raw_path: str) -> Path:
+    return (repo_root / raw_path).resolve()
+
+
+def path_within(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def generated_root_paths(repo_root: Path, manifest: dict[str, object]) -> list[Path]:
+    raw_roots = manifest.get("generated_roots", [])
+    if not isinstance(raw_roots, list):
+        return []
+    return [
+        normalized_path(repo_root, raw_root)
+        for raw_root in raw_roots
+        if isinstance(raw_root, str)
+    ]
+
+
+def clear_generated_roots(repo_root: Path, manifest: dict[str, object]) -> list[Path]:
+    cleared: list[Path] = []
+    repo_root_resolved = repo_root.resolve()
+    generated_roots = sorted(
+        generated_root_paths(repo_root, manifest), key=lambda path: len(path.parts)
+    )
+
+    for generated_root in generated_roots:
+        if not path_within(generated_root, repo_root_resolved):
+            raise ValueError(f"Generated root escapes repository root: {generated_root}")
+        if generated_root == repo_root_resolved:
+            raise ValueError("Generated root cannot be the repository root")
+        if generated_root.exists():
+            shutil.rmtree(generated_root)
+            cleared.append(generated_root)
+
+    return cleared
 
 
 def validate_manifest(manifest: dict[str, object]) -> list[str]:
@@ -82,6 +125,7 @@ def validate_manifest(manifest: dict[str, object]) -> list[str]:
 
 def check_paths(repo_root: Path, manifest: dict[str, object]) -> list[str]:
     errors: list[str] = []
+    repo_root_resolved = repo_root.resolve()
 
     source_root = manifest.get("source_root")
     if isinstance(source_root, str) and not (repo_root / source_root).is_dir():
@@ -94,6 +138,7 @@ def check_paths(repo_root: Path, manifest: dict[str, object]) -> list[str]:
                 errors.append(f"Authoring root '{name}' does not exist: {raw_path}")
 
     generated_assets = manifest.get("generated_assets", [])
+    generated_roots = generated_root_paths(repo_root, manifest)
     if isinstance(generated_assets, list):
         for index, asset in enumerate(generated_assets):
             if not isinstance(asset, dict):
@@ -108,11 +153,20 @@ def check_paths(repo_root: Path, manifest: dict[str, object]) -> list[str]:
                 for target in targets:
                     if not isinstance(target, str):
                         continue
-                    target_parent = (repo_root / target).parent
-                    if not target_parent.exists():
+                    target_path = normalized_path(repo_root, target)
+                    if not path_within(target_path, repo_root_resolved):
                         errors.append(
-                            "Generated asset target parent does not exist: "
-                            f"generated_assets[{index}] -> {target_parent.relative_to(repo_root)}"
+                            "Generated asset target escapes repository root: "
+                            f"generated_assets[{index}] -> {target}"
+                        )
+                        continue
+                    if not any(
+                        path_within(target_path, generated_root)
+                        for generated_root in generated_roots
+                    ):
+                        errors.append(
+                            "Generated asset target is outside declared generated_roots: "
+                            f"generated_assets[{index}] -> {target}"
                         )
 
     return errors
@@ -132,6 +186,7 @@ def render_generated_assets(repo_root: Path, manifest: dict[str, object]) -> lis
         source_text = source.read_text(encoding="utf-8")
         for raw_target in cast(list[str], asset["targets"]):
             target = repo_root / raw_target
+            target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(source_text, encoding="utf-8")
             written.append(target)
     return written
@@ -176,6 +231,12 @@ def main() -> int:
     if args.check:
         print("Build contract validated.")
         return 0
+
+    cleared = clear_generated_roots(repo_root, manifest)
+    if cleared:
+        print("Cleared generated roots:")
+        for path in cleared:
+            print(f"- {path.relative_to(repo_root)}")
 
     written = render_generated_assets(repo_root, manifest)
     if written:
