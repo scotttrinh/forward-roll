@@ -6,7 +6,7 @@
 - runtime: /Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/runtime.json
 - epic: 01
 - slice: 01-07
-- status: planned
+- status: completed
 - epic_dir: /Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/plans/epics/01-plugin-build-pipeline
 
 ## Goal

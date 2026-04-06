@@ -6,7 +6,7 @@
 - runtime: /Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/runtime.json
 - epic: 01
 - slug: plugin-build-pipeline
-- status: planned
+- status: completed
 
 ## Goal
 
