@@ -1,6 +1,6 @@
 {
   "project_name": "forward-roll",
-  "generated_at": "2026-04-03T15:00:28+00:00",
+  "generated_at": "2026-07-16T18:43:14+00:00",
   "repo_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll",
   "runtime_path": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/runtime.json",
   "specs_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/specs",
@@ -32,5 +32,14 @@
     "repo_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll",
     "workflow": "squash"
   },
-  "testing_posture": "Prefer high-signal end-to-end validation first, property-based tests for invariants, and targeted unit tests only for narrow edge cases."
+  "testing_posture": "Prefer high-signal end-to-end validation first, property-based tests for invariants, and targeted unit tests only for narrow edge cases.",
+  "omp": {
+    "config_path": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.omp/config.yml",
+    "isolation_mode": "none",
+    "agents_discoverable": [
+      "fr-impl",
+      "fr-review"
+    ],
+    "codex_agents_present": []
+  }
 }

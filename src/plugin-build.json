@@ -150,6 +150,14 @@
       "source": "src/plugin-shell/.omp-plugin/marketplace.json",
       "target": ".omp-plugin/marketplace.json",
       "repo_root": true
+    },
+    {
+      "source": "src/agent-templates/fr-impl.omp.md",
+      "target": "plugins/forward-roll/agents/fr-impl.md"
+    },
+    {
+      "source": "src/agent-templates/fr-review.omp.md",
+      "target": "plugins/forward-roll/agents/fr-review.md"
     }
   ],
   "build_entrypoint": "python3 src/build.py",
