@@ -52,6 +52,17 @@ def generated_root_paths(repo_root: Path, manifest: dict[str, object]) -> list[P
     ]
 
 
+def repo_root_output_paths(repo_root: Path, manifest: dict[str, object]) -> list[Path]:
+    raw_outputs = manifest.get("repo_root_outputs", [])
+    if not isinstance(raw_outputs, list):
+        return []
+    return [
+        normalized_path(repo_root, raw_output)
+        for raw_output in raw_outputs
+        if isinstance(raw_output, str)
+    ]
+
+
 def clear_generated_roots(repo_root: Path, manifest: dict[str, object]) -> list[Path]:
     cleared: list[Path] = []
     repo_root_resolved = repo_root.resolve()
@@ -67,6 +78,19 @@ def clear_generated_roots(repo_root: Path, manifest: dict[str, object]) -> list[
         if generated_root.exists():
             shutil.rmtree(generated_root)
             cleared.append(generated_root)
+
+    for output in repo_root_output_paths(repo_root, manifest):
+        if not path_within(output, repo_root_resolved):
+            raise ValueError(f"Repo-root output escapes repository root: {output}")
+        if output == repo_root_resolved:
+            raise ValueError("Repo-root output cannot be the repository root")
+        if not output.exists():
+            continue
+        if output.is_dir():
+            shutil.rmtree(output)
+        else:
+            output.unlink()
+        cleared.append(output)
 
     return cleared
 
@@ -101,6 +125,13 @@ def validate_manifest(manifest: dict[str, object]) -> list[str]:
     if not isinstance(manifest.get("generated_outputs_checked_in"), bool):
         errors.append("'generated_outputs_checked_in' must be a boolean")
 
+    repo_root_outputs = manifest.get("repo_root_outputs", [])
+    if "repo_root_outputs" in manifest and (
+        not isinstance(repo_root_outputs, list)
+        or not all(isinstance(path, str) for path in repo_root_outputs)
+    ):
+        errors.append("'repo_root_outputs' must be a list of strings when present")
+
     generated_assets = manifest.get("generated_assets", [])
     if not isinstance(generated_assets, list):
         errors.append("'generated_assets' must be a list when present")
@@ -110,15 +141,30 @@ def validate_manifest(manifest: dict[str, object]) -> list[str]:
                 errors.append(f"'generated_assets[{index}]' must be an object")
                 continue
             source = asset.get("source")
-            targets = asset.get("targets")
             if not isinstance(source, str):
                 errors.append(f"'generated_assets[{index}].source' must be a string")
-            if not isinstance(targets, list) or not all(
-                isinstance(target, str) for target in targets
-            ):
+            if "targets" in asset and "target" in asset:
                 errors.append(
-                    f"'generated_assets[{index}].targets' must be a list of strings"
+                    f"'generated_assets[{index}]' must not set both 'target' and 'targets'"
                 )
+            elif "targets" in asset:
+                targets = asset.get("targets")
+                if not isinstance(targets, list) or not all(
+                    isinstance(target, str) for target in targets
+                ):
+                    errors.append(
+                        f"'generated_assets[{index}].targets' must be a list of strings"
+                    )
+            elif "target" in asset:
+                target = asset.get("target")
+                if not isinstance(target, str):
+                    errors.append(f"'generated_assets[{index}].target' must be a string")
+            else:
+                errors.append(
+                    f"'generated_assets[{index}]' must set 'target' or 'targets'"
+                )
+            if "repo_root" in asset and not isinstance(asset["repo_root"], bool):
+                errors.append(f"'generated_assets[{index}].repo_root' must be a boolean")
 
     return errors
 
@@ -144,30 +190,36 @@ def check_paths(repo_root: Path, manifest: dict[str, object]) -> list[str]:
             if not isinstance(asset, dict):
                 continue
             source = asset.get("source")
-            targets = asset.get("targets")
             if isinstance(source, str) and not (repo_root / source).is_file():
                 errors.append(
                     f"Generated asset source does not exist: generated_assets[{index}] -> {source}"
                 )
-            if isinstance(targets, list):
-                for target in targets:
-                    if not isinstance(target, str):
-                        continue
-                    target_path = normalized_path(repo_root, target)
-                    if not path_within(target_path, repo_root_resolved):
-                        errors.append(
-                            "Generated asset target escapes repository root: "
-                            f"generated_assets[{index}] -> {target}"
-                        )
-                        continue
-                    if not any(
-                        path_within(target_path, generated_root)
-                        for generated_root in generated_roots
-                    ):
-                        errors.append(
-                            "Generated asset target is outside declared generated_roots: "
-                            f"generated_assets[{index}] -> {target}"
-                        )
+            repo_root_asset = bool(asset.get("repo_root"))
+            for target in asset_targets(cast(dict[str, Any], asset)):
+                target_path = normalized_path(repo_root, target)
+                if not path_within(target_path, repo_root_resolved):
+                    errors.append(
+                        "Generated asset target escapes repository root: "
+                        f"generated_assets[{index}] -> {target}"
+                    )
+                    continue
+                if repo_root_asset:
+                    continue
+                if not any(
+                    path_within(target_path, generated_root)
+                    for generated_root in generated_roots
+                ):
+                    errors.append(
+                        "Generated asset target is outside declared generated_roots: "
+                        f"generated_assets[{index}] -> {target}"
+                    )
+
+    for output in repo_root_output_paths(repo_root, manifest):
+        if not path_within(output, repo_root_resolved):
+            errors.append(
+                "Repo-root output escapes repository root: "
+                f"repo_root_outputs -> {output}"
+            )
 
     return errors
 
@@ -179,12 +231,22 @@ def generated_assets(manifest: dict[str, object]) -> list[dict[str, Any]]:
     return [cast(dict[str, Any], asset) for asset in assets if isinstance(asset, dict)]
 
 
+def asset_targets(asset: dict[str, Any]) -> list[str]:
+    targets = asset.get("targets")
+    if isinstance(targets, list):
+        return [target for target in targets if isinstance(target, str)]
+    target = asset.get("target")
+    if isinstance(target, str):
+        return [target]
+    return []
+
+
 def render_generated_assets(repo_root: Path, manifest: dict[str, object]) -> list[Path]:
     written: list[Path] = []
     for asset in generated_assets(manifest):
         source = repo_root / str(asset["source"])
         source_text = source.read_text(encoding="utf-8")
-        for raw_target in cast(list[str], asset["targets"]):
+        for raw_target in asset_targets(asset):
             target = repo_root / raw_target
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(source_text, encoding="utf-8")
@@ -222,6 +284,10 @@ def main() -> int:
     print("Generated roots:")
     for raw_path in manifest["generated_roots"]:
         print(f"- {raw_path}")
+    if manifest.get("repo_root_outputs"):
+        print("Repo-root outputs:")
+        for raw_path in manifest["repo_root_outputs"]:
+            print(f"- {raw_path}")
     print(
         "Generated outputs checked in: "
         + ("yes" if manifest["generated_outputs_checked_in"] else "no")
@@ -234,7 +300,7 @@ def main() -> int:
 
     cleared = clear_generated_roots(repo_root, manifest)
     if cleared:
-        print("Cleared generated roots:")
+        print("Cleared generated outputs:")
         for path in cleared:
             print(f"- {path.relative_to(repo_root)}")
 

@@ -4,6 +4,9 @@
   "generated_roots": [
     "plugins/forward-roll"
   ],
+  "repo_root_outputs": [
+    ".omp-plugin/marketplace.json"
+  ],
   "generated_outputs_checked_in": false,
   "authoring_roots": {
     "plugin_shell": "src/plugin-shell",
@@ -142,6 +145,11 @@
       "targets": [
         "plugins/forward-roll/skills/fr-review/scripts/review.py"
       ]
+    },
+    {
+      "source": "src/plugin-shell/.omp-plugin/marketplace.json",
+      "target": ".omp-plugin/marketplace.json",
+      "repo_root": true
     }
   ],
   "build_entrypoint": "python3 src/build.py",

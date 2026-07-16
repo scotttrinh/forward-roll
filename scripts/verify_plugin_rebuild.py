@@ -43,11 +43,13 @@ def generated_targets(repo_root: Path) -> list[Path]:
         if not isinstance(asset, dict):
             continue
         raw_targets = asset.get("targets", [])
-        if not isinstance(raw_targets, list):
-            continue
-        for raw_target in raw_targets:
-            if isinstance(raw_target, str):
-                targets.append(repo_root / raw_target)
+        if isinstance(raw_targets, list):
+            for raw_target in raw_targets:
+                if isinstance(raw_target, str):
+                    targets.append(repo_root / raw_target)
+        raw_target = asset.get("target")
+        if isinstance(raw_target, str):
+            targets.append(repo_root / raw_target)
     return targets
 
 
@@ -56,6 +58,23 @@ def assert_targets_exist(targets: list[Path], repo_root: Path) -> None:
     if missing:
         raise SystemExit(
             "Generated rebuild is incomplete. Missing target(s):\n"
+            + "\n".join(f"- {path}" for path in missing)
+        )
+
+
+def repo_root_output_paths(repo_root: Path) -> list[Path]:
+    manifest = json.loads((repo_root / "src" / "plugin-build.json").read_text(encoding="utf-8"))
+    raw_outputs = manifest.get("repo_root_outputs", [])
+    if not isinstance(raw_outputs, list):
+        return []
+    return [repo_root / raw_output for raw_output in raw_outputs if isinstance(raw_output, str)]
+
+
+def assert_repo_root_outputs_exist(outputs: list[Path], repo_root: Path) -> None:
+    missing = [output.relative_to(repo_root) for output in outputs if not output.exists()]
+    if missing:
+        raise SystemExit(
+            "Generated rebuild is missing repo-root output(s):\n"
             + "\n".join(f"- {path}" for path in missing)
         )
 
@@ -81,6 +100,7 @@ def main() -> int:
     plugin_root = repo_root / "plugins" / "forward-roll"
     plugin_parent = plugin_root.parent
     targets = generated_targets(repo_root)
+    repo_root_outputs = repo_root_output_paths(repo_root)
 
     with tempfile.TemporaryDirectory(
         dir=plugin_parent, prefix="forward-roll-rebuild-check-"
@@ -88,17 +108,29 @@ def main() -> int:
         backup_root = Path(temp_dir) / "forward-roll-backup"
         had_existing_plugin = plugin_root.exists()
 
+        repo_root_output_backups: dict[Path, bytes] = {}
+        for output in repo_root_outputs:
+            if output.exists():
+                repo_root_output_backups[output] = output.read_bytes()
+
         if had_existing_plugin:
             plugin_root.rename(backup_root)
 
         try:
             run(repo_root, "python3", "src/build.py")
             assert_targets_exist(targets, repo_root)
+            assert_repo_root_outputs_exist(repo_root_outputs, repo_root)
             validate_skills(repo_root)
+
             stale_file = plugin_root / "stale-file.txt"
             stale_file.write_text("stale\n", encoding="utf-8")
+            for output in repo_root_outputs:
+                if output.exists():
+                    output.unlink()
+
             run(repo_root, "python3", "src/build.py")
             assert_targets_exist(targets, repo_root)
+            assert_repo_root_outputs_exist(repo_root_outputs, repo_root)
             assert_path_missing(stale_file, repo_root)
             validate_skills(repo_root)
             print("Rebuild verification succeeded.")
@@ -107,6 +139,12 @@ def main() -> int:
                 shutil.rmtree(plugin_root)
             if had_existing_plugin:
                 backup_root.rename(plugin_root)
+            for output, data in repo_root_output_backups.items():
+                output.parent.mkdir(parents=True, exist_ok=True)
+                output.write_bytes(data)
+            for output in repo_root_outputs:
+                if output not in repo_root_output_backups and output.exists():
+                    output.unlink()
 
     return 0
 
