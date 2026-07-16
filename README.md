@@ -32,15 +32,17 @@ It is intentionally not a full project-management system. It is a development lo
 
 ## Workflow
 
-Forward Roll uses seven Codex skills:
+Forward Roll ships as an **omp-first** plugin (Codex remains a secondary target). Seven skills structure the loop, and two custom omp task agents do the work under `fr-do`'s orchestration:
 
 - `fr-bootstrap`: resolve the repo's runtime contract and artifact locations
 - `fr-specify`: create or refine durable high-level specs
 - `fr-plan-epic`: define one reviewable deliverable and its slice breakdown
 - `fr-plan-slice`: carve the next small execution unit out of the epic
-- `fr-do`: execute exactly one slice, validate it, and log the outcome
-- `fr-review`: compare epic intent against the current implementation
+- `fr-do`: orchestrate one slice — dispatch `fr-impl`, then `fr-review`, and materialize a single reviewable `jj` change only on clean review
+- `fr-review`: at epic completion, dispatch the `fr-review` agent across the assembled stack against the epic's definition of done
 - `fr-feedback`: turn review or operator feedback into one explicit durable outcome
+
+The execution agents ship on both targets: `fr-impl` (TDD implementer, edit-capable) and `fr-review` (spec-compliance reviewer, read-only). On omp they bundle inside the plugin (`plugins/forward-roll/agents/*.md`); on Codex they live at repo-root `.codex/agents/*.toml` (Codex plugins cannot bundle subagents). Non-isolated dispatch is pinned by `.omp/config.yml` (`task.isolation.mode: none`) so subagents share the working copy, and the omp catalog resolves at repo-root `.omp-plugin/marketplace.json`.
 
 The intended loop is:
 
@@ -84,17 +86,17 @@ Key paths:
 
 ## How You Use It
 
-The primary interface is not "run these Python scripts by hand." The primary interface is talking to Codex and invoking the workflow skills.
+The primary interface is not "run these Python scripts by hand." The primary interface is talking to omp and invoking the workflow skills (Codex remains supported as a secondary target).
 
 A typical operator flow looks more like:
 
-1. Ask Codex to run `fr-bootstrap` for the current repo.
-2. Ask Codex to run `fr-specify` to discover or sharpen project specs.
-3. Ask Codex to run `fr-plan-epic` for the next meaningful deliverable.
-4. Ask Codex to run `fr-plan-slice` for the next bounded piece of work.
-5. Ask Codex to run `fr-do` on that slice.
-6. Ask Codex to run `fr-review` when the epic is ready for comparison against implementation.
-7. Ask Codex to run `fr-feedback` to turn review output into an explicit next state.
+1. Ask omp to run `fr-bootstrap` for the current repo.
+2. Ask omp to run `fr-specify` to discover or sharpen project specs.
+3. Ask omp to run `fr-plan-epic` for the next meaningful deliverable.
+4. Ask omp to run `fr-plan-slice` for the next bounded piece of work.
+5. Ask omp to run `fr-do` on that slice.
+6. Ask omp to run `fr-review` when the epic is ready for comparison against implementation.
+7. Ask omp to run `fr-feedback` to turn review output into an explicit next state.
 
 The scripts in [plugins/forward-roll](/Users/scotttrinh/github.com/scotttrinh/forward-roll/plugins/forward-roll) are the deterministic helpers inside that agent loop. They exist to make artifact creation and updates predictable, portable, and less dependent on free-form model output.
 
@@ -182,7 +184,7 @@ Choose something else when:
 
 ## Status
 
-This repository is the first implementation pass. The plugin skeleton exists, the workflow shape is defined, and the repo is currently focused on making the specs, artifacts, and skill contracts coherent enough to use and iterate on.
+The plugin has pivoted to an omp-first, subagent-driven workflow: `fr-do` orchestrates non-isolated `fr-impl`/`fr-review` task agents and gates each slice's `jj` changeset on clean review (Codex remains a best-effort secondary target). This repository is the first implementation pass of that workflow; the repo is currently focused on making the specs, artifacts, and skill/agent contracts coherent enough to use and iterate on.
 
 ## References
 

@@ -1,6 +1,6 @@
 # Forward Roll
 
-Forward Roll is a Codex plugin for a personal, jj-first development loop.
+Forward Roll is an omp-first plugin for a personal, jj-first, subagent-driven development loop (Codex is a secondary target).
 
 This first pass turns the repository specs into a usable plugin skeleton:
 
@@ -8,26 +8,29 @@ This first pass turns the repository specs into a usable plugin skeleton:
 - `fr-specify` creates or sharpens high-level project specs.
 - `fr-plan-epic` defines a reviewable deliverable and its slice breakdown.
 - `fr-plan-slice` turns one epic into a bounded execution slice.
-- `fr-do` executes a slice and appends a timestamped run summary to the slice log.
+- `fr-do` orchestrates one slice by dispatching `fr-impl` then `fr-review`, gating the `jj` changeset on clean review and appending a run summary.
 - `fr-feedback` records operator or review-driven changes as durable workflow state.
-- `fr-review` compares epic intent against the current implementation.
+- `fr-review` dispatches the `fr-review` agent across the epic stack against its definition of done.
+
+Two custom task agents do the work: `fr-impl` (TDD implementer) and `fr-review` (spec-compliance reviewer). On omp they bundle in `plugins/forward-roll/agents/`; on Codex they ship to repo-root `.codex/agents/` (Codex plugins cannot bundle subagents).
 
 ## Layout
 
-- `src/`: repository-local authoring inputs for generated plugin assets
-- `src/plugin-build.json`: deterministic build manifest describing authored roots and generated outputs
-- `src/build.py`: repository-local build entrypoint for validating and materializing generated plugin assets
-- `src/shared-scripts/resolve_context.py`: authored shared helper currently generated into `fr-specify`, the planning skills, and the execution, feedback, and review skills
-- `src/plugin-shell/README.md`: authored source for the generated plugin root README
-- `src/plugin-shell/.codex-plugin/plugin.json`: authored source for the generated plugin metadata
-- `.codex-plugin/plugin.json`: current generated plugin metadata location
-- `skills/`: current generated skill bundle location
+- `src/`: authoring inputs (source of truth) for all generated plugin assets
+- `src/plugin-build.json`: deterministic build manifest (generated assets, roots, and repo-root outputs)
+- `src/build.py`: build entrypoint that validates and materializes generated assets
+- `src/skill-templates/`: authored `SKILL.md` and skill scripts, generated into `plugins/forward-roll/skills/`
+- `src/agent-templates/`: authored `fr-impl`/`fr-review` agent sources (omp `.omp.md` and Codex `.codex.toml`)
+- `src/shared-scripts/resolve_context.py`: shared helper generated into the execution, planning, and review skills
+- `src/plugin-shell/.omp-plugin/marketplace.json`: omp catalog source, generated to repo-root `.omp-plugin/marketplace.json`
+- `src/plugin-shell/.codex-plugin/plugin.json`: Codex plugin manifest source
+- `.omp/config.yml`: pins `task.isolation.mode: none` for non-isolated subagent dispatch
 
 The current contract is:
 
 - top-level `src/` is the source of truth for all inputs required to build the plugin from scratch
 - `plugins/forward-roll/` is the generated distribution output for the plugin bundle
-- `python3 src/build.py` clears the declared generated roots, recreates missing generated parent directories, and regenerates the plugin root `README.md`, `.codex-plugin/plugin.json`, every `SKILL.md`, the shared `resolve_context.py` helper, and every shipped skill-owned Python entrypoint
+- `python3 src/build.py` clears the declared generated roots and repo-root outputs, then regenerates the plugin `README.md`, `.codex-plugin/plugin.json`, every `SKILL.md`, the two agent definitions, the shared `resolve_context.py` helper, every shipped skill script, the repo-root omp catalog (`.omp-plugin/marketplace.json`), and the Codex agents (`.codex/agents/*.toml`)
 - `plugins/forward-roll/` should be rebuildable locally and in CI as additional generation paths land
 
 ## Local Development

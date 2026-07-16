@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 .forward-roll/runtime.json
 .forward-roll/research/
+.superpowers/
