@@ -16,6 +16,51 @@ DEFAULT_TESTING_POSTURE = (
 )
 
 
+FORWARD_ROLL_AGENTS = ("fr-impl", "fr-review")
+
+
+def read_omp_isolation_mode(config_path: Path) -> str | None:
+    scope: list[tuple[int, str]] = []
+    for raw in config_path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].rstrip()
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip())
+        stripped = line.strip()
+        while scope and indent <= scope[-1][0]:
+            scope.pop()
+        if stripped.endswith(":"):
+            scope.append((indent, stripped[:-1]))
+            continue
+        keys = [name for _, name in scope]
+        if keys == ["task", "isolation"] and stripped.startswith("mode:"):
+            value = stripped.split(":", 1)[1].strip().strip("\"'")
+            return value or None
+    return None
+
+
+def detect_omp(repo_root: Path) -> dict[str, object]:
+    config_path = repo_root / ".omp" / "config.yml"
+    if config_path.is_file():
+        isolation_mode = read_omp_isolation_mode(config_path) or "unset"
+    else:
+        isolation_mode = "unset"
+    agents_dir = repo_root / "plugins" / "forward-roll" / "agents"
+    codex_agents_dir = repo_root / ".codex" / "agents"
+    return {
+        "config_path": str(config_path),
+        "isolation_mode": isolation_mode,
+        "agents_discoverable": [
+            name for name in FORWARD_ROLL_AGENTS if (agents_dir / f"{name}.md").is_file()
+        ],
+        "codex_agents_present": [
+            name
+            for name in FORWARD_ROLL_AGENTS
+            if (codex_agents_dir / f"{name}.toml").is_file()
+        ],
+    }
+
+
 def now_iso() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
@@ -168,6 +213,7 @@ def main() -> int:
         },
         "jj": detect_jj(repo_root),
         "testing_posture": args.testing_posture or DEFAULT_TESTING_POSTURE,
+        "omp": detect_omp(repo_root),
     }
 
     write_json(runtime_path, runtime)
@@ -180,6 +226,33 @@ def main() -> int:
     jj = cast(dict[str, object], runtime["jj"])
     print(f"jj_available: {jj['available']}")
     print(f"jj_workflow: {runtime_text(jj['workflow'])}")
+    omp = cast(dict[str, object], runtime["omp"])
+    print(f"omp_isolation_mode: {omp['isolation_mode']}")
+    agents_discoverable = cast(list[str], omp["agents_discoverable"])
+    print(
+        "omp_agents_discoverable: "
+        + (", ".join(agents_discoverable) if agents_discoverable else "(none)")
+    )
+    codex_agents = cast(list[str], omp["codex_agents_present"])
+    if codex_agents:
+        print(
+            "codex_agents_present: " + ", ".join(codex_agents) + " at .codex/agents/"
+        )
+        print(
+            "codex_note: copy .codex/agents/*.toml to ~/.codex/agents/ "
+            "when using Codex outside this repo"
+        )
+    else:
+        print("codex_agents_present: (none)")
+
+    if omp["isolation_mode"] != "none":
+        print(
+            "\nForward Roll needs omp task.isolation.mode set to 'none' so "
+            "fr-impl/fr-review subagents share the working copy."
+        )
+        print("Add the following to .omp/config.yml and reload omp:\n")
+        print("task:\n  isolation:\n    mode: none\n")
+        return 1
     return 0
 
 

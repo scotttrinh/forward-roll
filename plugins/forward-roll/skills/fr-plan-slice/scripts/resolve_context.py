@@ -55,6 +55,51 @@ def relative_to_root(path: Path, repo_root: Path) -> str:
         return str(resolved)
 
 
+FORWARD_ROLL_AGENTS = ("fr-impl", "fr-review")
+
+
+def read_omp_isolation_mode(config_path: Path) -> str | None:
+    scope: list[tuple[int, str]] = []
+    for raw in config_path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].rstrip()
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip())
+        stripped = line.strip()
+        while scope and indent <= scope[-1][0]:
+            scope.pop()
+        if stripped.endswith(":"):
+            scope.append((indent, stripped[:-1]))
+            continue
+        keys = [name for _, name in scope]
+        if keys == ["task", "isolation"] and stripped.startswith("mode:"):
+            value = stripped.split(":", 1)[1].strip().strip("\"'")
+            return value or None
+    return None
+
+
+def omp_environment(repo_root: Path) -> dict[str, object]:
+    config_path = repo_root / ".omp" / "config.yml"
+    if config_path.is_file():
+        isolation_mode = read_omp_isolation_mode(config_path) or "unset"
+    else:
+        isolation_mode = "unset"
+    agents_dir = repo_root / "plugins" / "forward-roll" / "agents"
+    codex_agents_dir = repo_root / ".codex" / "agents"
+    return {
+        "config_path": str(config_path),
+        "isolation_mode": isolation_mode,
+        "agents_discoverable": [
+            name for name in FORWARD_ROLL_AGENTS if (agents_dir / f"{name}.md").is_file()
+        ],
+        "codex_agents_present": [
+            name
+            for name in FORWARD_ROLL_AGENTS
+            if (codex_agents_dir / f"{name}.toml").is_file()
+        ],
+    }
+
+
 def list_markdown_files(root: Path, repo_root: Path) -> list[dict[str, str]]:
     if not root.exists():
         return []
@@ -176,6 +221,7 @@ def main() -> int:
         "specs_root": str(specs_root),
         "plans_root": str(plans_root),
         "planning_layout": planning_layout,
+        "omp": omp_environment(repo_root),
         "filters": {
             "epic_id": epic_id,
             "slice_id": slice_id,
