@@ -5,7 +5,9 @@
     "plugins/forward-roll"
   ],
   "repo_root_outputs": [
-    ".omp-plugin/marketplace.json"
+    ".omp-plugin/marketplace.json",
+    ".codex/agents/fr-impl.toml",
+    ".codex/agents/fr-review.toml"
   ],
   "generated_outputs_checked_in": false,
   "authoring_roots": {
@@ -158,6 +160,16 @@
     {
       "source": "src/agent-templates/fr-review.omp.md",
       "target": "plugins/forward-roll/agents/fr-review.md"
+    },
+    {
+      "source": "src/agent-templates/fr-impl.codex.toml",
+      "target": ".codex/agents/fr-impl.toml",
+      "repo_root": true
+    },
+    {
+      "source": "src/agent-templates/fr-review.codex.toml",
+      "target": ".codex/agents/fr-review.toml",
+      "repo_root": true
     }
   ],
   "build_entrypoint": "python3 src/build.py",
