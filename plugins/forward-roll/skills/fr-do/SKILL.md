@@ -1,34 +1,38 @@
 ---
 name: "fr-do"
-description: "Execute one bounded work slice with clear validation and jj review boundaries"
+description: "Execute one planned slice by orchestrating fr-impl and fr-review subagents, gating the jj changeset on clean review"
 metadata:
-  short-description: "Do one planned slice"
+  short-description: "Orchestrate one slice via subagents"
 ---
 
 <objective>
-Execute exactly one planned slice, keep the work bounded, run the required validation, append a timestamped log entry to the slice file, and leave the result in a reviewable `jj` state.
+Execute exactly one planned slice by orchestrating two omp task subagents — fr-impl (TDD implementer) and fr-review (spec-compliance reviewer) — and materialize the result as a single reviewable jj change only after review returns clean. The main session is the orchestrator and does not write code itself.
 </objective>
 
 <tooling>
 Resolve the current context first:
 
-```bash
-python3 plugins/forward-roll/skills/fr-do/scripts/resolve_context.py --epic-id <epic-id> --slice-id <slice-id>
-```
+    python3 plugins/forward-roll/skills/fr-do/scripts/resolve_context.py --epic-id <epic-id> --slice-id <slice-id>
 
-Append a run summary to a slice with:
+Append a run summary after the changeset materializes:
 
-```bash
-python3 plugins/forward-roll/skills/fr-do/scripts/do.py --slice <slice-file> --summary "<what happened>"
-```
+    python3 plugins/forward-roll/skills/fr-do/scripts/do.py --slice <slice-file> --summary "<what happened>"
 </tooling>
 
 <process>
-1. Run `resolve_context.py` first to load the runtime, specs root, plans root, and the filtered epic or slice files that scope this execution.
-2. Read the runtime contract, parent epic, and active slice before editing code.
-3. Perform only the scoped work.
-4. Update specs or plan artifacts when the work changes product or workflow expectations.
-5. Run the smallest validation set that still gives strong evidence for the slice.
-6. Append a timestamped execution entry directly under the slice `Log` heading, including validation and next-step notes when relevant.
-7. Preserve a readable `jj` history by folding scratch iteration into the intended change with `jj squash` when practical.
+1. Run resolve_context.py; read the runtime contract, parent epic, and the active slice before acting.
+2. Verify the omp precondition: task.isolation.mode is none, so subagents share the working copy. If it is not none, fix .omp/config.yml and reload before continuing. Confirm fr-impl and fr-review are discoverable.
+3. Name the intended review unit: jj describe the working-copy change with the slice's intent. Implementation work will accumulate in @; it is not yet a finalized changeset.
+4. Dispatch a NON-ISOLATED fr-impl task (do not pass isolated:true). Pass the full slice contract: goal, in-scope/out-of-scope, TDD steps, acceptance criteria, and validation strategy. Its edits land in @. Await its structured result (files_changed, tests_written, validation_result, scope_adherence, deviations).
+5. Dispatch a NON-ISOLATED fr-review task. It validates @ against the slice acceptance criteria + spec/epic intent + TDD coverage, returning verdict + findings.
+6. Gate on the verdict:
+   - ship → jj squash the @ work into the described change (the review unit). Append the slice run-log via do.py. Advance to the next slice.
+   - revise → re-dispatch fr-impl with the specific findings (targeted fixes), then re-dispatch fr-review. Cap revision rounds at the slice's stop condition; on exhaustion, escalate to the operator rather than spinning.
+7. You own ALL jj history surgery. Subagents never run jj. Fold local scratch iteration into the single described change before final review so the unit stays reviewable.
 </process>
+
+<notes>
+- Slices execute sequentially: a non-isolated impl subagent edits @, so parallel impl subagents would clobber it. Use read-only scout subagents for any planning-time research instead.
+- If fr-impl reports scope-creep-noted, decide explicitly whether to widen the slice (update the slice artifact) or trim the work before reviewing.
+- The changeset must NOT appear in jj history as finalized until fr-review returns ship.
+</notes>
