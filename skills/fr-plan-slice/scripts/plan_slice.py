@@ -68,6 +68,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("slice_id", help="Slice identifier within the epic, for example 02")
     parser.add_argument("slug", help="Slice slug")
     parser.add_argument("--runtime-path", help="Path to the runtime contract JSON")
+    parser.add_argument(
+        "--archetype",
+        default="feature",
+        choices=["feature", "bugfix", "refactor", "perf", "visual-parity"],
+        help="Slice execution archetype (feature, bugfix, refactor, perf, visual-parity)",
+    )
     parser.add_argument("--goal", help="Goal of the next slice")
     parser.add_argument("--epic-slug", help="Epic slug used in the directory name")
     parser.add_argument("--why-now", help="Why this slice should happen now")
@@ -108,12 +114,17 @@ def main() -> int:
 - runtime: {runtime_path}
 - epic: {args.epic_id}
 - slice: {args.epic_id}-{args.slice_id}
+- archetype: {args.archetype}
 - status: planned
 - epic_dir: {epic_dir}
 
 ## Goal
 
 {args.goal or '[define the goal of the next bounded slice]'}
+
+## Archetype
+
+- {args.archetype}
 
 ## Why Now
 

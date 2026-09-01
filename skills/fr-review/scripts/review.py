@@ -57,6 +57,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--implemented", action="append", help="What is implemented now")
     parser.add_argument("--accepted", action="append", help="Acceptance criteria satisfied")
     parser.add_argument("--validation", action="append", help="Validation that exists")
+    parser.add_argument("--hygiene", action="append", help="Comment hygiene and anti-slop verification notes")
     parser.add_argument("--uncertainty", action="append", help="Remaining uncertainty")
     parser.add_argument("--follow-up", action="append", help="Follow-up implied by review")
     return parser
@@ -98,6 +99,10 @@ Read the parent epic and compare its stated intent against the current implement
 ## Validation Evidence
 
 {render_list(args.validation, "Record the validation that actually ran.")}
+
+## Anti-Slop & Comment Hygiene
+
+{render_list(args.hygiene, "Confirm absence of narrative AI comments, dead code, defensive bloat, and verify minimal blast radius.")}
 
 ## Remaining Uncertainty
 

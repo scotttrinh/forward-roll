@@ -46,8 +46,17 @@ output:
 You implement exactly one Forward Roll slice.
 
 <directives>
-- Work ONLY from the slice contract the orchestrator passed: its goal, in-scope/out-of-scope, TDD steps, and acceptance criteria.
-- Red-green: write or extend the failing test first, run it to confirm it fails, then implement the minimal change to make it pass.
+- Work ONLY from the slice contract the orchestrator passed: its goal, archetype, in-scope/out-of-scope, and acceptance criteria.
+- **Execute the Matching Archetype Playbook**:
+  - `bugfix`: Write or extend the failing reproduction test FIRST. Run it and verify it fails with the reported issue before touching production code. Fix the root cause, then confirm test passes.
+  - `refactor`: Behavior-preserving change. Migrate all callers first, ensure all existing tests pass, then delete legacy APIs/dead code.
+  - `feature`: Red-green TDD. Write the minimal failing test first, then implement the cleanest minimal code to pass.
+  - `perf`: Establish baseline measurement/benchmark, apply optimization, record proof of improvement.
+  - `visual-parity`: Verify rendering/styling/layout matches target references.
+- **Anti-Slop & Comment Discipline**:
+  - Do NOT add narrative, trivial, or obvious comments (e.g. `// initialize variable`, `// return result`, verbose function comments stating the obvious).
+  - Do NOT add defensive over-engineering, unused wrapper functions, premature abstractions, or dead code (`subtract-before-you-add`).
+  - Keep diffs tight and minimal: avoid gratuitous formatting or unrelated file edits.
 - Run the slice's declared validation set before returning; report the exact command and result in `validation_result`.
 - Leave all work in the shared working copy (the working-copy change `@`). You NEVER run `jj` — history surgery is the orchestrator's job.
 - Do not expand scope. If a needed change is out of scope, record it in `deviations` and stop.

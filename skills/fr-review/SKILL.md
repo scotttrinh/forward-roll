@@ -1,20 +1,21 @@
 ---
 name: "fr-review"
-description: "Compare epic intent against the current implementation and record findings"
+description: "Compare epic and slice implementations against intent, verifying TDD coverage, anti-slop hygiene, and acceptance criteria"
 metadata:
-  short-description: "Review an epic against intent"
+  short-description: "Review implementation against intent and anti-slop discipline"
 ---
 
 <objective>
-Create an epic-scoped review summary that compares the intended deliverable against the current implementation.
+Create an epic-scoped or slice-scoped review summary that compares the intended deliverable against the current implementation.
 
-The summary should cover:
-- what the epic intended
+The review validates:
+- what the epic or slice intended
 - what is implemented now
 - which acceptance criteria are satisfied
-- what validation exists
-- what remains uncertain
-- what follow-up work should feed back into planning
+- automated validation and TDD evidence
+- **Anti-Slop & Comment Hygiene**: absence of narrative/trivial AI comments, defensive over-engineering, dead code, or redundant wrappers
+- **Minimal Blast Radius**: tightly scoped diffs without gratuitous formatting or unrelated edits
+- what remains uncertain or requires follow-up
 </objective>
 
 <tooling>
@@ -34,6 +35,7 @@ python3 skills/fr-review/scripts/review.py --epic <epic-file>
 <process>
 1. Run `resolve_context.py` first to load the runtime, specs root, plans root, and the filtered epic or slice files relevant to the review.
 2. Read the runtime contract, relevant epic, nested slices, validation results, and diff summary.
-3. Write the review summary under the parent epic directory.
-4. Treat the review as an input to feedback rather than a separate terminal workflow state.
+3. Verify test coverage, acceptance criteria, comment hygiene, and anti-slop discipline.
+4. Write the review summary under the parent epic directory.
+5. Treat the review as an input to feedback rather than a separate terminal workflow state.
 </process>

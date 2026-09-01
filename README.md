@@ -5,15 +5,15 @@ Forward Roll is a `jj`-first development workflow for coding agents. It helps de
 ## Core Design Principles
 
 1. **Jujutsu (`jj`) Over Git**: The working copy `@` accumulates local iteration, which is described (`jj describe`) and folded (`jj squash`) into clean, single-change review boundaries.
-2. **Unversioned Planning Artifacts**: Specs, epics, slices, ledgers, and task briefs live in `.forward-roll/` (ignored by VCS), keeping git/jj history clean of transient planning clutter.
+2. **Unversioned Planning Artifacts**: Living specs, epics, slices, ledgers, and task briefs live in `.forward-roll/` (ignored by VCS), keeping git/jj history clean of transient planning clutter.
 3. **External & Explicit Configuration**: Environment and runtime contracts are stored explicitly in `.forward-roll/runtime.json`.
-4. **Structured Development Phases**:
+4. **Structured & Fast-Track Development Phases**:
    - **`fr-bootstrap`**: Resolve repo environment and runtime contracts.
-   - **`fr-specify`**: Create or refine durable high-level specifications.
+   - **`fr-specify`**: Capture ground truth in forward-facing living domain dossiers (or fast-track bounded tasks upfront).
    - **`fr-plan-epic`**: Define one reviewable deliverable and its slice breakdown.
-   - **`fr-plan-slice`**: Carve out the next bounded execution slice.
-   - **`fr-do`**: Orchestrate the slice via `fr-impl` (TDD implementer) and `fr-review` (spec reviewer), gating the `jj` changeset on clean review.
-   - **`fr-review`**: Review the assembled epic stack against the definition of done.
+   - **`fr-plan-slice`**: Carve out the next bounded execution slice with an archetype (`feature`, `bugfix`, `refactor`, `perf`, `visual-parity`).
+   - **`fr-do`**: Orchestrate the slice via `fr-impl` (TDD implementer with archetype playbooks) and `fr-review` (anti-slop and spec reviewer), gating the `jj` changeset on clean review.
+   - **`fr-review`**: Review the assembled epic stack against definition of done, comment hygiene, and anti-slop standards.
    - **`fr-feedback`**: Record review or operator feedback as an explicit next state.
 
 ---
