@@ -1,0 +1,21 @@
+{
+  "name": "forward-roll",
+  "version": "0.1.0",
+  "description": "Forward Roll: jj-first development loop for coding agents",
+  "author": {
+    "name": "Scott Trinh"
+  },
+  "homepage": "https://github.com/scotttrinh/forward-roll",
+  "repository": "https://github.com/scotttrinh/forward-roll",
+  "license": "MIT",
+  "keywords": [
+    "jj",
+    "jujutsu",
+    "skills",
+    "planning",
+    "tdd",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks-cursor.json"
+}

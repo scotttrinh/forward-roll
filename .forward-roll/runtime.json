@@ -1,6 +1,6 @@
 {
   "project_name": "forward-roll",
-  "generated_at": "2026-07-16T18:43:14+00:00",
+  "generated_at": "2026-09-01T01:33:16+00:00",
   "repo_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll",
   "runtime_path": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/runtime.json",
   "specs_root": "/Users/scotttrinh/github.com/scotttrinh/forward-roll/.forward-roll/specs",
@@ -40,6 +40,9 @@
       "fr-impl",
       "fr-review"
     ],
-    "codex_agents_present": []
+    "codex_agents_present": [
+      "fr-impl",
+      "fr-review"
+    ]
   }
 }

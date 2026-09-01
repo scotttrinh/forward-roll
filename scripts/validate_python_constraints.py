@@ -52,7 +52,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "paths",
         nargs="*",
-        default=["plugins/forward-roll/skills"],
+        default=["skills"],
         help="Script roots or files to validate",
     )
     return parser

@@ -1,0 +1,6 @@
+{
+  "name": "forward-roll",
+  "description": "Forward Roll: jj-first development loop with durable specs, bounded slices, and subagent review",
+  "version": "0.1.0",
+  "contextFileName": "GEMINI.md"
+}

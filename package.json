@@ -1,0 +1,20 @@
+{
+  "name": "forward-roll",
+  "version": "0.1.0",
+  "description": "Forward Roll: A jj-first development loop for coding agents",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "skills",
+    "jujutsu",
+    "jj",
+    "tdd",
+    "planning",
+    "workflow"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  }
+}

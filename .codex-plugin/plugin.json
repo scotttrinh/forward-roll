@@ -1,0 +1,41 @@
+{
+  "name": "forward-roll",
+  "version": "0.1.0",
+  "description": "A jj-first development loop for coding agents: durable specs, epic planning, bounded slice execution, and subagent review.",
+  "author": {
+    "name": "Scott Trinh",
+    "url": "https://github.com/scotttrinh"
+  },
+  "homepage": "https://github.com/scotttrinh/forward-roll",
+  "repository": "https://github.com/scotttrinh/forward-roll",
+  "license": "MIT",
+  "keywords": [
+    "jj",
+    "jujutsu",
+    "planning",
+    "specs",
+    "tdd",
+    "subagents",
+    "code-review",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "hooks": {},
+  "interface": {
+    "displayName": "Forward Roll",
+    "shortDescription": "jj-first planning, slice execution, and subagent review for coding agents",
+    "longDescription": "Forward Roll brings structured, durable planning and execution to coding agents using Jujutsu (jj). Keep intent in specs, plan epics and bounded slices, and gate reviewable changes with subagents.",
+    "developerName": "Scott Trinh",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Let's bootstrap Forward Roll for this project.",
+      "Let's plan an epic for the next feature."
+    ],
+    "websiteURL": "https://github.com/scotttrinh/forward-roll"
+  }
+}

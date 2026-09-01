@@ -1,0 +1,21 @@
+{
+  "name": "forward-roll",
+  "description": "Forward Roll: A jj-first development loop for coding agents with durable specs, bounded slice execution, and subagent review",
+  "version": "0.1.0",
+  "author": {
+    "name": "Scott Trinh"
+  },
+  "homepage": "https://github.com/scotttrinh/forward-roll",
+  "repository": "https://github.com/scotttrinh/forward-roll",
+  "license": "MIT",
+  "keywords": [
+    "jj",
+    "jujutsu",
+    "planning",
+    "specs",
+    "tdd",
+    "subagents",
+    "code-review",
+    "workflow"
+  ]
+}

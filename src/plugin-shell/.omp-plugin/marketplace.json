@@ -1,8 +1,0 @@
-{
-  "name": "forward-roll",
-  "owner": { "name": "Scott Trinh" },
-  "metadata": { "description": "jj-first omp workflow plugin", "pluginRoot": "plugins" },
-  "plugins": [
-    { "name": "forward-roll", "source": "./plugins/forward-roll", "category": "productivity" }
-  ]
-}
